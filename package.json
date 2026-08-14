@@ -1,0 +1,22 @@
+{
+  "name": "planeat",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Planes de comida que cuadran con tus objetivos, tu presupuesto y lo que ya tienes en casa",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @planeat/web",
+    "build": "npm run build --workspace @planeat/web",
+    "start": "npm run start --workspace @planeat/web",
+    "lint": "npm run lint --workspace @planeat/web",
+    "typecheck": "tsc --noEmit -p apps/web/tsconfig.json && tsc --noEmit -p packages/shared/tsconfig.json",
+    "solver:dev": "cd services/solver && uvicorn app.main:app --reload --port 8000",
+    "solver:test": "cd services/solver && pytest"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

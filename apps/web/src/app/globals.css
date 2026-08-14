@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   PlanEat — Sistema de diseño
+   ----------------------------------------------------------------------------
+   Decisiones documentadas en docs/design-decisions.md. Resumen:
+
+   · Acento de marca: berenjena profunda. Evita deliberadamente el verde-menta
+     clínico de las apps de salud y el coral de los competidores.
+   · Colores de macro: triada Okabe-Ito, validada para deuteranopia y
+     protanopia. Ninguno coincide con el acento de marca.
+   · "Éxito" NO usa verde: colisionaría con el color de grasa. Usa el acento
+     de marca con icono. El rojo queda reservado a error.
+   · Todo color se declara aquí como token. Ningún componente usa un literal.
+   ========================================================================== */
+
+:root {
+  /* Superficies — neutro cálido, no gris puro */
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --surface-2: #f3efe8;
+  --surface-3: #e9e3d9;
+
+  /* Texto */
+  --text: #1c1917;
+  --text-2: #494440;
+  --text-3: #79726b;
+
+  /* Líneas */
+  --line: #e4ded4;
+  --line-strong: #cdc4b6;
+
+  /* Marca — berenjena */
+  --brand: #6b3a5b;
+  --brand-hover: #572e4a;
+  --brand-soft: #f4ecf1;
+  --brand-line: #d9c3d0;
+  --on-brand: #ffffff;
+
+  /* Macronutrientes — triada Okabe-Ito (segura para daltonismo) */
+  --protein: #0072b2;
+  --protein-soft: #e4f0f8;
+  --carb: #e69f00;
+  --carb-soft: #fdf2dd;
+  --fat: #009e73;
+  --fat-soft: #dff2ec;
+
+  /* Estados semánticos */
+  --danger: #b3261e;
+  --danger-soft: #fbeceb;
+  --warning: #8a6116;
+  --warning-soft: #fbf3e2;
+
+  /* Forma y movimiento */
+  --radius: 10px;
+  --radius-sm: 7px;
+  --radius-lg: 14px;
+  --shadow-pop: 0 6px 24px -6px rgb(28 25 23 / 0.16), 0 2px 6px -2px rgb(28 25 23 / 0.1);
+  --dur: 150ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Oscuro por preferencia del sistema — sólo si no hay elección explícita de claro */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171512;
+    --surface: #1f1d19;
+    --surface-2: #272420;
+    --surface-3: #332f29;
+
+    --text: #f2ede5;
+    --text-2: #cfc8bd;
+    --text-3: #9c948a;
+
+    --line: #332f29;
+    --line-strong: #4a453d;
+
+    --brand: #d4a3c2;
+    --brand-hover: #e2b8d2;
+    --brand-soft: #2a1f26;
+    --brand-line: #4a3542;
+    --on-brand: #2a1520;
+
+    --protein: #56b4e9;
+    --protein-soft: #16262f;
+    --carb: #f0b73e;
+    --carb-soft: #2e2413;
+    --fat: #3fc9a0;
+    --fat-soft: #12291f;
+
+    --danger: #f2938c;
+    --danger-soft: #2e1917;
+    --warning: #e0b565;
+    --warning-soft: #2b2114;
+
+    --shadow-pop: 0 6px 24px -6px rgb(0 0 0 / 0.5), 0 2px 6px -2px rgb(0 0 0 / 0.4);
+  }
+}
+
+/* Elección explícita de oscuro — gana sobre la preferencia del sistema */
+:root[data-theme="dark"] {
+  --bg: #171512;
+  --surface: #1f1d19;
+  --surface-2: #272420;
+  --surface-3: #332f29;
+
+  --text: #f2ede5;
+  --text-2: #cfc8bd;
+  --text-3: #9c948a;
+
+  --line: #332f29;
+  --line-strong: #4a453d;
+
+  --brand: #d4a3c2;
+  --brand-hover: #e2b8d2;
+  --brand-soft: #2a1f26;
+  --brand-line: #4a3542;
+  --on-brand: #2a1520;
+
+  --protein: #56b4e9;
+  --protein-soft: #16262f;
+  --carb: #f0b73e;
+  --carb-soft: #2e2413;
+  --fat: #3fc9a0;
+  --fat-soft: #12291f;
+
+  --danger: #f2938c;
+  --danger-soft: #2e1917;
+  --warning: #e0b565;
+  --warning-soft: #2b2114;
+
+  --shadow-pop: 0 6px 24px -6px rgb(0 0 0 / 0.5), 0 2px 6px -2px rgb(0 0 0 / 0.4);
+}
+
+/* Exposición de los tokens como utilidades de Tailwind */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-line: var(--brand-line);
+  --color-on-brand: var(--on-brand);
+
+  --color-protein: var(--protein);
+  --color-protein-soft: var(--protein-soft);
+  --color-carb: var(--carb);
+  --color-carb-soft: var(--carb-soft);
+  --color-fat: var(--fat);
+  --color-fat-soft: var(--fat-soft);
+
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-base: var(--radius);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Toda cifra nutricional o de precio usa números tabulares. Sin esto las
+   columnas de gramos bailan al actualizarse. */
+.tnum,
+table,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
