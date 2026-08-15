@@ -1,3 +1,10 @@
+# Declarado explícitamente en vez de confiar en el defecto de pip: sin esto, un
+# pip antiguo se niega a instalar en modo editable ("editable mode currently
+# requires a setuptools-based build") y el mensaje no dice qué falta.
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "planeat-solver"
 version = "0.1.0"
@@ -13,6 +20,19 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "ruff>=0.7", "httpx>=0.27"]
+
+# El paquete es `app` y sólo `app`. Sin esta declaración, setuptools intenta
+# adivinarlo recorriendo el directorio y se planta en cuanto hay más de una
+# carpeta de primer nivel: `data/` (catálogo, fixtures y volcados de paridad) y
+# `scripts/` son datos y herramientas, no paquetes instalables, pero la
+# autodetección no puede saberlo y aborta con "Multiple top-level packages
+# discovered in a flat-layout" en vez de elegir por su cuenta.
+#
+# El fallo no aparecía en un entorno ya creado —el paquete estaba instalado de
+# antes de que `data/` creciera— y sí en una instalación limpia, que es
+# exactamente lo que hace CI.
+[tool.setuptools]
+packages = ["app", "app.solver"]
 
 [tool.ruff]
 line-length = 88
