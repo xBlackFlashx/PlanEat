@@ -1,0 +1,515 @@
+{
+  "_meta": {
+    "descripcion": "Recetas del catálogo semilla de desarrollo. Preparaciones caseras estándar, redactadas para este proyecto.",
+    "derivado": "NO se declaran aquí la nutrición, los alérgenos ni las dietas: los calcula construir_catalogo.py desde los ingredientes. Declararlos a mano sería una fuente de error silencioso.",
+    "revision": "Ninguna receta ha sido revisada por dietista. El campo revisadaPor va a null en el catálogo generado y así debe permanecer hasta que exista revisión real.",
+    "cantidades": "Los gramos son POR RACIÓN BASE (racionesBase = 1) y coherentes con el 'estado' del ingrediente: el arroz se pesa crudo, las lentejas de bote escurridas."
+  },
+  "recetas": [
+    {
+      "id": "avena_yogur_arandanos", "titulo": "Avena con yogur griego y arándanos",
+      "minutosPreparacion": 5, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["desayuno", "merienda"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "avena_copos", "gramos": 50, "descripcion": "5 cdas · 50 g" },
+        { "alimentoId": "yogur_griego", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "arandanos", "gramos": 70, "descripcion": "un puñado · 70 g" },
+        { "alimentoId": "miel", "gramos": 8, "descripcion": "1 cdta · 8 g" }
+      ],
+      "pasos": ["Mezcla la avena con el yogur en un bol.", "Deja reposar 5 minutos para que la avena ablande.", "Añade los arándanos por encima y riega con la miel."]
+    },
+    {
+      "id": "tostada_aguacate_huevo", "titulo": "Tostada de aguacate con huevo",
+      "minutosPreparacion": 5, "minutosCoccion": 5, "racionesBase": 1,
+      "slotsAdmitidos": ["desayuno", "almuerzo"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pan_integral", "gramos": 60, "descripcion": "2 rebanadas · 60 g" },
+        { "alimentoId": "aguacate", "gramos": 70, "descripcion": "medio aguacate · 70 g" },
+        { "alimentoId": "huevo", "gramos": 60, "descripcion": "1 huevo" },
+        { "alimentoId": "aceite_oliva", "gramos": 5, "descripcion": "1 cdta · 5 g" },
+        { "alimentoId": "sal", "gramos": 1, "descripcion": "una pizca" }
+      ],
+      "pasos": ["Tuesta el pan.", "Machaca el aguacate con un tenedor y sálalo.", "Fríe el huevo con el aceite a fuego medio.", "Extiende el aguacate sobre la tostada y coloca el huevo encima."]
+    },
+    {
+      "id": "tortilla_claras_espinacas", "titulo": "Tortilla de claras con espinacas",
+      "minutosPreparacion": 5, "minutosCoccion": 8, "racionesBase": 1,
+      "slotsAdmitidos": ["desayuno", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "clara_huevo", "gramos": 200, "descripcion": "200 ml de claras" },
+        { "alimentoId": "espinacas", "gramos": 80, "descripcion": "2 puñados · 80 g" },
+        { "alimentoId": "champinones", "gramos": 60, "descripcion": "60 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 4, "descripcion": "1 cdta · 4 g" },
+        { "alimentoId": "sal", "gramos": 1, "descripcion": "una pizca" }
+      ],
+      "pasos": ["Saltea los champiñones laminados con el aceite 4 minutos.", "Añade las espinacas y deja que reduzcan.", "Vierte las claras batidas y salpimenta.", "Cuaja a fuego suave 3 minutos por cada lado."]
+    },
+    {
+      "id": "porridge_platano_cacahuete", "titulo": "Porridge de avena con plátano y crema de cacahuete",
+      "minutosPreparacion": 3, "minutosCoccion": 7, "racionesBase": 1,
+      "slotsAdmitidos": ["desayuno"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "avena_copos", "gramos": 60, "descripcion": "6 cdas · 60 g" },
+        { "alimentoId": "leche_semi", "gramos": 250, "descripcion": "1 vaso · 250 ml" },
+        { "alimentoId": "platano", "gramos": 100, "descripcion": "1 plátano · 100 g" },
+        { "alimentoId": "crema_cacahuete", "gramos": 15, "descripcion": "1 cda · 15 g" }
+      ],
+      "pasos": ["Calienta la leche con la avena a fuego medio, removiendo.", "Cuece 5 minutos hasta que espese.", "Sirve con el plátano en rodajas y la crema de cacahuete por encima."]
+    },
+    {
+      "id": "yogur_fresas_almendras", "titulo": "Yogur griego con fresas y almendras",
+      "minutosPreparacion": 4, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["desayuno", "merienda"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "yogur_griego", "gramos": 200, "descripcion": "200 g" },
+        { "alimentoId": "fresas", "gramos": 120, "descripcion": "120 g" },
+        { "alimentoId": "almendras", "gramos": 15, "descripcion": "un puñado corto · 15 g" }
+      ],
+      "pasos": ["Lava y trocea las fresas.", "Mézclalas con el yogur.", "Añade las almendras picadas por encima."]
+    },
+    {
+      "id": "pudin_chia_avena", "titulo": "Pudín de chía con bebida de avena",
+      "minutosPreparacion": 5, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["desayuno", "merienda"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "semillas_chia", "gramos": 30, "descripcion": "3 cdas · 30 g" },
+        { "alimentoId": "bebida_avena", "gramos": 220, "descripcion": "220 ml" },
+        { "alimentoId": "platano", "gramos": 90, "descripcion": "1 plátano pequeño · 90 g" },
+        { "alimentoId": "miel", "gramos": 8, "descripcion": "1 cdta · 8 g" }
+      ],
+      "pasos": ["Mezcla la chía con la bebida de avena y la miel.", "Remueve bien y deja reposar en la nevera al menos 4 horas, mejor toda la noche.", "Sirve con el plátano en rodajas."]
+    },
+
+    {
+      "id": "pollo_arroz_brocoli", "titulo": "Pollo a la plancha con arroz integral y brócoli",
+      "minutosPreparacion": 8, "minutosCoccion": 25, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pechuga_pollo", "gramos": 170, "descripcion": "1 filete grande · 170 g" },
+        { "alimentoId": "arroz_integral", "gramos": 70, "descripcion": "70 g en crudo" },
+        { "alimentoId": "brocoli", "gramos": 180, "descripcion": "180 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" },
+        { "alimentoId": "sal", "gramos": 1, "descripcion": "una pizca" }
+      ],
+      "pasos": ["Cuece el arroz integral 22 minutos en agua con sal.", "Cuece el brócoli al vapor 6 minutos: debe quedar firme.", "Marca el pollo a la plancha con la mitad del aceite, 4 minutos por lado.", "Saltea el brócoli con el ajo laminado y el resto del aceite.", "Sirve todo junto."]
+    },
+    {
+      "id": "lentejas_guisadas", "titulo": "Lentejas guisadas con verduras",
+      "minutosPreparacion": 10, "minutosCoccion": 30, "racionesBase": 2,
+      "slotsAdmitidos": ["comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "lentejas_secas", "gramos": 140, "descripcion": "140 g en seco" },
+        { "alimentoId": "zanahoria", "gramos": 120, "descripcion": "2 zanahorias · 120 g" },
+        { "alimentoId": "cebolla", "gramos": 100, "descripcion": "1 cebolla · 100 g" },
+        { "alimentoId": "tomate_triturado", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "pimiento_rojo", "gramos": 80, "descripcion": "medio pimiento · 80 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 16, "descripcion": "4 cdtas · 16 g" },
+        { "alimentoId": "pimenton", "gramos": 3, "descripcion": "1 cdta · 3 g" },
+        { "alimentoId": "ajo", "gramos": 6, "descripcion": "2 dientes" },
+        { "alimentoId": "sal", "gramos": 3, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Pon las lentejas en remojo si el paquete lo indica.", "Sofríe la cebolla, el ajo, la zanahoria y el pimiento con el aceite, 8 minutos.", "Añade el pimentón fuera del fuego para que no se queme, y luego el tomate.", "Incorpora las lentejas escurridas y cubre con agua dos dedos por encima.", "Cuece a fuego bajo 25-30 minutos hasta que estén tiernas. Sala al final."]
+    },
+    {
+      "id": "ensalada_garbanzos", "titulo": "Ensalada de garbanzos con tomate y pepino",
+      "minutosPreparacion": 10, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "garbanzos_cocidos", "gramos": 200, "descripcion": "medio bote · 200 g" },
+        { "alimentoId": "tomate", "gramos": 120, "descripcion": "1 tomate · 120 g" },
+        { "alimentoId": "pepino", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "cebolla", "gramos": 30, "descripcion": "un poco de cebolla · 30 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 10, "descripcion": "1 cda · 10 g" },
+        { "alimentoId": "vinagre", "gramos": 8, "descripcion": "1 cdta · 8 g" },
+        { "alimentoId": "sal", "gramos": 1, "descripcion": "una pizca" }
+      ],
+      "pasos": ["Escurre y enjuaga los garbanzos.", "Trocea el tomate, el pepino y la cebolla.", "Mezcla todo y aliña con aceite, vinagre y sal."]
+    },
+    {
+      "id": "pasta_atun_tomate", "titulo": "Pasta integral con atún y tomate",
+      "minutosPreparacion": 5, "minutosCoccion": 15, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pasta_integral", "gramos": 80, "descripcion": "80 g en crudo" },
+        { "alimentoId": "atun_natural", "gramos": 110, "descripcion": "2 latas escurridas · 110 g" },
+        { "alimentoId": "tomate_triturado", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "cebolla", "gramos": 50, "descripcion": "media cebolla · 50 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "oregano", "gramos": 1, "descripcion": "1 cdta" },
+        { "alimentoId": "ajo", "gramos": 3, "descripcion": "1 diente" }
+      ],
+      "pasos": ["Cuece la pasta según el paquete.", "Pocha la cebolla y el ajo con el aceite.", "Añade el tomate y el orégano, y deja reducir 8 minutos.", "Incorpora el atún escurrido al final, sin cocerlo mucho.", "Mezcla con la pasta escurrida."]
+    },
+    {
+      "id": "merluza_patata_judias", "titulo": "Merluza al horno con patata y judías verdes",
+      "minutosPreparacion": 10, "minutosCoccion": 30, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "merluza", "gramos": 200, "descripcion": "1 lomo · 200 g" },
+        { "alimentoId": "patata", "gramos": 200, "descripcion": "2 patatas medianas · 200 g" },
+        { "alimentoId": "judias_verdes", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "limon", "gramos": 20, "descripcion": "medio limón" },
+        { "alimentoId": "ajo", "gramos": 3, "descripcion": "1 diente" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Precalienta el horno a 200 °C.", "Corta la patata en rodajas finas y hornéala 18 minutos con la mitad del aceite.", "Cuece las judías verdes 8 minutos.", "Coloca la merluza sobre las patatas, riega con el resto del aceite, el ajo picado y el limón.", "Hornea 12 minutos más. Sirve con las judías."]
+    },
+    {
+      "id": "arroz_pollo_verduras", "titulo": "Arroz con pollo y verduras",
+      "minutosPreparacion": 10, "minutosCoccion": 25, "racionesBase": 2,
+      "slotsAdmitidos": ["comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pechuga_pollo", "gramos": 280, "descripcion": "2 filetes · 280 g" },
+        { "alimentoId": "arroz_blanco", "gramos": 150, "descripcion": "150 g en crudo" },
+        { "alimentoId": "pimiento_rojo", "gramos": 120, "descripcion": "1 pimiento · 120 g" },
+        { "alimentoId": "guisantes", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "cebolla", "gramos": 80, "descripcion": "1 cebolla pequeña · 80 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 14, "descripcion": "3 cdtas · 14 g" },
+        { "alimentoId": "pimenton", "gramos": 3, "descripcion": "1 cdta" },
+        { "alimentoId": "sal", "gramos": 3, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Trocea el pollo y márcalo con el aceite en una cazuela ancha.", "Retíralo y sofríe la cebolla y el pimiento.", "Añade el pimentón fuera del fuego, luego el arroz y remueve un minuto.", "Cubre con el doble de agua caliente, añade los guisantes y el pollo.", "Cuece 18 minutos a fuego medio-bajo y deja reposar 5 minutos."]
+    },
+    {
+      "id": "quinoa_tofu_pimiento", "titulo": "Quinoa con tofu salteado y pimiento",
+      "minutosPreparacion": 10, "minutosCoccion": 20, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "quinoa", "gramos": 70, "descripcion": "70 g en crudo" },
+        { "alimentoId": "tofu_firme", "gramos": 180, "descripcion": "180 g" },
+        { "alimentoId": "pimiento_rojo", "gramos": 100, "descripcion": "1 pimiento pequeño · 100 g" },
+        { "alimentoId": "calabacin", "gramos": 100, "descripcion": "medio calabacín · 100 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 10, "descripcion": "1 cda · 10 g" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" },
+        { "alimentoId": "comino", "gramos": 2, "descripcion": "media cdta" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Enjuaga la quinoa y cuécela 15 minutos en el doble de agua.", "Escurre bien el tofu, córtalo en dados y dórralo con la mitad del aceite.", "Saltea el pimiento y el calabacín con el resto del aceite, el ajo y el comino.", "Mezcla todo con la quinoa."]
+    },
+    {
+      "id": "ternera_pimientos_arroz", "titulo": "Ternera salteada con pimientos y arroz",
+      "minutosPreparacion": 10, "minutosCoccion": 20, "racionesBase": 1,
+      "slotsAdmitidos": ["comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "ternera_magra", "gramos": 160, "descripcion": "160 g en tiras" },
+        { "alimentoId": "arroz_blanco", "gramos": 70, "descripcion": "70 g en crudo" },
+        { "alimentoId": "pimiento_rojo", "gramos": 130, "descripcion": "1 pimiento · 130 g" },
+        { "alimentoId": "cebolla", "gramos": 60, "descripcion": "media cebolla · 60 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Cuece el arroz 16 minutos.", "Saltea la ternera a fuego fuerte 3 minutos y retírala.", "En la misma sartén saltea la cebolla, el pimiento y el ajo.", "Devuelve la carne, salpimenta y sirve con el arroz."]
+    },
+    {
+      "id": "ensalada_pasta_atun", "titulo": "Ensalada de pasta con atún y aceitunas",
+      "minutosPreparacion": 10, "minutosCoccion": 10, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pasta_seca", "gramos": 70, "descripcion": "70 g en crudo" },
+        { "alimentoId": "atun_natural", "gramos": 80, "descripcion": "1 lata y media · 80 g" },
+        { "alimentoId": "tomate", "gramos": 100, "descripcion": "1 tomate · 100 g" },
+        { "alimentoId": "aceitunas", "gramos": 30, "descripcion": "30 g" },
+        { "alimentoId": "cebolla", "gramos": 30, "descripcion": "30 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "oregano", "gramos": 1, "descripcion": "1 cdta" }
+      ],
+      "pasos": ["Cuece la pasta y enfríala bajo el grifo.", "Trocea el tomate y la cebolla.", "Mezcla todo con el atún escurrido y las aceitunas.", "Aliña con aceite y orégano."]
+    },
+    {
+      "id": "curry_garbanzos", "titulo": "Curry de garbanzos con arroz",
+      "minutosPreparacion": 8, "minutosCoccion": 22, "racionesBase": 2,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "garbanzos_cocidos", "gramos": 400, "descripcion": "1 bote escurrido · 400 g" },
+        { "alimentoId": "arroz_blanco", "gramos": 140, "descripcion": "140 g en crudo" },
+        { "alimentoId": "tomate_triturado", "gramos": 200, "descripcion": "200 g" },
+        { "alimentoId": "cebolla", "gramos": 100, "descripcion": "1 cebolla · 100 g" },
+        { "alimentoId": "espinacas", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 14, "descripcion": "3 cdtas · 14 g" },
+        { "alimentoId": "comino", "gramos": 4, "descripcion": "1 cdta · 4 g" },
+        { "alimentoId": "ajo", "gramos": 6, "descripcion": "2 dientes" },
+        { "alimentoId": "sal", "gramos": 3, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Cuece el arroz.", "Sofríe la cebolla y el ajo con el aceite 6 minutos.", "Añade el comino, remueve 30 segundos y echa el tomate.", "Incorpora los garbanzos y cuece 10 minutos.", "Añade las espinacas al final hasta que reduzcan. Sirve con el arroz."]
+    },
+
+    {
+      "id": "salmon_calabacin", "titulo": "Salmón al horno con calabacín",
+      "minutosPreparacion": 8, "minutosCoccion": 20, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "salmon", "gramos": 150, "descripcion": "1 lomo · 150 g" },
+        { "alimentoId": "calabacin", "gramos": 200, "descripcion": "1 calabacín · 200 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "limon", "gramos": 20, "descripcion": "medio limón" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Precalienta el horno a 200 °C.", "Corta el calabacín en rodajas y colócalo en la bandeja con la mitad del aceite.", "Hornea 8 minutos, pon el salmón encima con el ajo, el limón y el resto del aceite.", "Hornea 10-12 minutos más."]
+    },
+    {
+      "id": "bacalao_pisto", "titulo": "Bacalao con pisto de verduras",
+      "minutosPreparacion": 12, "minutosCoccion": 28, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "bacalao", "gramos": 200, "descripcion": "1 lomo · 200 g" },
+        { "alimentoId": "calabacin", "gramos": 120, "descripcion": "120 g" },
+        { "alimentoId": "berenjena", "gramos": 120, "descripcion": "120 g" },
+        { "alimentoId": "pimiento_rojo", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "tomate_triturado", "gramos": 120, "descripcion": "120 g" },
+        { "alimentoId": "cebolla", "gramos": 60, "descripcion": "60 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 10, "descripcion": "1 cda · 10 g" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Corta todas las verduras en dados pequeños.", "Sofríe la cebolla y el pimiento 5 minutos, añade la berenjena y el calabacín.", "Incorpora el tomate y cuece a fuego bajo 15 minutos.", "Cocina el bacalao a la plancha 3 minutos por lado y sírvelo sobre el pisto."]
+    },
+    {
+      "id": "gambas_verduras_quinoa", "titulo": "Salteado de gambas con verduras y quinoa",
+      "minutosPreparacion": 10, "minutosCoccion": 18, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "gambas", "gramos": 180, "descripcion": "180 g peladas" },
+        { "alimentoId": "quinoa", "gramos": 60, "descripcion": "60 g en crudo" },
+        { "alimentoId": "brocoli", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "pimiento_rojo", "gramos": 80, "descripcion": "80 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "ajo", "gramos": 6, "descripcion": "2 dientes" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Cuece la quinoa 15 minutos.", "Saltea el brócoli y el pimiento a fuego fuerte 5 minutos.", "Añade el ajo y las gambas, y saltea 3 minutos más.", "Mezcla con la quinoa."]
+    },
+    {
+      "id": "crema_calabacin_requeson", "titulo": "Crema de calabacín con requesón",
+      "minutosPreparacion": 8, "minutosCoccion": 20, "racionesBase": 1,
+      "slotsAdmitidos": ["cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "calabacin", "gramos": 300, "descripcion": "1 calabacín y medio · 300 g" },
+        { "alimentoId": "cebolla", "gramos": 60, "descripcion": "60 g" },
+        { "alimentoId": "requeson", "gramos": 120, "descripcion": "120 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" },
+        { "alimentoId": "pimienta_negra", "gramos": 1, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Pocha la cebolla con el aceite.", "Añade el calabacín troceado y cubre a medias con agua.", "Cuece 15 minutos y tritura.", "Sirve con el requesón encima y pimienta recién molida."]
+    },
+    {
+      "id": "wrap_pollo", "titulo": "Wrap de pollo con lechuga y tomate",
+      "minutosPreparacion": 10, "minutosCoccion": 10, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "almuerzo", "comida"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "tortilla_trigo", "gramos": 80, "descripcion": "2 tortillas · 80 g" },
+        { "alimentoId": "pechuga_pollo", "gramos": 150, "descripcion": "1 filete · 150 g" },
+        { "alimentoId": "lechuga", "gramos": 50, "descripcion": "50 g" },
+        { "alimentoId": "tomate", "gramos": 80, "descripcion": "1 tomate pequeño · 80 g" },
+        { "alimentoId": "yogur_natural", "gramos": 40, "descripcion": "2 cdas · 40 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 5, "descripcion": "1 cdta · 5 g" },
+        { "alimentoId": "pimenton", "gramos": 2, "descripcion": "media cdta" }
+      ],
+      "pasos": ["Corta el pollo en tiras y márcalo con el aceite y el pimentón.", "Calienta las tortillas 30 segundos por lado.", "Rellena con la lechuga, el tomate y el pollo.", "Añade el yogur como salsa y enrolla."]
+    },
+    {
+      "id": "revuelto_champinones_tofu", "titulo": "Revuelto de champiñones y tofu",
+      "minutosPreparacion": 8, "minutosCoccion": 12, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "desayuno"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "tofu_firme", "gramos": 200, "descripcion": "200 g" },
+        { "alimentoId": "champinones", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "espinacas", "gramos": 80, "descripcion": "80 g" },
+        { "alimentoId": "levadura_nutricional", "gramos": 8, "descripcion": "1 cda · 8 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 8, "descripcion": "2 cdtas · 8 g" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Desmenuza el tofu con las manos.", "Saltea los champiñones laminados con el aceite y el ajo, 5 minutos.", "Añade el tofu desmenuzado y la levadura nutricional.", "Incorpora las espinacas al final hasta que reduzcan."]
+    },
+    {
+      "id": "ensalada_lentejas_huevo", "titulo": "Ensalada templada de lentejas y huevo",
+      "minutosPreparacion": 10, "minutosCoccion": 10, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "lentejas_cocidas", "gramos": 250, "descripcion": "medio bote largo · 250 g" },
+        { "alimentoId": "huevo", "gramos": 120, "descripcion": "2 huevos" },
+        { "alimentoId": "espinacas", "gramos": 60, "descripcion": "60 g" },
+        { "alimentoId": "tomate", "gramos": 100, "descripcion": "1 tomate · 100 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 10, "descripcion": "1 cda · 10 g" },
+        { "alimentoId": "vinagre", "gramos": 6, "descripcion": "1 cdta" },
+        { "alimentoId": "sal", "gramos": 1, "descripcion": "una pizca" }
+      ],
+      "pasos": ["Cuece los huevos 9 minutos y pélalos.", "Enjuaga las lentejas y templálas un minuto en la sartén.", "Monta con las espinacas y el tomate troceado.", "Añade los huevos partidos y aliña."]
+    },
+    {
+      "id": "tortilla_patata_ligera", "titulo": "Tortilla de patata ligera con ensalada",
+      "minutosPreparacion": 12, "minutosCoccion": 20, "racionesBase": 2,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "patata", "gramos": 350, "descripcion": "3 patatas · 350 g" },
+        { "alimentoId": "huevo", "gramos": 240, "descripcion": "4 huevos" },
+        { "alimentoId": "cebolla", "gramos": 100, "descripcion": "1 cebolla · 100 g" },
+        { "alimentoId": "lechuga", "gramos": 80, "descripcion": "80 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 18, "descripcion": "4 cdtas · 18 g" },
+        { "alimentoId": "sal", "gramos": 3, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Corta la patata en láminas finas y cocínala tapada a fuego bajo con el aceite y la cebolla, 15 minutos: se pocha, no se fríe.", "Bate los huevos y mézclalos con la patata escurrida.", "Cuaja en la sartén 3 minutos por cada lado.", "Sirve con la lechuga aliñada."]
+    },
+
+    {
+      "id": "pollo_coliflor_aceitunas", "titulo": "Pollo al horno con coliflor y aceitunas",
+      "minutosPreparacion": 10, "minutosCoccion": 30, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pechuga_pollo", "gramos": 180, "descripcion": "1 filete grande · 180 g" },
+        { "alimentoId": "coliflor", "gramos": 250, "descripcion": "250 g" },
+        { "alimentoId": "aceitunas", "gramos": 35, "descripcion": "35 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 10, "descripcion": "1 cda · 10 g" },
+        { "alimentoId": "pimenton", "gramos": 2, "descripcion": "media cdta" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" }
+      ],
+      "pasos": ["Precalienta el horno a 200 °C.", "Separa la coliflor en ramilletes y mézclala con el aceite, el ajo y el pimentón.", "Hornea 15 minutos, añade el pollo y hornea 15 minutos más.", "Añade las aceitunas al sacar del horno."]
+    },
+    {
+      "id": "salmon_espinacas_aguacate", "titulo": "Salmón con ensalada de espinacas y aguacate",
+      "minutosPreparacion": 8, "minutosCoccion": 10, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "salmon", "gramos": 160, "descripcion": "1 lomo · 160 g" },
+        { "alimentoId": "espinacas", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "aguacate", "gramos": 80, "descripcion": "medio aguacate · 80 g" },
+        { "alimentoId": "pepino", "gramos": 80, "descripcion": "80 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 6, "descripcion": "1 cdta y media · 6 g" },
+        { "alimentoId": "limon", "gramos": 15, "descripcion": "un chorro" },
+        { "alimentoId": "sal", "gramos": 1, "descripcion": "una pizca" }
+      ],
+      "pasos": ["Marca el salmón a la plancha 4 minutos por el lado de la piel y 2 por el otro.", "Monta las espinacas con el aguacate y el pepino.", "Aliña con aceite, limón y sal, y sirve el salmón encima."]
+    },
+    {
+      "id": "revuelto_gambas_bajo_carb", "titulo": "Revuelto de gambas y espinacas",
+      "minutosPreparacion": 7, "minutosCoccion": 10, "racionesBase": 1,
+      "slotsAdmitidos": ["cena", "desayuno"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "gambas", "gramos": 150, "descripcion": "150 g peladas" },
+        { "alimentoId": "huevo", "gramos": 120, "descripcion": "2 huevos" },
+        { "alimentoId": "espinacas", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 7, "descripcion": "1 cdta larga · 7 g" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" },
+        { "alimentoId": "sal", "gramos": 1, "descripcion": "una pizca" }
+      ],
+      "pasos": ["Saltea el ajo con el aceite y añade las gambas 2 minutos.", "Incorpora las espinacas hasta que reduzcan.", "Añade los huevos batidos y remueve a fuego suave hasta cuajar sin secar."]
+    },
+
+    {
+      "id": "yogur_nueces", "titulo": "Yogur natural con nueces",
+      "minutosPreparacion": 3, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["merienda", "almuerzo"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "yogur_natural", "gramos": 250, "descripcion": "2 yogures · 250 g" },
+        { "alimentoId": "nueces", "gramos": 20, "descripcion": "un puñado · 20 g" },
+        { "alimentoId": "miel", "gramos": 8, "descripcion": "1 cdta · 8 g" }
+      ],
+      "pasos": ["Sirve el yogur en un bol.", "Añade las nueces troceadas y la miel."]
+    },
+    {
+      "id": "tostada_cacahuete_platano", "titulo": "Tostada con crema de cacahuete y plátano",
+      "minutosPreparacion": 4, "minutosCoccion": 2, "racionesBase": 1,
+      "slotsAdmitidos": ["merienda", "almuerzo", "desayuno"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "pan_integral", "gramos": 50, "descripcion": "2 rebanadas · 50 g" },
+        { "alimentoId": "crema_cacahuete", "gramos": 20, "descripcion": "1 cda larga · 20 g" },
+        { "alimentoId": "platano", "gramos": 90, "descripcion": "1 plátano · 90 g" }
+      ],
+      "pasos": ["Tuesta el pan.", "Extiende la crema de cacahuete.", "Cubre con el plátano en rodajas."]
+    },
+    {
+      "id": "batido_platano_avena", "titulo": "Batido de plátano, leche y avena",
+      "minutosPreparacion": 4, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["merienda", "almuerzo", "desayuno"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "platano", "gramos": 120, "descripcion": "1 plátano grande · 120 g" },
+        { "alimentoId": "leche_semi", "gramos": 250, "descripcion": "1 vaso · 250 ml" },
+        { "alimentoId": "avena_copos", "gramos": 35, "descripcion": "3 cdas · 35 g" },
+        { "alimentoId": "queso_batido_0", "gramos": 100, "descripcion": "100 g" }
+      ],
+      "pasos": ["Pon todos los ingredientes en la batidora.", "Tritura hasta que quede homogéneo.", "Sirve frío."]
+    },
+    {
+      "id": "requeson_miel_almendras", "titulo": "Requesón con miel y almendras",
+      "minutosPreparacion": 3, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["merienda", "almuerzo"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "requeson", "gramos": 200, "descripcion": "200 g" },
+        { "alimentoId": "miel", "gramos": 10, "descripcion": "1 cdta larga · 10 g" },
+        { "alimentoId": "almendras", "gramos": 15, "descripcion": "15 g" }
+      ],
+      "pasos": ["Sirve el requesón en un bol.", "Riega con la miel y añade las almendras picadas."]
+    },
+    {
+      "id": "manzana_almendras", "titulo": "Manzana con almendras",
+      "minutosPreparacion": 3, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["merienda", "almuerzo"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "manzana", "gramos": 180, "descripcion": "1 manzana · 180 g" },
+        { "alimentoId": "almendras", "gramos": 25, "descripcion": "un puñado · 25 g" }
+      ],
+      "pasos": ["Corta la manzana en gajos.", "Acompaña con las almendras."]
+    },
+    {
+      "id": "queso_batido_fresas", "titulo": "Queso batido con fresas",
+      "minutosPreparacion": 4, "minutosCoccion": 0, "racionesBase": 1,
+      "slotsAdmitidos": ["merienda", "almuerzo", "desayuno"], "mediterranea": false,
+      "ingredientes": [
+        { "alimentoId": "queso_batido_0", "gramos": 250, "descripcion": "250 g" },
+        { "alimentoId": "fresas", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "semillas_chia", "gramos": 10, "descripcion": "1 cdta · 10 g" }
+      ],
+      "pasos": ["Trocea las fresas.", "Mézclalas con el queso batido.", "Espolvorea la chía por encima."]
+    },
+    {
+      "id": "cuscus_verduras_garbanzos", "titulo": "Cuscús con verduras y garbanzos",
+      "minutosPreparacion": 10, "minutosCoccion": 15, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "cuscus", "gramos": 70, "descripcion": "70 g en crudo" },
+        { "alimentoId": "garbanzos_cocidos", "gramos": 150, "descripcion": "150 g" },
+        { "alimentoId": "calabacin", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "zanahoria", "gramos": 80, "descripcion": "80 g" },
+        { "alimentoId": "pimiento_rojo", "gramos": 80, "descripcion": "80 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 10, "descripcion": "1 cda · 10 g" },
+        { "alimentoId": "comino", "gramos": 2, "descripcion": "media cdta" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Hidrata el cuscús con el mismo volumen de agua hirviendo y tápalo 5 minutos.", "Saltea las verduras en dados con el aceite y el comino, 8 minutos.", "Añade los garbanzos escurridos y calienta 2 minutos.", "Mezcla con el cuscús desgranado con un tenedor."]
+    },
+    {
+      "id": "pollo_boniato_espinacas", "titulo": "Pollo con boniato asado y espinacas",
+      "minutosPreparacion": 10, "minutosCoccion": 30, "racionesBase": 1,
+      "slotsAdmitidos": ["comida", "cena"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pechuga_pollo", "gramos": 170, "descripcion": "1 filete · 170 g" },
+        { "alimentoId": "boniato", "gramos": 220, "descripcion": "1 boniato · 220 g" },
+        { "alimentoId": "espinacas", "gramos": 100, "descripcion": "100 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 9, "descripcion": "2 cdtas · 9 g" },
+        { "alimentoId": "ajo", "gramos": 4, "descripcion": "1 diente" },
+        { "alimentoId": "pimenton", "gramos": 2, "descripcion": "media cdta" },
+        { "alimentoId": "sal", "gramos": 2, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Precalienta el horno a 200 °C.", "Corta el boniato en dados, mézclalo con la mitad del aceite y el pimentón y hornea 25 minutos.", "Marca el pollo a la plancha 4 minutos por lado.", "Saltea las espinacas con el ajo y el resto del aceite."]
+    },
+    {
+      "id": "sopa_pollo_verduras", "titulo": "Sopa de pollo con verduras y arroz",
+      "minutosPreparacion": 10, "minutosCoccion": 25, "racionesBase": 2,
+      "slotsAdmitidos": ["cena", "comida"], "mediterranea": true,
+      "ingredientes": [
+        { "alimentoId": "pechuga_pollo", "gramos": 250, "descripcion": "250 g" },
+        { "alimentoId": "arroz_blanco", "gramos": 80, "descripcion": "80 g en crudo" },
+        { "alimentoId": "zanahoria", "gramos": 120, "descripcion": "2 zanahorias · 120 g" },
+        { "alimentoId": "cebolla", "gramos": 80, "descripcion": "80 g" },
+        { "alimentoId": "judias_verdes", "gramos": 120, "descripcion": "120 g" },
+        { "alimentoId": "aceite_oliva", "gramos": 10, "descripcion": "1 cda · 10 g" },
+        { "alimentoId": "sal", "gramos": 3, "descripcion": "al gusto" }
+      ],
+      "pasos": ["Sofríe la cebolla y la zanahoria con el aceite 6 minutos.", "Añade el pollo en dados y dóralo.", "Cubre con litro y medio de agua y cuece 12 minutos.", "Añade el arroz y las judías y cuece 14 minutos más. Sala al final."]
+    }
+  ]
+}
