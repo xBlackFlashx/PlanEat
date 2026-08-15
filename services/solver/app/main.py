@@ -9,18 +9,23 @@ Vive aparte de la app web por tres razones (ver docs/spec.md §8.2):
    segundos; el CRUD es I/O-bound. Escalarlos juntos desperdicia dinero.
 3. El motor evolucionará mucho más rápido que el modelo de datos. Un contrato
    HTTP versionado permite hacer A/B del algoritmo sin tocar la app.
-
-Estado: esqueleto. La implementación del solver es la fase 1 del roadmap.
 """
 
 from __future__ import annotations
 
+import logging
 import os
+from dataclasses import asdict
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 
-from .schemas import RespuestaError, SolicitudGeneracion
+from .catalogo import cargar_catalogo
+from .schemas import RespuestaError, RespuestaOk, SolicitudGeneracion
+from .solver import VERSION_GENERADOR
+from .solver.motor import ObjetivoInvalido, generar
+
+log = logging.getLogger("planeat.solver")
 
 app = FastAPI(
     title="PlanEat Solver",
@@ -28,46 +33,82 @@ app = FastAPI(
     description="Generación de planes de comida bajo restricciones nutricionales.",
 )
 
+# El catálogo se carga UNA vez por proceso y vive en memoria: la generación
+# nunca toca disco ni base de datos (spec §6.5). Cargarlo en el import y no en
+# un `startup` hace que un catálogo roto reviente el arranque en vez de la
+# primera petición, que es cuando peor duele.
+CATALOGO = cargar_catalogo()
+
 
 @app.get("/health")
 def health() -> dict[str, str]:
     """Sonda de vida para el orquestador."""
-    return {"status": "ok", "version": app.version}
+    return {
+        "status": "ok",
+        "version": app.version,
+        "catalogo": CATALOGO.version,
+        "recetas": str(CATALOGO.n),
+        "generador": VERSION_GENERADOR,
+    }
 
 
 @app.post("/v1/plan/generate", tags=["plan"])
-def generar_plan(solicitud: SolicitudGeneracion) -> JSONResponse:
+def generar_plan(solicitud: SolicitudGeneracion, respuesta: Response) -> JSONResponse:
     """Genera un plan que satisface los objetivos y restricciones dados.
 
-    Arquitectura prevista, en cuatro etapas (docs/spec.md §6):
+    Cuatro etapas (docs/spec.md §6, detalladas en services/solver/DISENO.md):
 
       A. Selección estocástica por slot sobre un pool de candidatos puntuado.
-      B. Porcionado óptimo por programación lineal (goal programming L1) para
-         cuadrar macros ajustando el factor de ración de forma continua.
-      C. Reparación: si B no converge, sustituir el candidato que más desvía
-         y reintentar.
-      D. Ensamblado semanal: penalizar ingredientes no compartidos para acortar
-         la lista de la compra.
+      B. Porcionado óptimo por programación lineal con banda muerta.
+      C. Reparación dirigida del slot culpable, máximo 3 intentos.
+      D. Ensamblado semanal por recocido para acortar la lista de la compra.
 
-    Todavía no implementado: devolver un plan falso sería peor que devolver un
-    fallo honesto, porque escondería el trabajo real que falta.
+    Códigos de estado, y por qué:
+
+    - **200** tanto para `ok: true` como para `ok: false`. Un fallo diagnosticado
+      NO es un error de la petición: el usuario pidió algo legítimo y el sistema
+      responde qué restricción ata y qué tres cosas puede hacer. Devolverlo como
+      4xx/5xx obligaría a la web a tratar como excepción lo que es una respuesta
+      de producto de primera clase, y se acabaría enseñando un "algo ha ido mal".
+    - **422** sólo cuando la petición está mal formada (un rango invertido, kcal
+      ≤ 0). Eso sí es culpa del cliente y hay que distinguirlo.
+
+    Cabeceras: `X-PlanEat-Seed` devuelve la semilla usada —imprescindible para
+    reproducir un plan en soporte, porque `RespuestaOk` todavía no tiene dónde
+    llevarla—, `X-PlanEat-Catalogo` la versión del catálogo y
+    `X-PlanEat-Generador` la del algoritmo. Sin las tres, un plan guardado no se
+    puede volver a construir.
     """
-    fallo = RespuestaError(
-        fallo={
-            "restriccionCulpable": "motor_no_implementado",
-            "mensaje": (
-                "El motor de generación aún no está implementado. "
-                "Es la fase 1 del roadmap."
-            ),
-            "recetasCandidatas": 0,
-            "sugerencias": [
-                "Consulta docs/spec.md §6 para la arquitectura del solver.",
-                "El contrato de esta ruta ya es estable: se puede integrar "
-                "contra ella desde ahora.",
-            ],
-        }
+    try:
+        resultado, traza = generar(solicitud, CATALOGO)
+    except ObjetivoInvalido as e:
+        return JSONResponse(
+            status_code=422,
+            content=RespuestaError(
+                fallo={
+                    "restriccionCulpable": "objetivo_mal_formado",
+                    "mensaje": str(e),
+                    "recetasCandidatas": 0,
+                    "sugerencias": [
+                        "Revisa que el mínimo de cada macro no supere su máximo",
+                        "Comprueba que las kcal objetivo sean mayores que cero",
+                        "Vuelve a calcular los objetivos desde tu perfil",
+                    ],
+                }
+            ).model_dump(),
+        )
+
+    log.info("generacion %s", asdict(traza))
+    cabeceras = {
+        "X-PlanEat-Seed": str(traza.seed),
+        "X-PlanEat-Catalogo": CATALOGO.version,
+        "X-PlanEat-Generador": VERSION_GENERADOR,
+    }
+    if isinstance(resultado, RespuestaOk):
+        cabeceras["X-PlanEat-Pool"] = str(traza.pool)
+    return JSONResponse(
+        status_code=200, content=resultado.model_dump(), headers=cabeceras
     )
-    return JSONResponse(status_code=501, content=fallo.model_dump())
 
 
 if __name__ == "__main__":

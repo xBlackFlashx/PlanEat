@@ -11,8 +11,13 @@ def test_health_responde_ok():
     assert r.json()["status"] == "ok"
 
 
-def test_generate_declara_no_implementado():
-    """El motor debe fallar de forma explícita, no devolver un plan falso."""
+def test_generate_devuelve_un_plan_real():
+    """Este test comprobaba el 501 de "motor_no_implementado".
+
+    El motor ya está implementado, así que la afirmación se ha invertido: la
+    ruta tiene que devolver un plan. La cobertura completa del motor está en
+    `tests/test_solver.py`; aquí sólo se guarda que la ruta está viva.
+    """
     r = client.post(
         "/v1/plan/generate",
         json={
@@ -27,5 +32,5 @@ def test_generate_declara_no_implementado():
             "restricciones": {"slots": ["desayuno", "comida", "cena"]},
         },
     )
-    assert r.status_code == 501
-    assert r.json()["fallo"]["restriccionCulpable"] == "motor_no_implementado"
+    assert r.status_code == 200
+    assert r.json()["ok"] is True

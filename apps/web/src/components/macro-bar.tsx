@@ -1,5 +1,21 @@
 /**
- * Barra de macronutrientes.
+ * Barra de macronutrientes. **Sustituida. No usar en pantallas nuevas.**
+ *
+ * Este componente hacía dos gráficos distintos a la vez —un reparto
+ * (parte sobre el todo, suma 100 %) y un progreso (razón contra un límite, no
+ * suma 100 %)— y por eso no podía hacer bien ninguno de los dos: recibía
+ * `objetivoKcal` pero dibujaba un reparto, así que el objetivo acababa
+ * degradado a una nota de texto en vez de a una marca en el eje, que es
+ * literalmente la razón documentada por la que se eligió barra sobre donut.
+ *
+ * El análisis completo está en docs/diseno-producto.md §4.1. La sustitución son
+ * dos componentes con un trabajo cada uno:
+ *
+ *   · `components/barra-reparto.tsx`      — el reparto.
+ *   · `components/barra-progreso-dia.tsx` — el progreso contra el objetivo.
+ *
+ * Se conserva porque `/sistema` lo usa como muestra del sistema de diseño y esa
+ * página es de otro ámbito. Cuando se actualice, este fichero se borra.
  *
  * Capa 2 de las tres capas de presentación nutricional (docs/spec.md §9.3).
  *

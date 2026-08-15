@@ -1,0 +1,264 @@
+/* ============================================================================
+   Movimiento y geometría que Tailwind no expresa.
+   ----------------------------------------------------------------------------
+   Está en un módulo CSS y no en globals.css a propósito: son estilos de estos
+   componentes, no del sistema. Ningún color literal — todo sale de un token.
+   Ninguna duración propia — todas salen de la tabla de globals.css (§5.1 de
+   docs/diseno-producto.md).
+
+   Regla de asimetría: la salida dura ≈ 65 % de la entrada.
+   ========================================================================== */
+
+/* --- Acciones por item -----------------------------------------------------
+   Se revelan al pasar el ratón Y al recibir el foco por teclado. Sin
+   :focus-within el patrón es inaccesible (docs/spec.md §9.4). En pantallas
+   táctiles están siempre visibles: allí no existe el hover. */
+
+.acciones {
+  opacity: 0;
+  transition: opacity var(--dur-rapida) var(--ease);
+}
+
+.filaItem:hover .acciones,
+.filaItem:focus-within .acciones {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .acciones {
+    opacity: 1;
+  }
+}
+
+/* --- Barrido del compás 2 del estado de generación -------------------------
+   Bucle infinito. El componente consulta prefers-reduced-motion y no lo monta;
+   esta media query es la red de seguridad, no la implementación. */
+
+.filaEsqueleto {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 0%,
+    var(--surface-3) 50%,
+    var(--surface-2) 100%
+  );
+  background-size: 240% 100%;
+  background-position: 120% 0;
+  animation: barrido 1100ms linear infinite;
+}
+
+@keyframes barrido {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filaEsqueleto {
+    animation: none;
+    background: var(--surface-2);
+  }
+}
+
+/* --- Entrada de listas -----------------------------------------------------
+   Opacidad + 8 px de desplazamiento, escalonado 40 ms, máximo 6 elementos.
+   Más de seis y deja de dar orden de lectura para convertirse en espera. */
+
+.entrada {
+  animation: entrada 180ms var(--ease-entrada) backwards;
+}
+
+@keyframes entrada {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entrada {
+    animation: none;
+  }
+}
+
+/* --- Crossfade de pantalla a resultado ------------------------------------ */
+
+.aparicion {
+  animation: aparicion var(--dur-lenta) var(--ease-entrada) backwards;
+}
+
+@keyframes aparicion {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aparicion {
+    animation: none;
+  }
+}
+
+/* --- Barra de macros -------------------------------------------------------
+   La única excepción autorizada a "sólo transform y opacity": el ancho de los
+   segmentos. Se aísla con contain para que el reflow no salga de la barra. */
+
+.barra {
+  contain: layout paint;
+}
+
+.segmento {
+  transition: flex-grow var(--dur-cuadre) var(--ease-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segmento {
+    transition: none;
+  }
+}
+
+/* --- Campos numéricos del generador conversacional -------------------------
+   Sin caja: subrayado que se refuerza al enfocar. El campo tiene 44 px de alto
+   real aunque parezca sólo una palabra subrayada. */
+
+.campoEnLinea {
+  border-bottom: 2px solid var(--brand-line);
+  transition: border-color var(--dur-rapida) var(--ease);
+}
+
+.campoEnLinea:hover {
+  border-bottom-color: var(--brand);
+}
+
+.campoEnLinea:focus {
+  outline: none;
+  border-bottom-color: var(--brand);
+}
+
+.campoEnLinea:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 4px;
+}
+
+.campoEnLinea::-webkit-outer-spin-button,
+.campoEnLinea::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* --- Panel lateral / hoja inferior (nivel 3) -------------------------------
+   <dialog> nativo: aporta trampa de foco, Escape y fondo inerte sin código.
+   En móvil entra desde abajo; en escritorio, desde el borde derecho: vuelve
+   por donde ha venido. */
+
+.panel {
+  padding: 0;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-pop);
+  width: 100%;
+  max-width: 100%;
+  max-height: 88dvh;
+  margin: auto auto 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  overflow: hidden;
+}
+
+.panel::backdrop {
+  background: var(--scrim);
+}
+
+.panel[open] {
+  animation: entradaHoja var(--dur-media) var(--ease-suave);
+}
+
+@keyframes entradaHoja {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .panel {
+    width: 400px;
+    height: 100dvh;
+    max-height: none;
+    margin: 0 0 0 auto;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  }
+
+  /* Sin velo en escritorio: el plan sigue visible detrás, que es el punto. */
+  .panel::backdrop {
+    background: transparent;
+  }
+
+  .panel[open] {
+    animation: entradaPanel var(--dur-media) var(--ease-suave);
+  }
+
+  @keyframes entradaPanel {
+    from {
+      opacity: 0;
+      transform: translateX(16px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel[open] {
+    animation: none;
+  }
+}
+
+/* --- Cabecera pegajosa del día --------------------------------------------
+   Se compacta por opacidad y altura. El cuerpo no se mueve: la cabecera es
+   sticky y reserva su espacio. */
+
+.cabeceraDia {
+  transition: padding var(--dur-media) var(--ease);
+}
+
+.plegable {
+  overflow: hidden;
+  transition:
+    opacity var(--dur-media) var(--ease),
+    max-height var(--dur-media) var(--ease);
+  max-height: 8rem;
+  opacity: 1;
+}
+
+.plegableOculto {
+  max-height: 0;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cabeceraDia,
+  .plegable {
+    transition: none;
+  }
+}
+
+/* --- Pulsación -------------------------------------------------------------
+   Acuse táctil por debajo de 100 ms. No cambia el layout: sólo transform. */
+
+.pulsable {
+  transition:
+    background-color var(--dur-rapida) var(--ease),
+    transform 80ms var(--ease);
+  touch-action: manipulation;
+}
+
+.pulsable:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulsable:active {
+    transform: none;
+  }
+}

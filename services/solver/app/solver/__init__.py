@@ -134,7 +134,21 @@ SA_T0, SA_ALFA, SA_ITERACIONES = 0.05, 0.994, 400  # §5.3
 # Diagnóstico
 # --------------------------------------------------------------------------
 
-MIN_POOL, MIN_CANDIDATOS_POR_SLOT = 40, 8  # §6.1
+# Umbral de calidad del pool. NO es un umbral absoluto de rechazo: un solo
+# número culparía al usuario de que el catálogo sea corto. Con el catálogo
+# semilla (36 recetas) ese uso rechazaría el 100 % de las peticiones. Las tres
+# puertas de §6.0 separan "tus filtros aprietan" de "nuestro catálogo es corto".
+MIN_POOL = 40  # §6.0
+# Sale de la restricción dura de repetición: con MAX_USOS_RECETA_SEMANA usos y
+# D días hacen falta ceil(D/2) recetas distintas por slot; +4 de holgura para
+# que el recocido de la etapa D tenga algo que intercambiar. Un número derivado
+# se recalcula cuando cambie el horizonte; uno inventado, no.
+MIN_CANDIDATOS_SLOT_DIA = 3  # elegir + 2 reparaciones            §6.0
+MIN_CANDIDATOS_SLOT_SEMANA = 8  # ceil(7/2) + 4                   §6.0
+# Por debajo de esta fracción del catálogo, la poda es atribuible a los filtros
+# del usuario (puerta 2). Por encima, el corto es el catálogo (puerta 3).
+FRACCION_POOL_ATRIBUIBLE = 0.5  # §6.0
+TTL_CACHE_POOL_S, TAM_CACHE_POOL = 3600, 256  # §1.4
 N_SUGERENCIAS = 3  # el contrato de producto: siempre exactamente tres
 # Suelo de seguridad, espejo de packages/shared/src/nutricion.ts. Ninguna
 # sugerencia del diagnóstico puede bajar de aquí (spec §11.3).
@@ -157,3 +171,31 @@ RUTA_A, RUTA_D, RUTA_DESEMPATE = 0, 1, 2
 VERSION_GENERADOR = "1.0.0"
 
 __all__ = [n for n in dir() if n.isupper() or n.startswith(("IDX_", "PESO"))]
+
+
+def rng_de(seed: int, *ruta: int) -> np.random.Generator:  # noqa: F821
+    """Generador independiente y reproducible para un punto del árbol. §2.6
+
+    Nunca se usa un único `Generator` compartido y consumido en orden: con un
+    generador secuencial, cualquier cambio en el número de llamadas (un slot
+    más, un reintento más) desplaza todo el flujo y el plan cambia. Aquí la
+    ruta identifica el nodo —(etapa, día, candidato, intento, slot)— y el flujo
+    de un nodo no depende de cuántos números hayan consumido los demás. Eso es
+    lo que hace que el resultado sea idéntico en serie y en paralelo.
+    """
+    import numpy as np
+
+    return np.random.Generator(
+        np.random.PCG64(
+            np.random.SeedSequence(entropy=int(seed), spawn_key=tuple(ruta))
+        )
+    )
+
+
+def temperatura(variedad: float) -> float:
+    """Mapa del control de "variedad" (0-100) a la temperatura del softmax. §2.4
+
+    Geométrico porque la percepción de "más variado" es multiplicativa, no
+    aditiva: subir de 10 a 20 se nota tanto como subir de 40 a 80.
+    """
+    return TAU_MIN * (TAU_MAX / TAU_MIN) ** (variedad / 100.0)

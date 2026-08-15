@@ -54,7 +54,9 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={alternar}
-      className="rounded-lg border border-line px-3 py-1.5 text-sm text-text-2 transition-colors hover:bg-surface-2 hover:text-text"
+      // `min-h-11` = 44 px: el mínimo táctil de docs/spec.md §9.5. El borde
+      // sigue midiendo lo mismo que antes, lo que crece es la zona pulsable.
+      className="inline-flex min-h-11 items-center rounded-lg border border-line px-3 text-sm text-text-2 transition-colors hover:bg-surface-2 hover:text-text"
       aria-label={
         tema === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
       }

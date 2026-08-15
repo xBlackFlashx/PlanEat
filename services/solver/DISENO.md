@@ -11,43 +11,51 @@
 >
 > **Qué NO cubre:** ingesta de datos nutricionales (§7 de la spec), UI, y la
 > capa de persistencia. El solver es una función pura sobre catálogo + petición.
+>
+> **Estado de verificación:** las afirmaciones numéricas de este documento se han
+> contrastado contra el entorno real (highspy 1.15.1, NumPy 2.5.2, el catálogo
+> del repositorio). El detalle de qué se midió, qué salió y qué sigue siendo una
+> estimación está en **§9**. Una de las comprobaciones destapó un fallo de diseño
+> —el umbral de pool— que está corregido en §6.0.
 
 ---
 
 ## 0. Resumen ejecutable
 
-| Etapa | Qué hace | Técnica | Presupuesto p95 |
+| Etapa | Qué hace | Técnica | Coste (P=1.500) |
 |---|---|---|---|
-| 0 | Pool de candidatos | Máscaras booleanas + caché de dos niveles | 8 ms (fallo) / 0,05 ms (acierto) |
-| A | Selección por slot | Score vectorizado + softmax sobre z-scores en top-k | 1,2 ms / día-candidato |
-| B | Porcionado | LP de goal programming L1 con banda muerta, HiGHS | 0,6 ms / día-candidato |
+| 0 | Pool de candidatos | Máscaras booleanas + caché de dos niveles | ~8 ms (fallo) / 0,05 ms (acierto) |
+| A | Selección por slot | Score vectorizado + softmax sobre z-scores en top-k | **50 µs / slot** ✔ |
+| B | Porcionado | LP de goal programming L1 con banda muerta, HiGHS | **64 µs / LP** ✔ |
 | C | Reparación | Sustitución del slot más culpable, ≤3 intentos | ×3 sobre A+B |
-| D | Ensamblado semanal | Recocido simulado con conteo incremental de ingredientes | 12 ms |
-| — | Diagnóstico de fallo | Ablación *leave-one-out* + cotas de alcanzabilidad | 40 ms |
+| D | Ensamblado semanal | Recocido simulado con conteo incremental de ingredientes | ~12 ms |
+| — | Diagnóstico de fallo | Ablación *leave-one-out* + cotas de alcanzabilidad | ~2 ms |
 
-Total estimado para una semana completa: **≈ 260 ms**, un solo hilo. El objetivo
-de la tarea (<2 s para un día) queda con ~8× de margen. Los números son
-**estimaciones a validar** con el banco de pruebas de §7.4; ninguno está medido
-todavía.
+Los valores marcados ✔ están **medidos** en este entorno (§9); el resto son
+estimaciones a confirmar con el banco de pruebas de §7.4. Con los números
+medidos y el desglose de §7.1, una semana completa sale en **≈ 73 ms** y un día
+en **≈ 12 ms**, un solo hilo. El objetivo de la tarea (<2 s para un día) queda
+con ~170× de margen, lo que permite no paralelizar nada (§7.3).
 
-### Ficheros a crear
+### Ficheros
 
 ```
 services/solver/app/
-  catalogo.py      Carga y precálculo del catálogo (estructuras de §1)
-  pool.py          Etapa 0: filtros duros y caché
-  scoring.py       Etapa A: score vectorizado y muestreo
-  porcionado.py    Etapa B: LP con HiGHS
-  reparacion.py    Etapa C
-  semanal.py       Etapa D
-  diagnostico.py   §6: por qué no hay solución
-  generador.py     Orquestación: SolicitudGeneracion -> RespuestaGeneracion
-  constantes.py    TODOS los pesos y umbrales de este documento, en un sitio
+  solver/__init__.py  TODOS los pesos y umbrales de este documento  [YA EXISTE]
+  catalogo.py         Carga y precálculo del catálogo (§1)          [YA EXISTE]
+  solver/pool.py         Etapa 0: filtros duros y caché
+  solver/scoring.py      Etapa A: score vectorizado y muestreo
+  solver/porcionado.py   Etapa B: LP con HiGHS
+  solver/reparacion.py   Etapa C
+  solver/semanal.py      Etapa D
+  solver/diagnostico.py  §6: por qué no hay solución
+  solver/generador.py    Orquestación: SolicitudGeneracion -> RespuestaGeneracion
 ```
 
-Regla dura de implementación: **ningún número mágico fuera de `constantes.py`**.
-Cada constante lleva como comentario la sección de este documento que la
-justifica.
+Regla dura de implementación: **ningún número mágico fuera de
+`app/solver/__init__.py`**. Cada constante lleva como comentario la sección de
+este documento que la justifica. (Ese módulo hace de `constantes.py`; no importa
+a ninguno de sus submódulos, así que no hay ciclo.)
 
 ---
 
@@ -81,7 +89,7 @@ class Catalogo:
 
     # --- Nutrición por ración base (racionesBase = 1 ración de la receta) ---
     nutr: np.ndarray                # (N, 6) float32
-    # Orden de columnas, FIJO en todo el servicio (constantes.IDX_NUTRIENTE):
+    # Orden de columnas, FIJO en todo el servicio (app.solver.IDX_NUTRIENTE):
     #   0 kcal · 1 proteinaG · 2 carbohidratoG · 3 grasaG · 4 fibraG · 5 sodioMg
     conocido: np.ndarray            # (N, 6) bool — ¿el dato existe de verdad?
 
@@ -238,12 +246,23 @@ donde $\mathbf{v}_{\mathbf{d}}$ es el vector de fracciones calóricas del residu
 normalizado igual que en §1.1.
 
 **Por qué distancia angular y no el coseno crudo.** Los dos vectores viven en el
-octante no negativo de $\mathbb{R}^3$ y además sus componentes suman ~1 antes de
-normalizar, así que el coseno se concentra en $[0{,}85,\;1{,}0]$: casi no
-discrimina, y al pasar por softmax todas las recetas quedan casi equiprobables.
-La distancia angular reescalada a $[0,1]$ separa mucho mejor ese régimen (es
-aproximadamente lineal donde el coseno es plano). Coste: una `arccos` sobre P
-elementos, ~20 µs.
+octante no negativo de $\mathbb{R}^3$ y sus componentes suman ~1 antes de
+normalizar, así que el coseno se comprime contra 1 y casi no discrimina.
+
+Medido sobre el catálogo real (36 recetas, objetivo 30/40/30 % de kcal, §9):
+
+| | mín | p05 | mediana | máx | desv. típica |
+|---|---|---|---|---|---|
+| $c_r$ (coseno) | 0,769 | 0,782 | **0,946** | 0,996 | 0,064 |
+| $\phi_{\text{fit}}$ (angular) | 0,559 | 0,572 | **0,789** | 0,941 | **0,106** |
+
+La transformación angular **multiplica la dispersión por 1,66×** y descomprime
+la mediana del 0,95 al 0,79. Como el softmax de §2.4 estandariza por la
+desviación típica, ese factor no cambia las probabilidades por sí solo — lo que
+cambia es la *forma*: `arccos` es aproximadamente lineal justo donde el coseno
+es plano, así que las diferencias entre las recetas del top-k dejan de estar
+aplastadas en el tercer decimal y el ordenamiento deja de depender del ruido de
+`float32`. Coste: una `arccos` sobre P elementos, ~20 µs.
 
 Si `tiene_macro[r]` es falso, $\phi_{\text{fit}} = 0{,}5$ (neutro): una infusión
 no encaja ni desencaja composicionalmente. Si el residuo tiene todos los macros
@@ -318,7 +337,7 @@ penalización residual a 21 días, que es la ventana de la spec.
 
 **(g) Afinidad $\phi_{\text{afin}}$.** No existe en el contrato (`food_preference`
 es v1). **Peso efectivo 0 en MVP.** Se deja el término en el código con su peso
-en `constantes.py` para que activarlo sea una línea.
+en `app/solver/__init__.py` para que activarlo sea una línea.
 
 ### 2.3 Cálculo vectorizado
 
@@ -424,7 +443,7 @@ def rng_de(seed: int, *ruta: int) -> np.random.Generator:
         np.random.SeedSequence(entropy=seed, spawn_key=ruta)))
 ```
 
-Rutas reservadas (`constantes.RUTA_*`): `(0, dia, k, intento, slot)` para la
+Rutas reservadas (`app.solver.RUTA_*`): `(0, dia, k, intento, slot)` para la
 etapa A, `(1,)` para el recocido de la etapa D, `(2, …)` para desempates.
 
 **`seed` ausente.** El contrato lo permite (`seed: int | None`) pero
@@ -517,12 +536,30 @@ falta.
 Éste es el detalle que la spec omite y que sin él el solver es inutilizable en
 producción. El LP de goal programming es masivamente degenerado: en cuanto los
 objetivos son alcanzables, **toda una cara del politopo es óptima** y HiGHS
-devuelve un vértice arbitrario — típicamente uno con una receta en $\ell_i$ y
-otra en $u_i$ ("media ración de lentejas y 1,8 raciones de tostada"). Penalizar
-la distancia L1 a $\sigma^{\text{ref}}$ (el $\hat\sigma$ que la etapa A ya
-consideró sensato, §2.5) rompe el empate hacia la solución equilibrada, es
-determinista, y con $\varepsilon = 10^{-3}$ nunca compite con el término
-nutricional (cuyos coeficientes son ~$10^{0}$).
+devuelve el vértice al que llegue el símplex, no el sensato. Penalizar la
+distancia L1 a $\sigma^{\text{ref}}$ (el $\hat\sigma$ que la etapa A ya
+consideró sensato, §2.5) rompe el empate hacia la solución equilibrada, y con
+$\varepsilon = 10^{-3}$ nunca compite con el término nutricional (cuyos
+coeficientes son ~$10^{0}$).
+
+**Verificado, y el resultado es más matizado de lo que parecía** (§9, caso 2).
+Con 4 recetas nutricionalmente idénticas y todos los objetivos alcanzables:
+
+| | $\sigma$ devuelto | ¿estable entre ejecuciones? |
+|---|---|---|
+| sin regularizador | `(0,60 · 0,60 · 1,00 · 1,80)` | sí, 50/50 iguales |
+| con regularizador | `(1,00 · 1,00 · 1,00 · 1,00)` | sí, 200/200 iguales |
+
+Es decir: **la patología existe y es exactamente la predicha** — media ración de
+dos platos y 1,8 raciones de otro, con el mismo error nutricional cero que el
+reparto equilibrado. Pero HiGHS *sí* es determinista entre ejecuciones con el
+mismo build. Corrección honesta del argumento: el regularizador no está para
+arreglar un no-determinismo run-to-run que no existe, sino por dos razones
+reales — (1) **calidad**: el vértice arbitrario es incocinable y el usuario lo
+lee como un fallo del producto; (2) **estabilidad entre versiones**: el vértice
+elegido depende del pivoteo del símplex, luego una actualización de HiGHS
+cambiaría todos los planes guardados sin cambiar `VERSION_GENERADOR`. Con el
+regularizador el óptimo es único y no depende del solver.
 
 **El LP es siempre factible, por construcción.** $u^+$ y $u^-$ no tienen cota
 superior y $\sigma$ vive en una caja no vacía, así que siempre existe solución
@@ -569,13 +606,17 @@ expresiones Python cuesta más que resolver, y el orden de recorrido de las
 expresiones puede variar. El CSC explícito es determinista y su construcción es
 puro NumPy.
 
-> **No verificado.** `highspy` no está instalado en el entorno donde se escribió
-> este documento, así que los nombres exactos de la API (`HighsLp.a_matrix_`,
-> `MatrixFormat.kColwise`, `getSolution().col_value`, los identificadores de
-> `HighsModelStatus`) están tomados de la interfaz publicada de HiGHS 1.8 y
-> **hay que contrastarlos al implementar**. La formulación matemática, la
-> disposición de columnas/filas y el CSC no dependen de ese detalle: si algún
-> nombre cambió, se ajusta la llamada, no el modelo.
+> **Verificado** contra `highspy` **1.15.1** (el instalado en
+> `services/solver/.venv`), ejecutando el código de esta sección tal cual (§9).
+> Existen y funcionan: `HighsLp` con `num_col_`, `num_row_`, `sense_`,
+> `col_cost_`, `col_lower_`, `col_upper_`, `row_lower_`, `row_upper_`,
+> `a_matrix_` (`format_`, `start_`, `index_`, `value_`); `MatrixFormat.kColwise`;
+> `ObjSense.kMinimize`; `HighsModelStatus.{kOptimal, kInfeasible, kUnbounded,
+> kTimeLimit, kIterationLimit}`; `Highs.getSolution().col_value`. Asignar los
+> arrays NumPy directamente a los campos `col_cost_` etc. funciona sin conversión
+> explícita. **El único cuidado real:** `a_matrix_.start_` e `index_` deben ser
+> `int32` y `value_` `float64`; con otros dtypes la conversión de pybind11 es
+> silenciosa pero costosa.
 
 **Disposición del modelo.** Con $R$ recetas y $N$ nutrientes activos:
 
@@ -912,7 +953,7 @@ semanal los días se producen **en orden** y `bits_semana` acumula la unión de 
 días ya cerrados. Consecuencia asumida: la generación semanal es secuencial. Es
 un intercambio consciente — la alternativa (días independientes y toda la
 optimización de lista en la etapa D) daría candidatos peores para empezar. Como
-el presupuesto de tiempo sobra con 8× de margen (§7), gana la calidad.
+el presupuesto de tiempo sobra con dos órdenes de magnitud (§7), gana la calidad.
 
 ---
 
@@ -924,10 +965,54 @@ accionable con un botón (spec §9.4, "Estado de sobre-restricción").
 
 Dos fases, en este orden.
 
+### 6.0 Cuándo se dispara: el umbral de pool, bien definido
+
+Un umbral absoluto `|P| < MIN_POOL = 40` **es incorrecto tal cual**, y el
+catálogo semilla del repositorio lo demuestra: tiene **36 recetas** (medido, §9),
+así que un solo número haría que el servicio rechazara *todas* las peticiones
+con un diagnóstico que culpa al usuario de restricciones que no ha puesto.
+Distinguir las dos causas es justamente el trabajo de esta sección.
+
+Tres puertas, en este orden:
+
+| Puerta | Condición | Significado | Respuesta |
+|---|---|---|---|
+| **1. Viabilidad (dura)** | algún slot pedido con $\lvert P_s\rvert < $ `MIN_CANDIDATOS_SLOT` | no se puede ni llenar el plan | `ok: false`, ablación §6.1 |
+| **2. Atribución** | $\lvert P\rvert <$ `MIN_POOL` **y** $\lvert P\rvert < 0{,}5\,N$ | los filtros del usuario son la causa | `ok: false`, ablación §6.1 |
+| **3. Catálogo corto** | $\lvert P\rvert <$ `MIN_POOL` **y** $\lvert P\rvert \ge 0{,}5\,N$ | los filtros apenas podan: el corto es el catálogo | **se genera igual**, `catalogo_estrecho` en la traza |
+
+`MIN_CANDIDATOS_SLOT` depende del horizonte, y el número sale de la restricción
+dura de §5.1 (ninguna receta más de `MAX_USOS_RECETA_SEMANA = 2` veces por
+semana):
+
+$$
+\text{MIN\_CANDIDATOS\_SLOT} =
+\begin{cases}
+3 & \text{un día (elegir + 2 reparaciones)}\\[2pt]
+\left\lceil \dfrac{D}{\text{MAX\_USOS\_RECETA\_SEMANA}} \right\rceil + 4 = 8
+& \text{semana } (D=7)
+\end{cases}
+$$
+
+Los 4 de holgura son para que la etapa D tenga algo que intercambiar; con
+exactamente $\lceil D/2 \rceil$ la combinación está forzada y el recocido no
+sirve de nada.
+
+La puerta 3 es la que hace utilizable el catálogo semilla: sus mínimos por slot
+son `desayuno 11 · almuerzo 8 · comida 21 · merienda 9 · cena 22` (medido, §9),
+todos ≥ 8, así que genera semanas correctas aunque $\lvert P\rvert = 36 < 40$.
+El día que el catálogo llegue a las 350-450 recetas de la spec §7.4, la puerta 3
+deja de activarse sola y `MIN_POOL` recupera su papel de umbral de calidad.
+
+**Por qué no se sube simplemente `MIN_POOL` a 0 en desarrollo:** porque entonces
+el diagnóstico de sobre-restricción —que es la funcionalidad de producto más
+diferencial de §6— no se ejercitaría nunca en local, y se descubriría roto en
+producción. Con las tres puertas, se ejercita el camino real con el catálogo
+real.
+
 ### 6.1 Fase 1 — El pool es demasiado pequeño (ablación *leave-one-out*)
 
-Se dispara si $|P| < 40$ (`MIN_POOL`) o si algún slot pedido tiene menos de 8
-candidatos admisibles.
+Se dispara por las puertas 1 y 2 de §6.0.
 
 Se construye la máscara de cada restricción por separado y se mide **cuántas
 recetas devolvería el pool si se quitara esa restricción y solo esa**:
@@ -1050,25 +1135,37 @@ re-ejecutar la petición aplicando la sugerencia (a) tiene que devolver
 
 ### 7.1 Dónde está el coste
 
+Medido en este entorno salvo donde diga *(est.)* — ver §9 para el método. El
+recuento de veces es el peor caso: 7 días × 6 candidatos × 4 pasadas (1 inicial +
+3 reparaciones) × 5 slots. Es pesimista a propósito: la reparación solo
+re-puntúa **un** slot (§4.2), no los cinco.
+
 | Operación | Coste unitario | Veces (semana) | Total |
 |---|---|---|---|
-| Carga de catálogo | 1,2 s | 0 (arranque) | — |
-| Pool nivel 1 (fallo) | 8 ms | 0–1 | ≤ 8 ms |
-| Pool nivel 2 (exclusiones) | 50 µs | 1 | 0,05 ms |
-| Score de un slot (P=1.500) | 150 µs | 7×6×4×5 = 840 | **126 ms** |
-| Top-k + softmax | 40 µs | 840 | 34 ms |
-| LP (construir + resolver) | 250 µs + 350 µs | 7×6×4 = 168 | **101 ms** |
-| Cuantización + reparación 1-D | 30 µs | 168 | 5 ms |
-| Recocido (400 iteraciones) | 30 µs | 1 | 12 ms |
+| Carga de catálogo | 1,0 ms para N=36 → ~0,14 s para N=5.000 *(extrapolado)* | 0 (arranque) | — |
+| Pool nivel 1 (fallo) | 8 ms *(est.)* | 0–1 | ≤ 8 ms |
+| Pool nivel 2 (exclusiones) | 50 µs *(est.)* | 1 | 0,05 ms |
+| Score de un slot, P=1.500 | **50 µs** | 7×6×4×5 = 840 | **42 ms** |
+| Score de un slot, P=5.000 | **114 µs** | 840 | 96 ms |
+| Top-k + softmax | incluido arriba (`argpartition` medido dentro) | 840 | — |
+| LP (construir + resolver) | **64 µs** | 7×6×4 = 168 | **11 ms** |
+| Cuantización + reparación 1-D | 30 µs *(est.)* | 168 | 5 ms |
+| Recocido (400 iteraciones) | 30 µs *(est.)* | 1 | 12 ms |
 | Serialización de la respuesta | — | 1 | ~3 ms |
-| **Total semana** | | | **≈ 290 ms** |
-| **Total un día** | | | **≈ 45 ms** |
+| **Total semana (P=1.500)** | | | **≈ 73 ms** |
+| **Total semana (P=5.000)** | | | **≈ 127 ms** |
+| **Total un día (P=1.500)** | | | **≈ 12 ms** |
 
-El coste está repartido casi al 50 % entre el scoring vectorizado y el LP. Ambos
-son irreductibles sin cambiar el algoritmo, y ambos están muy por debajo del
-presupuesto. **Objetivo de la tarea: <2 s para un día → 45× de margen.** Ese
-margen no es un lujo: absorbe una máquina de CI lenta, un pool de 5.000 recetas
-en vez de 1.500, y el arranque en frío del intérprete.
+Las estimaciones a ojo del borrador anterior eran pesimistas por un factor de
+3-10 (se estimaban 150 µs de scoring y 600 µs de LP). Se dejan aquí las medidas,
+no las estimaciones, porque un presupuesto inflado invita a optimizaciones
+prematuras: con estos números **no hay ninguna** justificada.
+
+El coste está dominado por el scoring vectorizado (≈4× el LP), y crece
+sublinealmente con P. Ambos son irreductibles sin cambiar el algoritmo.
+**Objetivo de la tarea: <2 s para un día → ~170× de margen.** Ese margen no es un
+lujo: absorbe una máquina de CI lenta, un pool de 5.000 recetas en vez de 1.500,
+un intérprete en frío y el `float64` de HiGHS.
 
 ### 7.2 Qué se vectoriza
 
@@ -1092,8 +1189,8 @@ Micro-optimizaciones que sí valen la pena y por qué:
 Los $K \times D = 42$ candidatos de día son independientes y la spec sugiere
 `ProcessPoolExecutor`. **Decisión: no paralelizar en MVP.** Tres razones:
 
-1. El presupuesto se cumple 8× de sobra en un hilo. Paralelizar es complejidad
-   sin beneficio de producto.
+1. El presupuesto se cumple con dos órdenes de magnitud de sobra en un hilo
+   (§7.1, medido). Paralelizar es complejidad sin beneficio de producto.
 2. El coste de arranque de procesos y de serializar el pool NumPy (~90 KB por
    tarea × 42) es del orden del trabajo total.
 3. Multiproceso complica la reproducibilidad. El árbol de `SeedSequence` (§2.6)
@@ -1191,6 +1288,9 @@ tests.
 | `test_todos_los_items_bloqueados` | Culpable `items_bloqueados`, sin excepción |
 | `test_rango_invertido_es_422` | `proteinaG: {min: 200, max: 100}` → error de validación, no `kInfeasible` |
 | `test_pool_vacio_no_revienta` | Cero recetas admisibles → `FalloGeneracion`, nunca traza de excepción |
+| **`test_catalogo_semilla_genera_semana`** | Con `data/catalogo.jsonl` tal cual (36 recetas < `MIN_POOL`) y sin exclusiones → `ok: true`. Es el test de la puerta 3 de §6.0: cubre el bug de rechazar todo por un umbral absoluto |
+| `test_pool_corto_por_filtros_si_falla` | Mismo catálogo, pero excluyendo lácteos+gluten+huevos hasta dejar `|P| < 0,5·N` → `ok: false` con culpable atribuido a un filtro, no al catálogo |
+| `test_slot_sin_candidatos_falla_antes_de_generar` | Un slot con 0 recetas admisibles → puerta 1, fallo en <5 ms |
 
 ### 8.5 Honestidad con los datos
 
@@ -1224,10 +1324,59 @@ tests.
 
 ---
 
+## 9. Verificación empírica de este documento
+
+Todo lo que este documento afirma como **medido** se obtuvo ejecutando el código
+del propio documento contra el entorno real del repositorio
+(`services/solver/.venv`, macOS/arm64, Python 3.12, **NumPy 2.5.2**, **highspy
+1.15.1**). No hay ningún número medido que no salga de aquí, y lo que no se pudo
+medir se deja marcado como *(est.)*.
+
+**Qué se comprobó y qué salió:**
+
+| # | Afirmación del documento | Resultado |
+|---|---|---|
+| 1 | `np.bitwise_count` existe (§1.3) | ✔ NumPy 2.5.2; `pyproject` ya exige `numpy>=2.1` |
+| 2 | Nombres de la API de highspy (§3.4) | ✔ todos correctos en 1.15.1; ver la nota de dtypes |
+| 3 | El LP de §3.4 compila y resuelve tal como está escrito | ✔ `kOptimal`, $E=0$ con objetivo alcanzable |
+| 4 | Una sola fila por nutriente reproduce la banda muerta (§3.2) | ✔ $u^+=u^-=0$ dentro de banda; $E=0{,}169$ con proteína imposible, y $u^-_{\text{prot}}=171$ g identifica el nutriente que ata |
+| 5 | El LP es degenerado sin regularizador (§3.2) | ✔ patología reproducida exactamente; matiz importante corregido en §3.2 |
+| 6 | El coseno se satura (§2.2a) | ✔ pero el rango real es $[0{,}77,\ 1{,}00]$, no $[0{,}85,\ 1{,}00]$; tabla corregida |
+| 7 | Presupuestos de tiempo (§7.1) | ✔ el diseño es 3-10× **más rápido** de lo estimado |
+| 8 | `MIN_POOL = 40` sobre el catálogo real | ✘ **fallo de diseño**: el catálogo tiene 36 recetas. Corregido en §6.0 |
+
+Lo importante del punto 8: el error no se habría visto revisando el documento,
+solo cargando los datos que hay. Es la razón de que esta sección exista.
+
+**Cómo reproducirlo.** Los dos guiones de verificación son deliberadamente
+independientes del código del solver (que aún no existe) y deben convertirse en
+`tests/bench_solver.py` (§7.4) al implementar:
+
+```bash
+cd services/solver
+./.venv/bin/python - <<'PY'
+import numpy as np, highspy
+from app.catalogo import cargar_catalogo
+cat = cargar_catalogo()
+obj = np.array([.30,.40,.30]); obj /= np.linalg.norm(obj)
+cos = cat.v_macro[cat.tiene_macro] @ obj.astype(np.float32)
+fit = 1 - (2/np.pi)*np.arccos(np.clip(cos,-1,1))
+print(cat.n, cos.min(), np.median(cos), cos.std(), fit.std())   # §2.2a
+PY
+```
+
+**Qué queda sin medir** (y por qué no se inventa un número): el coste del pool
+de nivel 1 y 2, la cuantización, el recocido y la serialización. Los tres
+primeros dependen de código que todavía no existe; el último, del tamaño real de
+la respuesta. Están marcados *(est.)* en §7.1 y son los primeros que el banco de
+pruebas debe cubrir.
+
+---
+
 ## Apéndice A — Constantes, todas juntas
 
 ```python
-# services/solver/app/constantes.py — cada valor cita la sección que lo justifica
+# services/solver/app/solver/__init__.py — cada valor cita su sección
 
 IDX_NUTRIENTE = {"kcal": 0, "proteina": 1, "carbohidrato": 2,
                  "grasa": 3, "fibra": 4, "sodio": 5}                    # §1.1
@@ -1260,11 +1409,22 @@ LAMBDA_INGREDIENTES, MU_PRESUPUESTO, NU_REPETICION = 0.006, 0.30, 0.05  # §5.1
 MAX_USOS_RECETA_SEMANA = 2                                              # §5.1
 SA_T0, SA_ALFA, SA_ITERACIONES = 0.05, 0.994, 400                       # §5.3
 
-MIN_POOL, MIN_CANDIDATOS_POR_SLOT = 40, 8                               # §6.1
+MIN_POOL = 40                                                           # §6.0
+MIN_CANDIDATOS_SLOT_DIA = 3          # elegir + 2 reparaciones           # §6.0
+MIN_CANDIDATOS_SLOT_SEMANA = 8       # ceil(D/MAX_USOS_RECETA_SEMANA)+4  # §6.0
+FRACCION_POOL_ATRIBUIBLE = 0.5       # puerta 2 vs. puerta 3             # §6.0
 TTL_CACHE_POOL_S, TAM_CACHE_POOL = 3600, 256                            # §1.4
 
 VERSION_GENERADOR = "1.0.0"   # cambia con cualquier alteración de resultados
 ```
+
+> **Cambio pendiente de aplicar en `app/solver/__init__.py`.** Ese módulo ya
+> existe y hoy declara `MIN_POOL, MIN_CANDIDATOS_POR_SLOT = 40, 8`. Con las tres
+> puertas de §6.0 hay que sustituirlo por las cuatro constantes de arriba
+> (`MIN_POOL`, `MIN_CANDIDATOS_SLOT_DIA`, `MIN_CANDIDATOS_SLOT_SEMANA`,
+> `FRACCION_POOL_ATRIBUIBLE`). Es el único punto donde este documento pide tocar
+> código ya escrito, y sin él el servicio rechaza todas las peticiones contra el
+> catálogo actual.
 
 `VERSION_GENERADOR` se persiste con cada plan. Sin él no se puede hacer A/B de
 versiones del algoritmo ni reproducir un plan antiguo (spec §6.5, punto 8), por
@@ -1286,5 +1446,6 @@ mucho que se guarde el seed.
 | 10 | Reseleccionar el día entero | Solo el slot culpable | 4× más barato y no tira los slots buenos (§4.2) |
 | 11 | `Random(seed)` secuencial | Árbol de `SeedSequence` con clave estructural | Reproducibilidad estable ante cambios de flujo y paralelismo (§2.6) |
 | 12 | Caché de pool por todas las restricciones | Caché de dos niveles | `ingredientesExcluidos` es de alta cardinalidad y hunde los aciertos (§1.4) |
-| 13 | `ProcessPoolExecutor` para los candidatos | Un solo hilo en MVP | El presupuesto sobra 8×; multiproceso complica la reproducibilidad (§7.3) |
+| 13 | `ProcessPoolExecutor` para los candidatos | Un solo hilo en MVP | El presupuesto sobra ~170× (medido); multiproceso complica la reproducibilidad (§7.3) |
 | 14 | Diagnóstico genérico | Ablación + cotas demostrables + veto sobre alérgenos | Permite afirmar la imposibilidad sin mentir, y no pone en riesgo a nadie (§6) |
+| 15 | `MIN_POOL` como umbral absoluto | Tres puertas (viabilidad / atribución / catálogo corto) | Un umbral único culpa al usuario de que el catálogo sea corto, y con el catálogo semilla (36 recetas) rechazaría todas las peticiones (§6.0) |

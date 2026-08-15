@@ -1,36 +1,48 @@
 import Link from "next/link";
-import { calcularObjetivo } from "@planeat/shared";
-import { MacroBar } from "@/components/macro-bar";
+
+import { Generador } from "@/components/generador";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 /**
- * Portada. Por ahora es un esqueleto: establece el sistema visual y muestra el
- * cálculo de objetivos ya funcionando. El generador público sin registro —el
- * primer vertical real— es el siguiente paso del roadmap.
+ * Portada con generador público.
+ *
+ * Objetivo único: que un desconocido vea un día real generado en menos de
+ * sesenta segundos y sin cuenta. Todo lo demás en esta página es secundario y
+ * vive por debajo del pliegue.
+ *
+ * En el primer segundo se ve el titular y, justo después, el primer campo
+ * subrayado. Nada compite: no hay imagen a pantalla completa sobre el
+ * formulario, no hay carrusel, no hay vídeo.
  */
 
-// Perfil de ejemplo para demostrar que el cálculo de objetivos ya funciona.
-const objetivoDemo = calcularObjetivo({
-  sexo: "hombre",
-  edad: 32,
-  peso: 78,
-  altura: 178,
-  actividad: "moderado",
-  objetivo: "perder",
-});
+const PILARES = [
+  {
+    titulo: "El coste, delante",
+    texto:
+      "Cada día trae su coste estimado en ingredientes, siempre como rango. La comida tiene precio y esconderlo hasta el supermercado no ayuda a nadie.",
+  },
+  {
+    titulo: "La lista, corta",
+    texto:
+      "El plan se monta favoreciendo recetas que comparten ingredientes. Un plan que necesita sesenta cosas distintas es un plan que no se cocina.",
+  },
+  {
+    titulo: "Lo que ya tienes, primero",
+    texto:
+      "Lo que hay en casa entra en el plan antes que lo que hay que comprar. Es la diferencia entre planificar y volver a llenar la nevera.",
+  },
+];
 
-export default function Home() {
-  const centro = (r: { min: number; max: number }) => (r.min + r.max) / 2;
-
+export default function Portada() {
   return (
     <div className="flex min-h-full flex-col">
       <header className="border-b border-line">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <span className="text-lg font-semibold tracking-tight">PlanEat</span>
           <div className="flex items-center gap-3">
             <Link
               href="/sistema"
-              className="text-sm text-text-2 underline-offset-4 hover:text-text hover:underline"
+              className="hidden text-sm text-text-2 underline-offset-4 hover:text-text hover:underline sm:inline"
             >
               Sistema de diseño
             </Link>
@@ -39,61 +51,50 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand">
-          En construcción
-        </p>
-        <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
-          Tu plan de comidas, resuelto
-        </h1>
-        <p className="mt-5 max-w-xl text-lg leading-relaxed text-text-2">
-          Planes que cuadran con tus objetivos, tu presupuesto y lo que ya tienes
-          en casa. Sin registrar nada plato a plato.
-        </p>
+      <main className="mx-auto w-full max-w-[1120px] flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mx-auto max-w-2xl">
+          <h1 className="text-balance text-[34px] font-semibold leading-[1.05] tracking-tight sm:text-5xl">
+            Tu semana, resuelta.
+          </h1>
+          <p className="mt-4 text-pretty text-[17px] leading-relaxed text-text-2">
+            Qué comer, cuánto cuesta y qué comprar. Sin listas de sesenta
+            ingredientes.
+          </p>
+        </div>
 
-        <section className="mt-14 max-w-md rounded-xl border border-line bg-surface p-6">
-          <h2 className="text-sm font-semibold text-text">
-            Objetivo diario calculado
+        <div className="mx-auto mt-8 max-w-2xl">
+          <Generador />
+        </div>
+
+        <section className="mx-auto mt-16 max-w-2xl border-t border-line pt-10 sm:mt-24">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            En qué se diferencia
           </h2>
-          <p className="mt-1 mb-5 text-sm text-text-3">
-            Hombre, 32 años, 78 kg, 178 cm, actividad moderada, quiere perder
-            peso.
-          </p>
-          <MacroBar
-            kcal={objetivoDemo.kcal}
-            objetivoKcal={objetivoDemo.kcal}
-            panel={{
-              proteinaG: centro(objetivoDemo.proteinaG),
-              carbohidratoG: centro(objetivoDemo.carbohidratoG),
-              grasaG: centro(objetivoDemo.grasaG),
-            }}
-          />
-          <p className="mt-5 border-t border-line pt-4 text-sm text-text-3">
-            Calculado con Mifflin-St Jeor. Es una estimación poblacional, no
-            consejo médico.
-          </p>
-        </section>
-
-        <section className="mt-16 border-t border-line pt-8">
-          <h2 className="text-sm font-semibold text-text">Siguiente paso</h2>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-2">
-            El motor de generación de planes — fase 1 del roadmap. El contrato
-            HTTP del solver ya está definido en{" "}
-            <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[0.85em]">
-              services/solver
-            </code>
-            ; falta implementar las cuatro etapas descritas en{" "}
-            <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[0.85em]">
-              docs/spec.md
-            </code>{" "}
-            §6.
-          </p>
+          <dl className="mt-6 flex flex-col gap-8">
+            {PILARES.map((pilar) => (
+              <div key={pilar.titulo}>
+                <dt className="text-[17px] font-semibold">{pilar.titulo}</dt>
+                <dd className="mt-1.5 text-pretty leading-relaxed text-text-2">
+                  {pilar.texto}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </section>
       </main>
 
       <footer className="border-t border-line">
-        <div className="mx-auto max-w-5xl px-6 py-6 text-sm text-text-3">
-          PlanEat · esqueleto del proyecto
+        <div className="mx-auto max-w-[1120px] px-4 py-8 sm:px-6 lg:px-8">
+          <p className="max-w-2xl text-sm leading-relaxed text-text-2">
+            Los objetivos se calculan con fórmulas poblacionales
+            (Mifflin-St Jeor) y son estimaciones, no consejo médico. El filtro
+            de alérgenos usa los ingredientes declarados en nuestro catálogo y
+            no sustituye leer la etiqueta del producto que compres.
+          </p>
+          {/* `--text-2` y no `--text-3`: sobre `--bg` en tema claro el tercer
+              nivel de texto se queda en 4,47:1, tres centésimas por debajo de
+              AA. Medido, no supuesto (docs/diseno-producto.md, anexo A). */}
+          <p className="mt-4 text-sm text-text-2">PlanEat</p>
         </div>
       </footer>
     </div>
