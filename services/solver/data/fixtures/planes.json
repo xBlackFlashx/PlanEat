@@ -1,0 +1,2586 @@
+{
+  "descripcion": "Generaciones completas. Se comparan las invariantes, no los valores: el RNG del port no es el de NumPy.",
+  "escenarios": [
+    {
+      "nombre": "dia_simple",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "comida",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 1
+      },
+      "ok": true,
+      "invariantes": {
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1908.9,
+            "kcalEnBanda": true,
+            "proteinaG": 141.2,
+            "proteinaEnRango": true,
+            "carbohidratoG": 193.2,
+            "grasaG": 63.5,
+            "sumaComidasCuadra": true
+          }
+        ],
+        "maxUsosPorReceta": 1
+      },
+      "poolTraza": 36,
+      "planReferencia": {
+        "ok": true,
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "yogur_fresas_almendras",
+                    "factorRacion": 0.65,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 207.5,
+                  "proteinaG": 14.3,
+                  "carbohidratoG": 12.8,
+                  "grasaG": 11.6,
+                  "fibraG": 2.8,
+                  "sodioMg": 46.4
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "ensalada_pasta_atun",
+                    "factorRacion": 1.65,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 824.0,
+                  "proteinaG": 52.0,
+                  "carbohidratoG": 99.5,
+                  "grasaG": 24.1,
+                  "fibraG": 8.6,
+                  "sodioMg": 1207.5
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "wrap_pollo",
+                    "factorRacion": 1.7,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 877.4,
+                  "proteinaG": 74.9,
+                  "carbohidratoG": 80.8,
+                  "grasaG": 27.8,
+                  "fibraG": 10.7,
+                  "sodioMg": 992.6
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1908.9,
+              "proteinaG": 141.2,
+              "carbohidratoG": 193.2,
+              "grasaG": 63.5,
+              "fibraG": 22.1,
+              "sodioMg": 2246.5
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          }
+        ],
+        "msTranscurridos": 11,
+        "seed": "1",
+        "versionCatalogo": "6b4fe8f81196dd7e",
+        "versionGenerador": "1.0.0",
+        "pool": 36,
+        "catalogoEstrecho": true
+      }
+    },
+    {
+      "nombre": "dia_cinco_slots",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "almuerzo",
+            "comida",
+            "merienda",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 7
+      },
+      "ok": true,
+      "invariantes": {
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1900.4,
+            "kcalEnBanda": true,
+            "proteinaG": 121.7,
+            "proteinaEnRango": true,
+            "carbohidratoG": 222.5,
+            "grasaG": 60.9,
+            "sumaComidasCuadra": true
+          }
+        ],
+        "maxUsosPorReceta": 1
+      },
+      "poolTraza": 36,
+      "planReferencia": {
+        "ok": true,
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "yogur_fresas_almendras",
+                    "factorRacion": 0.65,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 207.5,
+                  "proteinaG": 14.3,
+                  "carbohidratoG": 12.8,
+                  "grasaG": 11.6,
+                  "fibraG": 2.8,
+                  "sodioMg": 46.4
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "wrap_pollo",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 309.7,
+                  "proteinaG": 26.4,
+                  "carbohidratoG": 28.5,
+                  "grasaG": 9.8,
+                  "fibraG": 3.8,
+                  "sodioMg": 350.3
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "cuscus_verduras_garbanzos",
+                    "factorRacion": 1.3,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 834.9,
+                  "proteinaG": 33.0,
+                  "carbohidratoG": 132.8,
+                  "grasaG": 20.1,
+                  "fibraG": 26.1,
+                  "sodioMg": 1574.3
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "requeson_miel_almendras",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 185.6,
+                  "proteinaG": 15.1,
+                  "carbohidratoG": 10.5,
+                  "grasaG": 9.7,
+                  "fibraG": 1.1,
+                  "sodioMg": 396.3
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "merluza_patata_judias",
+                    "factorRacion": 0.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 362.8,
+                  "proteinaG": 32.9,
+                  "carbohidratoG": 37.8,
+                  "grasaG": 9.7,
+                  "fibraG": 8.1,
+                  "sodioMg": 796.9
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1900.4,
+              "proteinaG": 121.7,
+              "carbohidratoG": 222.5,
+              "grasaG": 60.9,
+              "fibraG": 41.9,
+              "sodioMg": 3164.2
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          }
+        ],
+        "msTranscurridos": 3,
+        "seed": "7",
+        "versionCatalogo": "6b4fe8f81196dd7e",
+        "versionGenerador": "1.0.0",
+        "pool": 36,
+        "catalogoEstrecho": true
+      }
+    },
+    {
+      "nombre": "semana_completa",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "almuerzo",
+            "comida",
+            "merienda",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 42
+      },
+      "ok": true,
+      "invariantes": {
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1905.0,
+            "kcalEnBanda": true,
+            "proteinaG": 122.6,
+            "proteinaEnRango": true,
+            "carbohidratoG": 198.5,
+            "grasaG": 71.4,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-16",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1909.5,
+            "kcalEnBanda": true,
+            "proteinaG": 135.9,
+            "proteinaEnRango": true,
+            "carbohidratoG": 212.9,
+            "grasaG": 61.1,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-17",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1924.8,
+            "kcalEnBanda": true,
+            "proteinaG": 123.9,
+            "proteinaEnRango": true,
+            "carbohidratoG": 217.6,
+            "grasaG": 63.2,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-18",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1923.8,
+            "kcalEnBanda": true,
+            "proteinaG": 130.2,
+            "proteinaEnRango": true,
+            "carbohidratoG": 216.0,
+            "grasaG": 62.7,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-19",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1924.7,
+            "kcalEnBanda": true,
+            "proteinaG": 129.0,
+            "proteinaEnRango": true,
+            "carbohidratoG": 216.5,
+            "grasaG": 58.6,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-20",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1901.2,
+            "kcalEnBanda": true,
+            "proteinaG": 120.1,
+            "proteinaEnRango": true,
+            "carbohidratoG": 194.1,
+            "grasaG": 69.5,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-21",
+            "slots": [
+              "desayuno",
+              "almuerzo",
+              "comida",
+              "merienda",
+              "cena"
+            ],
+            "nItems": 5,
+            "kcal": 1904.9,
+            "kcalEnBanda": true,
+            "proteinaG": 129.2,
+            "proteinaEnRango": true,
+            "carbohidratoG": 200.8,
+            "grasaG": 71.3,
+            "sumaComidasCuadra": true
+          }
+        ],
+        "maxUsosPorReceta": 2
+      },
+      "poolTraza": 36,
+      "planReferencia": {
+        "ok": true,
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "pudin_chia_avena",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 209.5,
+                  "proteinaG": 4.7,
+                  "carbohidratoG": 33.2,
+                  "grasaG": 7.7,
+                  "fibraG": 8.6,
+                  "sodioMg": 69.6
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "yogur_nueces",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 184.6,
+                  "proteinaG": 7.1,
+                  "carbohidratoG": 12.7,
+                  "grasaG": 12.8,
+                  "fibraG": 0.8,
+                  "sodioMg": 69.4
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "ensalada_pasta_atun",
+                    "factorRacion": 1.35,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 674.1,
+                  "proteinaG": 42.6,
+                  "carbohidratoG": 81.4,
+                  "grasaG": 19.7,
+                  "fibraG": 7.0,
+                  "sodioMg": 987.9
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "yogur_fresas_almendras",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 191.6,
+                  "proteinaG": 13.2,
+                  "carbohidratoG": 11.8,
+                  "grasaG": 10.7,
+                  "fibraG": 2.6,
+                  "sodioMg": 42.8
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "wrap_pollo",
+                    "factorRacion": 1.25,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 645.2,
+                  "proteinaG": 55.1,
+                  "carbohidratoG": 59.4,
+                  "grasaG": 20.4,
+                  "fibraG": 7.9,
+                  "sodioMg": 729.9
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1905.0,
+              "proteinaG": 122.6,
+              "carbohidratoG": 198.5,
+              "grasaG": 71.4,
+              "fibraG": 26.9,
+              "sodioMg": 1899.7
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-16",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "queso_batido_fresas",
+                    "factorRacion": 0.95,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 203.4,
+                  "proteinaG": 21.6,
+                  "carbohidratoG": 24.5,
+                  "grasaG": 3.8,
+                  "fibraG": 6.1,
+                  "sodioMg": 121.7
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "manzana_almendras",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 143.0,
+                  "proteinaG": 3.5,
+                  "carbohidratoG": 18.4,
+                  "grasaG": 7.7,
+                  "fibraG": 4.5,
+                  "sodioMg": 1.2
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "wrap_pollo",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 929.1,
+                  "proteinaG": 79.3,
+                  "carbohidratoG": 85.6,
+                  "grasaG": 29.4,
+                  "fibraG": 11.4,
+                  "sodioMg": 1051.0
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "pudin_chia_avena",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 209.5,
+                  "proteinaG": 4.7,
+                  "carbohidratoG": 33.2,
+                  "grasaG": 7.7,
+                  "fibraG": 8.6,
+                  "sodioMg": 69.6
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "ensalada_pasta_atun",
+                    "factorRacion": 0.85,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 424.5,
+                  "proteinaG": 26.8,
+                  "carbohidratoG": 51.3,
+                  "grasaG": 12.4,
+                  "fibraG": 4.4,
+                  "sodioMg": 622.0
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1909.5,
+              "proteinaG": 135.9,
+              "carbohidratoG": 212.9,
+              "grasaG": 61.1,
+              "fibraG": 34.9,
+              "sodioMg": 1865.5
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-17",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "yogur_fresas_almendras",
+                    "factorRacion": 0.65,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 207.5,
+                  "proteinaG": 14.3,
+                  "carbohidratoG": 12.8,
+                  "grasaG": 11.6,
+                  "fibraG": 2.8,
+                  "sodioMg": 46.4
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "tostada_cacahuete_platano",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 192.7,
+                  "proteinaG": 6.3,
+                  "carbohidratoG": 27.1,
+                  "grasaG": 7.2,
+                  "fibraG": 3.9,
+                  "sodioMg": 137.6
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "ternera_pimientos_arroz",
+                    "factorRacion": 1.7,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 1024.4,
+                  "proteinaG": 70.6,
+                  "carbohidratoG": 119.0,
+                  "grasaG": 27.6,
+                  "fibraG": 7.7,
+                  "sodioMg": 1485.6
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "manzana_almendras",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 143.0,
+                  "proteinaG": 3.5,
+                  "carbohidratoG": 18.4,
+                  "grasaG": 7.7,
+                  "fibraG": 4.5,
+                  "sodioMg": 1.2
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "pollo_arroz_brocoli",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 357.2,
+                  "proteinaG": 29.3,
+                  "carbohidratoG": 40.3,
+                  "grasaG": 9.0,
+                  "fibraG": 4.3,
+                  "sodioMg": 331.6
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1924.8,
+              "proteinaG": 123.9,
+              "carbohidratoG": 217.6,
+              "grasaG": 63.2,
+              "fibraG": 23.2,
+              "sodioMg": 2002.4
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-18",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "batido_platano_avena",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 243.0,
+                  "proteinaG": 13.9,
+                  "carbohidratoG": 40.0,
+                  "grasaG": 4.2,
+                  "fibraG": 4.1,
+                  "sodioMg": 97.1
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "requeson_miel_almendras",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 185.6,
+                  "proteinaG": 15.1,
+                  "carbohidratoG": 10.5,
+                  "grasaG": 9.7,
+                  "fibraG": 1.1,
+                  "sodioMg": 396.3
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "pollo_arroz_brocoli",
+                    "factorRacion": 1.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 952.4,
+                  "proteinaG": 78.1,
+                  "carbohidratoG": 107.4,
+                  "grasaG": 24.1,
+                  "fibraG": 11.5,
+                  "sodioMg": 884.3
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "tostada_cacahuete_platano",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 192.7,
+                  "proteinaG": 6.3,
+                  "carbohidratoG": 27.1,
+                  "grasaG": 7.2,
+                  "fibraG": 3.9,
+                  "sodioMg": 137.6
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "tortilla_patata_ligera",
+                    "factorRacion": 0.85,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 350.1,
+                  "proteinaG": 16.8,
+                  "carbohidratoG": 30.9,
+                  "grasaG": 17.6,
+                  "fibraG": 4.4,
+                  "sodioMg": 658.6
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1923.8,
+              "proteinaG": 130.2,
+              "carbohidratoG": 216.0,
+              "grasaG": 62.7,
+              "fibraG": 25.1,
+              "sodioMg": 2173.9
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-19",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "avena_yogur_arandanos",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 242.5,
+                  "proteinaG": 13.5,
+                  "carbohidratoG": 32.9,
+                  "grasaG": 6.7,
+                  "fibraG": 4.2,
+                  "sodioMg": 32.7
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "batido_platano_avena",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 243.0,
+                  "proteinaG": 13.9,
+                  "carbohidratoG": 40.0,
+                  "grasaG": 4.2,
+                  "fibraG": 4.1,
+                  "sodioMg": 97.1
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "ternera_pimientos_arroz",
+                    "factorRacion": 1.5,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 903.9,
+                  "proteinaG": 62.3,
+                  "carbohidratoG": 105.0,
+                  "grasaG": 24.4,
+                  "fibraG": 6.8,
+                  "sodioMg": 1310.9
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "requeson_miel_almendras",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 185.6,
+                  "proteinaG": 15.1,
+                  "carbohidratoG": 10.5,
+                  "grasaG": 9.7,
+                  "fibraG": 1.1,
+                  "sodioMg": 396.3
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "ensalada_lentejas_huevo",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 349.8,
+                  "proteinaG": 24.2,
+                  "carbohidratoG": 28.2,
+                  "grasaG": 13.7,
+                  "fibraG": 13.4,
+                  "sodioMg": 726.3
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1924.7,
+              "proteinaG": 129.0,
+              "carbohidratoG": 216.5,
+              "grasaG": 58.6,
+              "fibraG": 29.6,
+              "sodioMg": 2563.3
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-20",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "porridge_platano_cacahuete",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 315.4,
+                  "proteinaG": 13.8,
+                  "carbohidratoG": 46.6,
+                  "grasaG": 9.6,
+                  "fibraG": 5.9,
+                  "sodioMg": 68.9
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "tostada_aguacate_huevo",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 234.1,
+                  "proteinaG": 8.6,
+                  "carbohidratoG": 18.6,
+                  "grasaG": 14.0,
+                  "fibraG": 5.0,
+                  "sodioMg": 448.3
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "ensalada_lentejas_huevo",
+                    "factorRacion": 1.25,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 728.7,
+                  "proteinaG": 50.3,
+                  "carbohidratoG": 58.6,
+                  "grasaG": 28.6,
+                  "fibraG": 27.8,
+                  "sodioMg": 1513.1
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "avena_yogur_arandanos",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 242.5,
+                  "proteinaG": 13.5,
+                  "carbohidratoG": 32.9,
+                  "grasaG": 6.7,
+                  "fibraG": 4.2,
+                  "sodioMg": 32.7
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "pollo_boniato_espinacas",
+                    "factorRacion": 0.75,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 380.5,
+                  "proteinaG": 33.9,
+                  "carbohidratoG": 37.5,
+                  "grasaG": 10.7,
+                  "fibraG": 7.2,
+                  "sodioMg": 808.6
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1901.2,
+              "proteinaG": 120.1,
+              "carbohidratoG": 194.1,
+              "grasaG": 69.5,
+              "fibraG": 50.1,
+              "sodioMg": 2871.7
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-21",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "tostada_aguacate_huevo",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 234.1,
+                  "proteinaG": 8.6,
+                  "carbohidratoG": 18.6,
+                  "grasaG": 14.0,
+                  "fibraG": 5.0,
+                  "sodioMg": 448.3
+                }
+              },
+              {
+                "slot": "almuerzo",
+                "items": [
+                  {
+                    "recetaId": "yogur_nueces",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 184.6,
+                  "proteinaG": 7.1,
+                  "carbohidratoG": 12.7,
+                  "grasaG": 12.8,
+                  "fibraG": 0.8,
+                  "sodioMg": 69.4
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "merluza_patata_judias",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 816.3,
+                  "proteinaG": 74.0,
+                  "carbohidratoG": 85.1,
+                  "grasaG": 21.9,
+                  "fibraG": 18.2,
+                  "sodioMg": 1793.0
+                }
+              },
+              {
+                "slot": "merienda",
+                "items": [
+                  {
+                    "recetaId": "queso_batido_fresas",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 128.5,
+                  "proteinaG": 13.7,
+                  "carbohidratoG": 15.5,
+                  "grasaG": 2.4,
+                  "fibraG": 3.8,
+                  "sodioMg": 76.9
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "ensalada_garbanzos",
+                    "factorRacion": 1.3,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 541.5,
+                  "proteinaG": 25.9,
+                  "carbohidratoG": 69.0,
+                  "grasaG": 20.2,
+                  "fibraG": 22.9,
+                  "sodioMg": 1140.1
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1904.9,
+              "proteinaG": 129.2,
+              "carbohidratoG": 200.8,
+              "grasaG": 71.3,
+              "fibraG": 50.8,
+              "sodioMg": 3527.7
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          }
+        ],
+        "msTranscurridos": 25,
+        "seed": "42",
+        "versionCatalogo": "6b4fe8f81196dd7e",
+        "versionGenerador": "1.0.0",
+        "pool": 36,
+        "catalogoEstrecho": true
+      }
+    },
+    {
+      "nombre": "tres_dias_vegetariano",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "vegetariana",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "comida",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 3
+      },
+      "ok": true,
+      "invariantes": {
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 2077.7,
+            "kcalEnBanda": true,
+            "proteinaG": 119.6,
+            "proteinaEnRango": false,
+            "carbohidratoG": 244.1,
+            "grasaG": 73.5,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-16",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1951.2,
+            "kcalEnBanda": true,
+            "proteinaG": 120.4,
+            "proteinaEnRango": true,
+            "carbohidratoG": 218.3,
+            "grasaG": 64.6,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-17",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1961.0,
+            "kcalEnBanda": true,
+            "proteinaG": 109.7,
+            "proteinaEnRango": false,
+            "carbohidratoG": 251.4,
+            "grasaG": 61.6,
+            "sumaComidasCuadra": true
+          }
+        ],
+        "maxUsosPorReceta": 2
+      },
+      "poolTraza": 21,
+      "planReferencia": {
+        "ok": true,
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "queso_batido_fresas",
+                    "factorRacion": 0.95,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 203.4,
+                  "proteinaG": 21.6,
+                  "carbohidratoG": 24.5,
+                  "grasaG": 3.8,
+                  "fibraG": 6.1,
+                  "sodioMg": 121.7
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "quinoa_tofu_pimiento",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 1200.0,
+                  "proteinaG": 71.3,
+                  "carbohidratoG": 112.3,
+                  "grasaG": 53.4,
+                  "fibraG": 21.4,
+                  "sodioMg": 1474.0
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "cuscus_verduras_garbanzos",
+                    "factorRacion": 1.05,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 674.3,
+                  "proteinaG": 26.7,
+                  "carbohidratoG": 107.3,
+                  "grasaG": 16.2,
+                  "fibraG": 21.0,
+                  "sodioMg": 1271.5
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 2077.7,
+              "proteinaG": 119.6,
+              "carbohidratoG": 244.1,
+              "grasaG": 73.5,
+              "fibraG": 48.5,
+              "sodioMg": 2867.3
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-16",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "batido_platano_avena",
+                    "factorRacion": 1.25,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 506.2,
+                  "proteinaG": 29.0,
+                  "carbohidratoG": 83.4,
+                  "grasaG": 8.7,
+                  "fibraG": 8.5,
+                  "sodioMg": 202.4
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "ensalada_lentejas_huevo",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 1049.3,
+                  "proteinaG": 72.5,
+                  "carbohidratoG": 84.5,
+                  "grasaG": 41.1,
+                  "fibraG": 40.1,
+                  "sodioMg": 2178.9
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "ensalada_garbanzos",
+                    "factorRacion": 0.95,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 395.7,
+                  "proteinaG": 18.9,
+                  "carbohidratoG": 50.4,
+                  "grasaG": 14.8,
+                  "fibraG": 16.8,
+                  "sodioMg": 833.2
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1951.2,
+              "proteinaG": 120.4,
+              "carbohidratoG": 218.3,
+              "grasaG": 64.6,
+              "fibraG": 65.4,
+              "sodioMg": 3214.4
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-17",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "queso_batido_fresas",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 385.4,
+                  "proteinaG": 40.9,
+                  "carbohidratoG": 46.3,
+                  "grasaG": 7.3,
+                  "fibraG": 11.5,
+                  "sodioMg": 230.6
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "tortilla_patata_ligera",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 741.4,
+                  "proteinaG": 35.5,
+                  "carbohidratoG": 65.5,
+                  "grasaG": 37.3,
+                  "fibraG": 9.4,
+                  "sodioMg": 1394.6
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "curry_garbanzos",
+                    "factorRacion": 1.25,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 834.2,
+                  "proteinaG": 33.2,
+                  "carbohidratoG": 139.5,
+                  "grasaG": 17.0,
+                  "fibraG": 24.4,
+                  "sodioMg": 1624.4
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1961.0,
+              "proteinaG": 109.7,
+              "carbohidratoG": 251.4,
+              "grasaG": 61.6,
+              "fibraG": 45.3,
+              "sodioMg": 3249.6
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          }
+        ],
+        "msTranscurridos": 16,
+        "seed": "3",
+        "versionCatalogo": "6b4fe8f81196dd7e",
+        "versionGenerador": "1.0.0",
+        "pool": 21,
+        "catalogoEstrecho": true
+      }
+    },
+    {
+      "nombre": "sin_gluten",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [
+            "gluten"
+          ],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "comida",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 11
+      },
+      "ok": true,
+      "invariantes": {
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1916.5,
+            "kcalEnBanda": true,
+            "proteinaG": 143.9,
+            "proteinaEnRango": true,
+            "carbohidratoG": 179.2,
+            "grasaG": 66.2,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-16",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1900.9,
+            "kcalEnBanda": true,
+            "proteinaG": 143.1,
+            "proteinaEnRango": true,
+            "carbohidratoG": 185.1,
+            "grasaG": 67.7,
+            "sumaComidasCuadra": true
+          }
+        ],
+        "maxUsosPorReceta": 1
+      },
+      "poolTraza": 26,
+      "planReferencia": {
+        "ok": true,
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "yogur_fresas_almendras",
+                    "factorRacion": 0.65,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 207.5,
+                  "proteinaG": 14.3,
+                  "carbohidratoG": 12.8,
+                  "grasaG": 11.6,
+                  "fibraG": 2.8,
+                  "sodioMg": 46.4
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "ensalada_lentejas_huevo",
+                    "factorRacion": 1.4,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 816.1,
+                  "proteinaG": 56.4,
+                  "carbohidratoG": 65.7,
+                  "grasaG": 32.0,
+                  "fibraG": 31.2,
+                  "sodioMg": 1694.7
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "pollo_arroz_brocoli",
+                    "factorRacion": 1.5,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 892.9,
+                  "proteinaG": 73.2,
+                  "carbohidratoG": 100.7,
+                  "grasaG": 22.6,
+                  "fibraG": 10.8,
+                  "sodioMg": 829.1
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1916.5,
+              "proteinaG": 143.9,
+              "carbohidratoG": 179.2,
+              "grasaG": 66.2,
+              "fibraG": 44.8,
+              "sodioMg": 2570.2
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-16",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "queso_batido_fresas",
+                    "factorRacion": 1.15,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 246.2,
+                  "proteinaG": 26.2,
+                  "carbohidratoG": 29.6,
+                  "grasaG": 4.7,
+                  "fibraG": 7.4,
+                  "sodioMg": 147.3
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "pollo_boniato_espinacas",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 913.2,
+                  "proteinaG": 81.4,
+                  "carbohidratoG": 90.0,
+                  "grasaG": 25.8,
+                  "fibraG": 17.2,
+                  "sodioMg": 1940.8
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "tortilla_patata_ligera",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 741.4,
+                  "proteinaG": 35.5,
+                  "carbohidratoG": 65.5,
+                  "grasaG": 37.3,
+                  "fibraG": 9.4,
+                  "sodioMg": 1394.6
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1900.9,
+              "proteinaG": 143.1,
+              "carbohidratoG": 185.1,
+              "grasaG": 67.7,
+              "fibraG": 34.0,
+              "sodioMg": 3482.7
+            },
+            "objetivo": {
+              "kcal": 2000.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 120.0,
+                "max": 160.0
+              },
+              "carbohidratoG": {
+                "min": 180.0,
+                "max": 250.0
+              },
+              "grasaG": {
+                "min": 55.0,
+                "max": 80.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          }
+        ],
+        "msTranscurridos": 10,
+        "seed": "11",
+        "versionCatalogo": "6b4fe8f81196dd7e",
+        "versionGenerador": "1.0.0",
+        "pool": 26,
+        "catalogoEstrecho": true
+      }
+    },
+    {
+      "nombre": "deficit",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 1600.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 110.0,
+              "max": 140.0
+            },
+            "carbohidratoG": {
+              "min": 130.0,
+              "max": 180.0
+            },
+            "grasaG": {
+              "min": 45.0,
+              "max": 65.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 1600.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 110.0,
+              "max": 140.0
+            },
+            "carbohidratoG": {
+              "min": 130.0,
+              "max": 180.0
+            },
+            "grasaG": {
+              "min": 45.0,
+              "max": 65.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 1600.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 110.0,
+              "max": 140.0
+            },
+            "carbohidratoG": {
+              "min": 130.0,
+              "max": 180.0
+            },
+            "grasaG": {
+              "min": 45.0,
+              "max": 65.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "comida",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 5
+      },
+      "ok": true,
+      "invariantes": {
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1524.1,
+            "kcalEnBanda": true,
+            "proteinaG": 135.7,
+            "proteinaEnRango": true,
+            "carbohidratoG": 131.7,
+            "grasaG": 54.3,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-16",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1532.7,
+            "kcalEnBanda": true,
+            "proteinaG": 123.3,
+            "proteinaEnRango": true,
+            "carbohidratoG": 131.7,
+            "grasaG": 59.7,
+            "sumaComidasCuadra": true
+          },
+          {
+            "fecha": "2026-08-17",
+            "slots": [
+              "desayuno",
+              "comida",
+              "cena"
+            ],
+            "nItems": 3,
+            "kcal": 1633.7,
+            "kcalEnBanda": true,
+            "proteinaG": 140.8,
+            "proteinaEnRango": false,
+            "carbohidratoG": 167.0,
+            "grasaG": 44.6,
+            "sumaComidasCuadra": true
+          }
+        ],
+        "maxUsosPorReceta": 1
+      },
+      "poolTraza": 36,
+      "planReferencia": {
+        "ok": true,
+        "dias": [
+          {
+            "fecha": "2026-08-15",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "tostada_cacahuete_platano",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 192.7,
+                  "proteinaG": 6.3,
+                  "carbohidratoG": 27.1,
+                  "grasaG": 7.2,
+                  "fibraG": 3.9,
+                  "sodioMg": 137.6
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "merluza_patata_judias",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 816.3,
+                  "proteinaG": 74.0,
+                  "carbohidratoG": 85.1,
+                  "grasaG": 21.9,
+                  "fibraG": 18.2,
+                  "sodioMg": 1793.0
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "pollo_coliflor_aceitunas",
+                    "factorRacion": 1.2,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 515.1,
+                  "proteinaG": 55.4,
+                  "carbohidratoG": 19.5,
+                  "grasaG": 25.2,
+                  "fibraG": 8.3,
+                  "sodioMg": 873.2
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1524.1,
+              "proteinaG": 135.7,
+              "carbohidratoG": 131.7,
+              "grasaG": 54.3,
+              "fibraG": 30.4,
+              "sodioMg": 2803.8
+            },
+            "objetivo": {
+              "kcal": 1600.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 110.0,
+                "max": 140.0
+              },
+              "carbohidratoG": {
+                "min": 130.0,
+                "max": 180.0
+              },
+              "grasaG": {
+                "min": 45.0,
+                "max": 65.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-16",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "yogur_fresas_almendras",
+                    "factorRacion": 0.95,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 303.3,
+                  "proteinaG": 20.9,
+                  "carbohidratoG": 18.8,
+                  "grasaG": 17.0,
+                  "fibraG": 4.1,
+                  "sodioMg": 67.8
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "pollo_boniato_espinacas",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 913.2,
+                  "proteinaG": 81.4,
+                  "carbohidratoG": 90.0,
+                  "grasaG": 25.8,
+                  "fibraG": 17.2,
+                  "sodioMg": 1940.8
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "crema_calabacin_requeson",
+                    "factorRacion": 1.2,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 316.1,
+                  "proteinaG": 21.1,
+                  "carbohidratoG": 22.9,
+                  "grasaG": 17.0,
+                  "fibraG": 5.1,
+                  "sodioMg": 1436.2
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1532.7,
+              "proteinaG": 123.3,
+              "carbohidratoG": 131.7,
+              "grasaG": 59.7,
+              "fibraG": 26.4,
+              "sodioMg": 3444.7
+            },
+            "objetivo": {
+              "kcal": 1600.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 110.0,
+                "max": 140.0
+              },
+              "carbohidratoG": {
+                "min": 130.0,
+                "max": 180.0
+              },
+              "grasaG": {
+                "min": 45.0,
+                "max": 65.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          },
+          {
+            "fecha": "2026-08-17",
+            "comidas": [
+              {
+                "slot": "desayuno",
+                "items": [
+                  {
+                    "recetaId": "queso_batido_fresas",
+                    "factorRacion": 0.6,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 128.5,
+                  "proteinaG": 13.7,
+                  "carbohidratoG": 15.5,
+                  "grasaG": 2.4,
+                  "fibraG": 3.8,
+                  "sodioMg": 76.9
+                }
+              },
+              {
+                "slot": "comida",
+                "items": [
+                  {
+                    "recetaId": "wrap_pollo",
+                    "factorRacion": 1.8,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 929.1,
+                  "proteinaG": 79.3,
+                  "carbohidratoG": 85.6,
+                  "grasaG": 29.4,
+                  "fibraG": 11.4,
+                  "sodioMg": 1051.0
+                }
+              },
+              {
+                "slot": "cena",
+                "items": [
+                  {
+                    "recetaId": "sopa_pollo_verduras",
+                    "factorRacion": 1.45,
+                    "bloqueado": false
+                  }
+                ],
+                "totales": {
+                  "kcal": 576.2,
+                  "proteinaG": 47.8,
+                  "carbohidratoG": 66.0,
+                  "grasaG": 12.7,
+                  "fibraG": 7.0,
+                  "sodioMg": 1021.1
+                }
+              }
+            ],
+            "totales": {
+              "kcal": 1633.7,
+              "proteinaG": 140.8,
+              "carbohidratoG": 167.0,
+              "grasaG": 44.6,
+              "fibraG": 22.2,
+              "sodioMg": 2149.0
+            },
+            "objetivo": {
+              "kcal": 1600.0,
+              "toleranciaKcal": 0.05,
+              "proteinaG": {
+                "min": 110.0,
+                "max": 140.0
+              },
+              "carbohidratoG": {
+                "min": 130.0,
+                "max": 180.0
+              },
+              "grasaG": {
+                "min": 45.0,
+                "max": 65.0
+              },
+              "fibraMinG": 20.0,
+              "sodioMaxMg": null
+            }
+          }
+        ],
+        "msTranscurridos": 13,
+        "seed": "5",
+        "versionCatalogo": "6b4fe8f81196dd7e",
+        "versionGenerador": "1.0.0",
+        "pool": 36,
+        "catalogoEstrecho": true
+      }
+    }
+  ],
+  "catalogoVersion": "6b4fe8f81196dd7e",
+  "nRecetas": 36
+}

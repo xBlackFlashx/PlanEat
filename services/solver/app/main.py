@@ -73,11 +73,15 @@ def generar_plan(solicitud: SolicitudGeneracion, respuesta: Response) -> JSONRes
     - **422** sólo cuando la petición está mal formada (un rango invertido, kcal
       ≤ 0). Eso sí es culpa del cliente y hay que distinguirlo.
 
-    Cabeceras: `X-PlanEat-Seed` devuelve la semilla usada —imprescindible para
-    reproducir un plan en soporte, porque `RespuestaOk` todavía no tiene dónde
-    llevarla—, `X-PlanEat-Catalogo` la versión del catálogo y
-    `X-PlanEat-Generador` la del algoritmo. Sin las tres, un plan guardado no se
-    puede volver a construir.
+    Reproducibilidad: `seed`, `versionCatalogo`, `versionGenerador`, `pool` y
+    `catalogoEstrecho` viajan DENTRO de `RespuestaOk`. Estaban en las cabeceras
+    `X-PlanEat-*` porque la respuesta no tenía dónde llevarlos; ahora sí, y hacía
+    falta que lo tuviera: el motor del navegador (`packages/motor`) genera sin
+    servidor y no puede poner una cabecera en ninguna parte. Sin esos datos, un
+    plan guardado o compartido no se puede volver a construir.
+
+    Las cabeceras se mantienen como espejo de sólo lectura, no como fuente: hay
+    clientes que las leen y quitarlas no aporta nada. La fuente es el payload.
     """
     try:
         resultado, traza = generar(solicitud, CATALOGO)
@@ -99,6 +103,7 @@ def generar_plan(solicitud: SolicitudGeneracion, respuesta: Response) -> JSONRes
         )
 
     log.info("generacion %s", asdict(traza))
+    # Espejo de lo que ya va en el payload; ver el docstring.
     cabeceras = {
         "X-PlanEat-Seed": str(traza.seed),
         "X-PlanEat-Catalogo": CATALOGO.version,

@@ -33,10 +33,10 @@ from ..schemas import (
     DiaPlan,
     FalloGeneracion,
     ItemPlan,
-    PanelNutricional,
     RespuestaError,
     RespuestaOk,
     SolicitudGeneracion,
+    TotalesNutricionales,
 )
 from . import (
     FRACCION_POOL_ATRIBUIBLE,
@@ -46,6 +46,7 @@ from . import (
     IDX_KCAL,
     IDX_PROT,
     IDX_SLOT,
+    IDX_SODIO,
     MAX_USOS_RECETA_SEMANA,
     MIN_CANDIDATOS_SLOT_DIA,
     MIN_CANDIDATOS_SLOT_SEMANA,
@@ -144,18 +145,29 @@ def _min_candidatos_slot(n_dias: int) -> int:
     )
 
 
-def _panel(totales: np.ndarray, fibra_fiable: bool) -> PanelNutricional:
-    """Traduce el vector de 6 nutrientes al panel del contrato.
+def _panel(
+    totales: np.ndarray, fibra_fiable: bool, sodio_fiable: bool
+) -> TotalesNutricionales:
+    """Traduce el vector de 6 nutrientes a los totales del contrato.
 
     `fibraG` va a `None` cuando menos del 80 % de las kcal del día tienen fibra
     conocida: un total parcial se lee como total y miente. §8.5
+
+    `sodioMg` sale de la columna 5, que el motor ya calculaba y este serializador
+    tiraba. Su criterio de fiabilidad es más estricto que el de la fibra —basta
+    con que UN item no declare sodio para anularlo— y no es una incoherencia:
+    el sodio es la única columna donde el interés del usuario es un techo, y un
+    techo estimado por defecto invita a pasarse creyendo que no. Ojo al portar:
+    esto NO es lo mismo que `nutrientes_activos`, que decide si el sodio entra en
+    la función objetivo y para eso mira además si hay `sodioMaxMg`.
     """
-    return PanelNutricional(
+    return TotalesNutricionales(
         kcal=round(float(totales[IDX_KCAL]), 1),
         proteinaG=round(float(totales[IDX_PROT]), 1),
         carbohidratoG=round(float(totales[IDX_CARB]), 1),
         grasaG=round(float(totales[IDX_GRASA]), 1),
         fibraG=round(float(totales[IDX_FIBRA]), 1) if fibra_fiable else None,
+        sodioMg=round(float(totales[IDX_SODIO]), 1) if sodio_fiable else None,
     )
 
 
@@ -169,6 +181,9 @@ def _dia_a_contrato(pool, cand: CandidatoDia, fecha: str, objetivo) -> DiaPlan:
     orden = sorted(range(len(cand.slots)), key=lambda p: IDX_SLOT[cand.slots[p]])
     comidas: list[ComidaPlan] = []
     acumulado = np.zeros(6, dtype=np.float64)
+    # El sodio del día sólo es fiable si lo es el de TODAS sus comidas: una suma
+    # a la que le falta un sumando no es una cota superior de nada.
+    sodio_dia = all(bool(pool.conocido[f][IDX_SODIO]) for f in cand.filas)
     for p in orden:
         fila, sigma = cand.filas[p], float(cand.sigma[p])
         totales = pool.nutr[fila].astype(np.float64) * sigma
@@ -183,13 +198,15 @@ def _dia_a_contrato(pool, cand: CandidatoDia, fecha: str, objetivo) -> DiaPlan:
                         bloqueado=False,
                     )
                 ],
-                totales=_panel(totales, cand.fibra_fiable),
+                totales=_panel(
+                    totales, cand.fibra_fiable, bool(pool.conocido[fila][IDX_SODIO])
+                ),
             )
         )
     return DiaPlan(
         fecha=fecha,
         comidas=comidas,
-        totales=_panel(acumulado, cand.fibra_fiable),
+        totales=_panel(acumulado, cand.fibra_fiable, sodio_dia),
         objetivo=objetivo,
     )
 
@@ -279,7 +296,17 @@ def generar(
     if resultado.dias_sin_candidato or len(resultado.dias) != n_dias:
         # Algún día se quedó sin ninguna combinación admisible. No es un caso de
         # objetivo inalcanzable sino de pool agotado dentro del día.
-        fallo = diagnosticar_pool(cat, restr, slots, pool.p, por_slot, min_slot)
+        #
+        # El sexto argumento es el dict de slots FLOJOS, no el recuento completo
+        # por slot. Aquí se pasaba `por_slot`, que nunca está vacío: la rama de
+        # `slot_sin_candidatos` de `diagnosticar_pool` se disparaba SIEMPRE y
+        # escribía mensajes falsos del tipo «Sólo encuentro 21 recetas para la
+        # comida y necesito al menos 8» —21 ≥ 8, o sea, ese slot no era el
+        # problema—. En este punto ya se ha pasado la puerta 1, así que `flojos`
+        # está vacío por construcción y el diagnóstico cae donde debe: en el eje
+        # que la ablación señala como culpable. Es la misma llamada que la de la
+        # puerta 1, y ésa siempre fue correcta.
+        fallo = diagnosticar_pool(cat, restr, slots, pool.p, flojos, min_slot)
         traza.ms_total = int((time.perf_counter() - t0) * 1000)
         return RespuestaError(fallo=_a_contrato(fallo)), traza
 
@@ -317,7 +344,21 @@ def generar(
     ]
     ms = max(1, int((time.perf_counter() - t0) * 1000))
     traza.ms_total = ms
-    return RespuestaOk(dias=dias, msTranscurridos=ms), traza
+    # Los cinco datos de reproducibilidad van DENTRO de la respuesta, no en
+    # cabeceras: el motor del navegador no tiene ninguna que poner, y un plan sin
+    # ellos no se puede volver a generar. `seed` como cadena porque son 63 bits.
+    return (
+        RespuestaOk(
+            dias=dias,
+            msTranscurridos=ms,
+            seed=str(seed),
+            versionCatalogo=cat.version,
+            versionGenerador=VERSION_GENERADOR,
+            pool=pool.p,
+            catalogoEstrecho=traza.catalogo_estrecho,
+        ),
+        traza,
+    )
 
 
 __all__ = ["ObjetivoInvalido", "Traza", "generar", "VERSION_GENERADOR"]

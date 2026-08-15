@@ -12,11 +12,14 @@
     "build": "npm run build --workspace @planeat/web",
     "start": "npm run start --workspace @planeat/web",
     "lint": "npm run lint --workspace @planeat/web",
-    "typecheck": "tsc --noEmit -p apps/web/tsconfig.json && tsc --noEmit -p packages/shared/tsconfig.json",
+    "typecheck": "tsc --noEmit -p apps/web/tsconfig.json && tsc --noEmit -p packages/shared/tsconfig.json && tsc --noEmit -p packages/motor/tsconfig.json",
+    "test": "npm run test --workspace @planeat/motor",
+    "motor:catalogo": "npm run compilar-catalogo --workspace @planeat/motor",
+    "motor:paridad": "npm run paridad --workspace @planeat/motor",
     "solver:dev": "cd services/solver && uvicorn app.main:app --reload --port 8000",
     "solver:test": "cd services/solver && pytest"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.18"
   }
 }

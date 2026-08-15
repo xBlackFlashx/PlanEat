@@ -1,0 +1,23 @@
+{
+  "name": "@planeat/motor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Motor de generación de planes portado a TypeScript. Corre en el navegador, sin backend.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./worker": "./src/worker/motor.worker.ts",
+    "./cliente": "./src/worker/cliente.ts",
+    "./catalogo-compilado": "./datos/catalogo-compilado.json"
+  },
+  "scripts": {
+    "test": "node --test 'pruebas/**/*.test.ts'",
+    "compilar-catalogo": "node herramientas/compilar-catalogo.ts",
+    "paridad": "node pruebas/paridad/comparar.ts"
+  },
+  "dependencies": {
+    "@planeat/shared": "*"
+  }
+}

@@ -72,12 +72,24 @@ class SolicitudGeneracion(BaseModel):
     seed: int | None = None
 
 
-class PanelNutricional(BaseModel):
+class TotalesNutricionales(BaseModel):
+    """Totales ya servidos de una comida o de un día. NO es un panel por 100 g.
+
+    El mismo modelo se usaba antes para las dos cosas y la web acabó leyendo
+    `salG` de un total del día, campo que este servicio no emite ni puede emitir
+    (no tiene sal por receta, tiene sodio). Espejo de `TotalesNutricionales` de
+    `packages/shared/src/types.ts`.
+
+    `fibraG` y `sodioMg` son anulables porque `None` afirma algo —«este total no
+    es fiable»— y omitirlos dejaría leer un total parcial como total (§8.5).
+    """
+
     kcal: float
     proteinaG: float
     carbohidratoG: float
     grasaG: float
     fibraG: float | None = None
+    sodioMg: float | None = None
 
 
 class ItemPlan(BaseModel):
@@ -89,13 +101,13 @@ class ItemPlan(BaseModel):
 class ComidaPlan(BaseModel):
     slot: SlotComida
     items: list[ItemPlan]
-    totales: PanelNutricional
+    totales: TotalesNutricionales
 
 
 class DiaPlan(BaseModel):
     fecha: str
     comidas: list[ComidaPlan]
-    totales: PanelNutricional
+    totales: TotalesNutricionales
     objetivo: ObjetivoNutricional
 
 
@@ -112,9 +124,31 @@ class FalloGeneracion(BaseModel):
 
 
 class RespuestaOk(BaseModel):
+    """Plan generado, con todo lo necesario para volver a generarlo.
+
+    Los cinco campos que siguen a `msTranscurridos` viajaban en cabeceras
+    (`X-PlanEat-Seed`, `-Catalogo`, `-Generador`, `-Pool`). El motor del
+    navegador no tiene servidor ni cabeceras, así que sin traerlos al payload un
+    plan guardado o compartido deja de ser reproducible: exactamente el fallo
+    indepurable contra el que avisa el docstring de `main.py`. Los dos motores
+    emiten el mismo contrato; las cabeceras se mantienen por compatibilidad.
+    """
+
     ok: Literal[True] = True
     dias: list[DiaPlan]
     msTranscurridos: int
+    # Decimal y como CADENA: son 63 bits y un JSON con `number` los redondea en
+    # silencio al pasar por un lector de 53 bits (JavaScript). Un plan cuya
+    # semilla se ha redondeado no se puede volver a generar y nada falla al
+    # hacerlo, que es la peor combinación posible.
+    seed: str
+    versionCatalogo: str
+    versionGenerador: str
+    pool: int
+    # El pool se quedó corto por lo corto del catálogo, no por los filtros del
+    # usuario (puerta 3 de §6.0): el plan vale, la variedad está limitada, y la
+    # culpa no es de quien lo pidió.
+    catalogoEstrecho: bool = False
 
 
 class RespuestaError(BaseModel):

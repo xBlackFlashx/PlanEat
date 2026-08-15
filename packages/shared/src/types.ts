@@ -61,16 +61,57 @@ export interface Rango {
 
 export type FuenteNutricional = "usda" | "ciqual" | "openfoodfacts" | "propia";
 
-/** Panel nutricional por 100 g de producto comestible. */
-export interface PanelNutricional {
+/**
+ * Panel nutricional **por 100 g** de producto comestible: lo que dice la
+ * etiqueta de un alimento.
+ *
+ * Un campo ausente y un campo a `null` significan lo mismo aquí —«no lo
+ * sabemos»— y hay que admitir las dos escrituras porque hay dos productores: el
+ * catálogo, que omite la clave, y el JSON del solver, que la serializa a `null`.
+ * Aceptar sólo una de las dos obligaba a los consumidores a elegir entre
+ * `?? null` y `!== undefined` según de dónde viniera el dato, que es la clase de
+ * detalle que se olvida justo en el sitio donde importa.
+ */
+export interface PanelPor100g {
   kcal: number;
   proteinaG: number;
   carbohidratoG: number;
   grasaG: number;
-  grasaSaturadaG?: number;
-  azucaresG?: number;
-  fibraG?: number;
-  salG?: number;
+  grasaSaturadaG?: number | null;
+  azucaresG?: number | null;
+  fibraG?: number | null;
+  salG?: number | null;
+}
+
+/**
+ * @deprecated Nombre histórico de `PanelPor100g`. Se conserva porque el mismo
+ * tipo se usaba para dos cosas incompatibles —el panel por 100 g de un alimento
+ * y los totales de un día— y sólo una de las dos se llamaba así con propiedad.
+ * Los totales viven ahora en `TotalesNutricionales`. Migrar los usos y borrarlo.
+ */
+export type PanelNutricional = PanelPor100g;
+
+/**
+ * Totales **ya servidos**: la suma de las raciones de una comida o de un día.
+ *
+ * No es un `PanelPor100g` por más que se le parezca, y confundirlos costó un
+ * bug real: la UI leía `totales.salG`, que el solver no emite ni puede emitir
+ * (no tiene sal por receta, tiene sodio). Aquí `fibraG` y `sodioMg` son
+ * requeridos y anulables a propósito: `null` es una afirmación —«este total no
+ * es fiable, no lo enseñes como si lo fuera»— y ausentarlos dejaría que un
+ * total parcial se leyera como total, que es exactamente la mentira que §8.5
+ * prohíbe. `sodioMg` en miligramos porque es la unidad de la columna 5 del
+ * motor; convertir a sal (×2,5/1000) es cosa de la presentación.
+ */
+export interface TotalesNutricionales {
+  kcal: number;
+  proteinaG: number;
+  carbohidratoG: number;
+  grasaG: number;
+  /** `null` si menos del 80 % de las kcal tienen fibra conocida. */
+  fibraG: number | null;
+  /** `null` si algún item del total no declara sodio. */
+  sodioMg: number | null;
 }
 
 export interface Alimento {
@@ -79,7 +120,7 @@ export interface Alimento {
   fuente: FuenteNutricional;
   /** Identificador en la fuente original. Permite reingesta sin refactorizar. */
   fuenteRef: string;
-  panel: PanelNutricional;
+  panel: PanelPor100g;
   /** Formatos reales de compra, para convertir la lista a algo comprable. */
   formatosCompra?: FormatoCompra[];
   alergenos: Alergeno[];
@@ -170,14 +211,14 @@ export interface ItemPlan {
 export interface ComidaPlan {
   slot: SlotComida;
   items: ItemPlan[];
-  totales: PanelNutricional;
+  totales: TotalesNutricionales;
 }
 
 export interface DiaPlan {
   /** ISO 8601, `YYYY-MM-DD`. */
   fecha: string;
   comidas: ComidaPlan[];
-  totales: PanelNutricional;
+  totales: TotalesNutricionales;
   objetivo: ObjetivoNutricional;
 }
 
@@ -225,6 +266,47 @@ export interface FalloGeneracion {
   sugerencias: string[];
 }
 
-export type RespuestaGeneracion =
-  | { ok: true; dias: DiaPlan[]; msTranscurridos: number }
-  | { ok: false; fallo: FalloGeneracion };
+/**
+ * Plan generado, con todo lo necesario para volver a generarlo.
+ *
+ * Los cinco campos de debajo de `msTranscurridos` viajaban hasta ahora en
+ * cabeceras HTTP (`X-PlanEat-Seed`, `X-PlanEat-Catalogo`, `X-PlanEat-Generador`,
+ * `X-PlanEat-Pool`; ver `services/solver/app/main.py`). Al mover el motor al
+ * navegador desaparece el servidor y con él las cabeceras: sin traerlos al
+ * payload, un plan guardado o compartido deja de ser reproducible y el fallo es
+ * indepurable en soporte, que es justo contra lo que avisaba el docstring del
+ * endpoint. Se replican en `schemas.py` para que los dos motores sigan hablando
+ * el mismo contrato mientras convivan.
+ */
+export interface RespuestaOk {
+  ok: true;
+  dias: DiaPlan[];
+  msTranscurridos: number;
+  /**
+   * Semilla usada, en decimal y como **cadena**. Son 63 bits: un `number` sólo
+   * garantiza 53 y el redondeo ocurriría en silencio —al serializar a JSON, al
+   * pasar por la query de la URL o en un `parseInt`—, dejando el plan
+   * irreproducible sin que nada falle. Tipar esto como `number` en cualquier
+   * punto del monorepo es el bug que toda la disciplina de semillas evita.
+   */
+  seed: string;
+  /** Hash del catálogo con el que se generó. Sin él, «mismo seed» no dice nada. */
+  versionCatalogo: string;
+  /** Versión del algoritmo. El motor del navegador y el de Python NO coinciden. */
+  versionGenerador: string;
+  /** Recetas admisibles tras los filtros duros. Diagnóstico, no decoración. */
+  pool: number;
+  /**
+   * El pool se quedó corto por lo corto del catálogo, no por los filtros del
+   * usuario (puerta 3 de §6.0). El plan es válido; la UI puede avisar de que la
+   * variedad está limitada, pero no debe culpar de ello a quien lo pidió.
+   */
+  catalogoEstrecho: boolean;
+}
+
+export interface RespuestaError {
+  ok: false;
+  fallo: FalloGeneracion;
+}
+
+export type RespuestaGeneracion = RespuestaOk | RespuestaError;

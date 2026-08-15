@@ -1,0 +1,339 @@
+{
+  "descripcion": "Peticiones sobre-restringidas. Aquí SÍ se compara texto: la culpa y las tres sugerencias son contrato de producto.",
+  "casos": [
+    {
+      "nombre": "vegano_estricto",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          },
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "vegana",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "almuerzo",
+            "comida",
+            "merienda",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 2
+      },
+      "ok": false,
+      "fallo": {
+        "restriccionCulpable": "slot_sin_candidatos:desayuno",
+        "mensaje": "Sólo encuentro 2 recetas para el desayuno con tus filtros, y necesito al menos 8 para armar el plan sin repetir.",
+        "recetasCandidatas": 8,
+        "sugerencias": [
+          "Ampliar la dieta más allá de «vegana» (+28 recetas)",
+          "Planificar 4 comidas al día en vez de 5",
+          "Avisarte en cuanto el catálogo tenga más recetas que te encajen"
+        ]
+      }
+    },
+    {
+      "nombre": "todos_los_alergenos",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [
+            "gluten",
+            "lacteos",
+            "huevos",
+            "pescado",
+            "soja",
+            "frutos_de_cascara",
+            "sesamo",
+            "crustaceos",
+            "moluscos"
+          ],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "comida",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 2
+      },
+      "ok": false,
+      "fallo": {
+        "restriccionCulpable": "slot_sin_candidatos:desayuno",
+        "mensaje": "Sólo encuentro 0 recetas para el desayuno con tus filtros, y necesito al menos 3 para armar el plan sin repetir.",
+        "recetasCandidatas": 9,
+        "sugerencias": [
+          "Planificar 2 comidas al día en vez de 3",
+          "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
+          "Escríbenos y ampliamos el catálogo con lo que te falta."
+        ]
+      }
+    },
+    {
+      "nombre": "tiempo_imposible",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 2000.0,
+            "toleranciaKcal": 0.05,
+            "proteinaG": {
+              "min": 120.0,
+              "max": 160.0
+            },
+            "carbohidratoG": {
+              "min": 180.0,
+              "max": 250.0
+            },
+            "grasaG": {
+              "min": 55.0,
+              "max": 80.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "comida",
+            "cena"
+          ],
+          "minutosMaxPorSlot": {
+            "desayuno": 3,
+            "comida": 5,
+            "cena": 5
+          },
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 2
+      },
+      "ok": false,
+      "fallo": {
+        "restriccionCulpable": "slot_sin_candidatos:desayuno",
+        "mensaje": "Sólo encuentro 0 recetas para el desayuno con tus filtros, y necesito al menos 3 para armar el plan sin repetir.",
+        "recetasCandidatas": 8,
+        "sugerencias": [
+          "Subir el tiempo del desayuno de 3 a 13 min (+5 recetas)",
+          "Elegir otras comidas del día (+3 recetas)",
+          "Planificar 2 comidas al día en vez de 3"
+        ]
+      }
+    },
+    {
+      "nombre": "kcal_extremas",
+      "solicitud": {
+        "objetivos": [
+          {
+            "kcal": 800.0,
+            "toleranciaKcal": 0.01,
+            "proteinaG": {
+              "min": 90.0,
+              "max": 100.0
+            },
+            "carbohidratoG": {
+              "min": 20.0,
+              "max": 40.0
+            },
+            "grasaG": {
+              "min": 10.0,
+              "max": 20.0
+            },
+            "fibraMinG": 20.0,
+            "sodioMaxMg": null
+          }
+        ],
+        "restricciones": {
+          "dieta": "omnivora",
+          "alergenosExcluidos": [],
+          "ingredientesExcluidos": [],
+          "slots": [
+            "desayuno",
+            "comida",
+            "cena"
+          ],
+          "minutosMaxPorSlot": null,
+          "comensales": 1,
+          "presupuestoSemanalCents": null,
+          "despensaAlimentoIds": [],
+          "recetasRecientes": []
+        },
+        "seed": 2
+      },
+      "ok": false,
+      "fallo": {
+        "restriccionCulpable": "macros_incompatibles",
+        "mensaje": "Los máximos de macros que pides suman 740 kcal, menos de las 800 kcal del día.",
+        "recetasCandidatas": 0,
+        "sugerencias": [
+          "Recalcular los macros a partir de tus kcal objetivo",
+          "Ampliar el rango de carbohidratos",
+          "Ampliar el rango de grasa"
+        ]
+      }
+    }
+  ],
+  "catalogoVersion": "6b4fe8f81196dd7e",
+  "nRecetas": 36
+}
