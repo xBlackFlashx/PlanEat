@@ -11,21 +11,84 @@
  * de foco, el cierre con `Escape`, el fondo inerte y la devolución del foco al
  * elemento que lo abrió. Reimplementar eso a mano sale siempre peor.
  *
- * La ficha muestra los datos del catálogo escalados a la ración que sirve el
- * plan. Lo que el catálogo no declara aparece como «sin declarar»: en un
- * producto de nutrición, un cero inventado es peor que un hueco.
+ * ## El problema de esta pantalla: aquí «la foto manda» y no hay fotos
+ *
+ * `docs/diseno-producto.md` §3.5 pide abrir con una foto 3:2 y §2.6 fija la
+ * densidad en «baja: la foto manda». Pero el catálogo tiene 36 recetas y
+ * **ninguna trae imagen** (`imagenUrl` es opcional en
+ * `services/solver/data/recetas.json` y está vacío en las 36), así que diseñar
+ * la ficha alrededor de la foto sería diseñar una pantalla que no existe.
+ *
+ * La salida no es un placeholder gris con un icono de plato. Es preguntarse qué
+ * hace la foto en una ficha de receta: decir de qué está hecho el plato antes
+ * de que leas nada. **Eso el catálogo sí lo tiene** — la lista de ingredientes
+ * resuelta a nombres legibles — y es lo que ocupa el sitio de la foto: título
+ * en la voz serif y, debajo, los ingredientes reales como bloque de lectura.
+ * Es información, no relleno; se sostiene sin imagen; y no miente sobre nada.
+ *
+ * El hueco de la foto sigue previsto y en su sitio exacto: `imagenDe()` la
+ * busca en cada render y, en cuanto el catálogo compilado la traiga, se pinta
+ * arriba del todo con su `aspect-ratio` declarado, sin tocar este componente.
+ *
+ * ## Lo que la ficha decide enseñar
+ *
+ * Los datos del catálogo escalados a la ración que sirve el plan. Lo que el
+ * catálogo no declara aparece como «sin declarar»: en un producto de nutrición,
+ * un cero inventado es peor que un hueco. Y `revisadaPor` —que hoy vale `null`
+ * en las 36 recetas— se enseña **como aviso, no como silencio**: según
+ * `docs/spec.md` la revisión por dietista es condición para publicar, así que
+ * su ausencia es información de producto de primer orden, no un campo vacío que
+ * convenga disimular.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 import { gramos, kcal as formatearKcal, minutos, racion } from "@/lib/formato";
 import { nombreAlergeno } from "@/lib/perfil";
 import type { RecetaResumen } from "@/lib/tipos";
 
 import { BarraReparto } from "./barra-reparto";
-import { IconoCambiar, IconoCerrar, IconoReloj } from "./iconos";
+import { DetallePlegable } from "./detalle-plegable";
+import { IconoAviso, IconoCambiar, IconoCerrar, IconoReloj } from "./iconos";
 import estilos from "./planeat.module.css";
 import { TablaNutricional } from "./tabla-nutricional";
+
+/**
+ * La foto, el día que la haya.
+ *
+ * `RecetaResumen` es `RecetaVista`, y `RecetaVista` no declara `imagenUrl`
+ * porque el compilador del catálogo no la emite todavía. Se lee por presencia y
+ * no por tipo por dos razones: `lib/tipos.ts` es de otro agente y no me toca
+ * editarlo, y así el día que el campo aparezca la ficha lo pinta sin que nadie
+ * tenga que acordarse de volver aquí. Si el valor no es una cadena con
+ * contenido, no hay foto y punto: media docena de píxeles rotos en la cabecera
+ * es peor que no tener cabecera.
+ */
+function imagenDe(receta: RecetaResumen): string | null {
+  if (!("imagenUrl" in receta)) return null;
+  const valor: unknown = receta.imagenUrl;
+  return typeof valor === "string" && valor.trim() !== "" ? valor : null;
+}
+
+/**
+ * Precio de una ración, en rango y con resolución de diez céntimos.
+ *
+ * `rangoPrecio` de `lib/formato` redondea a euros enteros, y para el total de
+ * un día (20–24 €) está bien. Para una ración de 1,30 € da **«0–1 €»**, y un
+ * cero en un precio se lee como «gratis»: la cifra es cierta y el mensaje es
+ * falso. Misma regla del §9.1.5 —nunca un precio exacto, porque sale del precio
+ * de los ingredientes y no de una compra real—, otra resolución.
+ *
+ * Vive aquí y no en `lib/formato.ts` porque ese fichero es de otro agente. Es
+ * candidata a mudarse allí en cuanto el árbol esté en una sola mano.
+ */
+function precioDeRacion(cents: number): string {
+  const euros = cents / 100;
+  const decima = (valor: number) => (Math.round(valor * 10) / 10).toFixed(1).replace(".", ",");
+  const min = Math.floor(euros * 0.92 * 10) / 10;
+  const max = Math.ceil(euros * 1.08 * 10) / 10;
+  return `${decima(min)}–${decima(max)} €`;
+}
 
 interface PropsPanelReceta {
   receta: RecetaResumen | null;
@@ -41,6 +104,11 @@ export function PanelReceta({
   alCambiarReceta,
 }: PropsPanelReceta) {
   const dialogo = useRef<HTMLDialogElement>(null);
+  // Un plan de varios días monta un `PanelReceta` por día. Con el id literal
+  // que había antes, el documento acababa con varios `titulo-ficha` y el
+  // `aria-labelledby` apuntaba al primero que encontrara.
+  const idTitulo = useId();
+  const idIngredientes = useId();
 
   useEffect(() => {
     const nodo = dialogo.current;
@@ -49,8 +117,28 @@ export function PanelReceta({
     if (!receta && nodo.open) nodo.close();
   }, [receta]);
 
+  /**
+   * Clic fuera de la ficha = cerrar.
+   *
+   * Un `<dialog>` no cierra solo al pulsar el fondo. En escritorio el velo es
+   * transparente a propósito, así que sin esto el usuario ve su plan, intenta
+   * tocarlo, no pasa nada y no hay nada que sugiera de qué salir. El evento
+   * llega con `target` = el propio `<dialog>` sólo cuando el clic cae en el
+   * área que no ocupa su contenido, que es exactamente el fondo.
+   *
+   * Sigue sin ser lo que pide §3.5 —allí el plan de detrás es *usable*, no sólo
+   * visible, y eso exige `show()` en vez de `showModal()` y una trampa de foco
+   * escrita a mano—. Esto es la mitad barata del arreglo, y la otra mitad queda
+   * anotada aquí para que no parezca resuelta.
+   */
+  const alPulsarFondo = (evento: React.MouseEvent<HTMLDialogElement>) => {
+    if (evento.target === dialogo.current) alCerrar();
+  };
+
   if (!receta) {
-    return <dialog ref={dialogo} className={estilos.panel} onClose={alCerrar} />;
+    return (
+      <dialog ref={dialogo} className={estilos.panel} onClose={alCerrar} />
+    );
   }
 
   const escalar = (valor: number) => valor * factorRacion;
@@ -64,20 +152,58 @@ export function PanelReceta({
     escalar(receta.porRacion.kcal),
   )} kcal y ${gramos(panel.proteinaG)} g de proteína.`;
 
+  const imagen = imagenDe(receta);
+  const coste = receta.costeCents;
+
   return (
     <dialog
       ref={dialogo}
       className={estilos.panel}
       onClose={alCerrar}
-      aria-labelledby="titulo-ficha"
+      onClick={alPulsarFondo}
+      aria-labelledby={idTitulo}
     >
       <div className="flex max-h-[88dvh] flex-col lg:h-dvh lg:max-h-none">
-        <header className="flex items-start justify-between gap-3 border-b border-line p-4 sm:p-6">
-          <div>
-            <h2 id="titulo-ficha" className="text-xl font-semibold tracking-tight">
+        {/* Cabecera: el sitio de la foto. Fondo propio para que se lea como un
+            bloque y no como el primer párrafo del cuerpo. */}
+        <header className="relative shrink-0 border-b border-line bg-surface-2">
+          {/* El `aspect-ratio` va declarado siempre, aunque hoy nunca haya
+              imagen: es la causa número uno de CLS en productos con foto
+              (§2.5). `alt` describe el plato, no el plano. */}
+          {imagen && (
+            /* No es `next/image` a propósito: el sitio se publica estático
+               (`output: "export"`, sin optimizador detrás) y `images.unoptimized`
+               ya está puesto en `next.config.ts`, así que `next/image` no
+               optimizaría nada y en cambio obligaría a declarar `remotePatterns`
+               para un host que todavía no existe. */
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imagen}
+              alt={receta.titulo}
+              className={estilos.fotoFicha}
+              fetchPriority="high"
+            />
+          )}
+
+          <button
+            type="button"
+            onClick={alCerrar}
+            className={`${estilos.pulsable} absolute right-2 top-2 z-10 grid size-11 place-items-center rounded-[var(--radius-sm)] bg-surface-2 text-text-2 hover:bg-surface-3 hover:text-text`}
+          >
+            <IconoCerrar />
+            <span className="sr-only">Cerrar la ficha</span>
+          </button>
+
+          <div className="p-4 pr-14 sm:p-6 sm:pr-16">
+            {/* `voz-2` es la utilidad del sistema (globals.css): 26 → 32 px en
+                Instrument Serif a peso 400. Es uno de los cuatro únicos sitios
+                del producto donde aparece la serif (§2.2), y el único de los
+                cuatro que vive dentro de un componente reutilizable. */}
+            <h2 id={idTitulo} className="voz-2 text-pretty">
               {receta.titulo}
             </h2>
-            <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-2">
+
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-2">
               <span className="inline-flex items-center gap-1.5">
                 <IconoReloj tam={16} />
                 <span className="tabular-nums" data-numeric>
@@ -88,46 +214,80 @@ export function PanelReceta({
               <span className="tabular-nums" data-numeric>
                 {racion(factorRacion)}
               </span>
+              {/* El precio nunca se da exacto (docs/spec.md §9.1.5): sale del
+                  precio de los ingredientes, no de una compra real. Cuando el
+                  catálogo no lo sabe, no aparece: no hay nada que decir. */}
+              {coste != null && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span className="tabular-nums" data-numeric>
+                    {precioDeRacion(coste * factorRacion)}
+                  </span>
+                </>
+              )}
             </p>
-          </div>
 
-          <button
-            type="button"
-            onClick={alCerrar}
-            className={`${estilos.pulsable} grid size-11 shrink-0 place-items-center rounded-[var(--radius-sm)] text-text-2 hover:bg-surface-2 hover:text-text`}
-          >
-            <IconoCerrar />
-            <span className="sr-only">Cerrar la ficha</span>
-          </button>
+            {/* Aquí es donde iría la foto, y es lo que hace su trabajo: de qué
+                está hecho el plato, antes de leer un solo número. */}
+            {receta.ingredientes.length > 0 ? (
+              <>
+                <h3 id={idIngredientes} className="sr-only">
+                  Ingredientes
+                </h3>
+                <ul
+                  role="list"
+                  aria-labelledby={idIngredientes}
+                  className="mt-4 text-pretty text-[17px] leading-relaxed text-text-2 sm:text-[18px]"
+                >
+                  {receta.ingredientes.map((ingrediente, indice) => (
+                    <li key={ingrediente} className="inline">
+                      {ingrediente}
+                      {/* El punto medio va pegado a la palabra anterior con un
+                          espacio duro y suelto detrás: así nunca empieza una
+                          línea, que es como se lee un separador huérfano. */}
+                      {indice < receta.ingredientes.length - 1 && (
+                        <span aria-hidden="true" className="text-text-3">
+                          {" · "}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="mt-4 text-[15px] leading-relaxed text-text-2">
+                El catálogo no trae la lista de ingredientes de esta receta.
+              </p>
+            )}
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-          {/* Capa 1 y capa 2, en el mismo orden que en todas partes. */}
-          <p className="text-[15px] leading-snug text-text-2">{frase}</p>
-          <BarraReparto panel={panel} conclusion={frase} className="mt-3" />
-
-          <h3 className="mt-8 text-base font-semibold">Ingredientes</h3>
-          {receta.ingredientes.length > 0 ? (
-            <ul className="mt-3 flex flex-col gap-2">
-              {receta.ingredientes.map((ingrediente) => (
-                <li
-                  key={ingrediente}
-                  className="border-b border-line pb-2 text-[15px] last:border-0"
-                >
-                  {ingrediente}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-2 text-sm text-text-2">
-              El catálogo no trae la lista de ingredientes de esta receta.
+          {/* Trazabilidad de la revisión. Va arriba porque condiciona cómo hay
+              que leer todo lo que viene después (docs/spec.md: la revisión por
+              dietista es condición para publicar). Hoy sale en las 36 recetas
+              del catálogo, y eso es exactamente lo que hay que enseñar. */}
+          {receta.revisadaPor ? (
+            <p className="text-sm leading-relaxed text-text-2">
+              Ficha revisada por{" "}
+              <span className="font-medium text-text">{receta.revisadaPor}</span>.
             </p>
+          ) : (
+            <div className="flex items-start gap-2.5 rounded-[var(--radius)] bg-warning-soft p-3 text-warning">
+              <span className="mt-0.5 shrink-0">
+                <IconoAviso tam={18} />
+              </span>
+              <p className="text-sm leading-relaxed">
+                <span className="font-medium">Sin revisar por un dietista.</span>{" "}
+                Los valores están calculados a partir de los ingredientes del
+                catálogo; nadie los ha comprobado plato a plato todavía.
+              </p>
+            </div>
           )}
-          <p className="mt-3 text-sm leading-relaxed text-text-2">
-            Las cantidades por ingrediente y los pasos de elaboración todavía no
-            los expone el servicio: la ficha completa llega con la vista de
-            receta.
-          </p>
+
+          {/* Capa 1 y capa 2, en el mismo orden que en todas partes. */}
+          <p className="mt-6 text-[15px] leading-snug text-text-2">{frase}</p>
+          <BarraReparto panel={panel} conclusion={frase} className="mt-3" />
 
           <h3 className="mt-8 text-base font-semibold">Alérgenos declarados</h3>
           <p className="mt-2 text-[15px]">
@@ -135,74 +295,71 @@ export function PanelReceta({
               ? receta.alergenos.map(nombreAlergeno).join(", ")
               : "Ninguno de los catorce de declaración obligatoria."}
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-text-2">
-            Filtramos por los ingredientes declarados en nuestro catálogo. No
-            sustituye leer la etiqueta del producto que compres.
-          </p>
 
-          <div className="mt-8">
-            <TablaNutricional
-              encabezadoValor="Esta ración"
-              filas={[
-                {
-                  etiqueta: "Valor energético",
-                  valor: receta.conocido.kcal ? escalar(receta.porRacion.kcal) : null,
-                  unidad: "kcal",
-                },
-                {
-                  etiqueta: "Grasas",
-                  valor: receta.conocido.grasaG ? escalar(receta.porRacion.grasaG) : null,
+          {/* Capa 3, plegada y con memoria. La tabla completa es referencia: el
+              que la quiere la abre y se le recuerda abierta; el que no, no paga
+              su densidad en cada ficha que mira. */}
+          <div className="mt-8 border-t border-line pt-2">
+            <DetallePlegable tipo="ficha-receta" resumen="Ver tabla nutricional completa">
+              <TablaNutricional
+                encabezadoValor="Esta ración"
+                filas={[
+                  {
+                    etiqueta: "Valor energético",
+                    valor: receta.conocido.kcal ? escalar(receta.porRacion.kcal) : null,
+                    unidad: "kcal",
+                  },
+                  {
+                    etiqueta: "Grasas",
+                    valor: receta.conocido.grasaG ? escalar(receta.porRacion.grasaG) : null,
+                    unidad: "g",
+                  },
+                  {
+                    etiqueta: "Hidratos de carbono",
+                    valor: receta.conocido.carbohidratoG
+                      ? escalar(receta.porRacion.carbohidratoG)
+                      : null,
+                    unidad: "g",
+                  },
+                  {
+                    etiqueta: "Fibra alimentaria",
+                    valor: receta.conocido.fibraG ? escalar(receta.porRacion.fibraG) : null,
+                    unidad: "g",
+                  },
+                  {
+                    etiqueta: "Proteínas",
+                    valor: receta.conocido.proteinaG
+                      ? escalar(receta.porRacion.proteinaG)
+                      : null,
+                    unidad: "g",
+                  },
+                  {
+                    etiqueta: "Sal",
+                    // Conversión legal sal = sodio × 2,5 (Reg. UE 1169/2011).
+                    valor: receta.conocido.sodioMg
+                      ? (escalar(receta.porRacion.sodioMg) * 2.5) / 1000
+                      : null,
                   unidad: "g",
-                },
-                {
-                  etiqueta: "Hidratos de carbono",
-                  valor: receta.conocido.carbohidratoG
-                    ? escalar(receta.porRacion.carbohidratoG)
-                    : null,
-                  unidad: "g",
-                },
-                {
-                  etiqueta: "Fibra alimentaria",
-                  valor: receta.conocido.fibraG ? escalar(receta.porRacion.fibraG) : null,
-                  unidad: "g",
-                },
-                {
-                  etiqueta: "Proteínas",
-                  valor: receta.conocido.proteinaG
-                    ? escalar(receta.porRacion.proteinaG)
-                    : null,
-                  unidad: "g",
-                },
-                {
-                  etiqueta: "Sal",
-                  // Conversión legal sal = sodio × 2,5 (Reg. UE 1169/2011).
-                  valor: receta.conocido.sodioMg
-                    ? (escalar(receta.porRacion.sodioMg) * 2.5) / 1000
-                    : null,
-                  unidad: "g",
-                },
-              ]}
-              nota={
-                receta.revisadaPor
-                  ? `Ficha revisada por ${receta.revisadaPor}.`
-                  : "Esta receta todavía no la ha revisado un dietista. Los valores salen del cálculo sobre los ingredientes del catálogo."
-              }
-            />
+                  },
+                ]}
+              />
+            </DetallePlegable>
           </div>
 
-          {receta.porRacion.fibraG > 0 && (
-            <p className="mt-4 text-sm text-text-2">
-              Fibra de esta ración:{" "}
-              <span className="tabular-nums" data-numeric>
-                {gramos(escalar(receta.porRacion.fibraG))} g
-              </span>
-              .
-            </p>
-          )}
+          {/* Un solo descargo, al pie y sin plegar (§3.5, punto 9). Antes eran
+              tres párrafos repartidos por la ficha diciendo cada uno una parte
+              de lo mismo: densidad alta y ninguno se leía. */}
+          <p className="mt-8 border-t border-line pt-4 text-sm leading-relaxed text-text-3">
+            Los alérgenos salen de los ingredientes declarados en nuestro
+            catálogo y no sustituyen a leer la etiqueta del producto que compres.
+            Las cantidades por ingrediente y los pasos de elaboración están en el
+            catálogo original pero todavía no llegan hasta aquí: llegan con la
+            vista de receta completa.
+          </p>
         </div>
 
         {alCambiarReceta && (
-          <footer className="border-t border-line p-4 sm:p-6">
+          <footer className="shrink-0 border-t border-line p-4 sm:p-6">
             <button
               type="button"
               onClick={() => {

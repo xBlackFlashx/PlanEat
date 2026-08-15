@@ -10,7 +10,8 @@
     ".": "./src/index.ts",
     "./worker": "./src/worker/motor.worker.ts",
     "./cliente": "./src/worker/cliente.ts",
-    "./catalogo-compilado": "./datos/catalogo-compilado.json"
+    "./catalogo-compilado": "./datos/catalogo-compilado.json",
+    "./recetas-vista": "./datos/recetas-vista.json"
   },
   "scripts": {
     "test": "node --test 'pruebas/**/*.test.ts'",

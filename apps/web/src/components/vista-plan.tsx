@@ -17,7 +17,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ObjetivoNutricional } from "@planeat/shared";
 
-import { aParametros, slotsDe } from "@/lib/perfil";
+import { useGeneracion } from "@/lib/generar";
+import { slotsDe } from "@/lib/perfil";
 import type { AjustesObjetivo, DatosFormulario } from "@/lib/perfil";
 import type { ResultadoPlan } from "@/lib/tipos";
 
@@ -27,15 +28,21 @@ import { SinServicio } from "./sin-servicio";
 import { SobreRestriccion } from "./sobre-restriccion";
 import estilos from "./planeat.module.css";
 
-/** Por debajo de esto no se monta esqueleto: parpadearía. */
-const MS_ANTES_DEL_ESQUELETO = 400;
-
 interface PropsVistaPlan {
   datos: DatosFormulario;
   resultado: ResultadoPlan;
   objetivo: ObjetivoNutricional;
   /** Compás 4: sólo cuando el plan acaba de generarse ante los ojos del usuario. */
   animarCuadre?: boolean;
+  /**
+   * Aviso de que hay un plan nuevo, con la semilla que lo produjo.
+   *
+   * Lo usa `/plan` para escribir el `seed` en la URL: un plan concreto sólo es
+   * compartible si el enlace lleva la semilla que lo generó. La portada no lo
+   * pasa, porque allí no hay URL que actualizar (y cambiarla sería justo la
+   * navegación que esa pantalla evita a propósito).
+   */
+  alGenerar?: (seed: string) => void;
 }
 
 export function VistaPlan({
@@ -43,15 +50,16 @@ export function VistaPlan({
   resultado: resultadoInicial,
   objetivo: objetivoInicial,
   animarCuadre = false,
+  alGenerar,
 }: PropsVistaPlan) {
   const [resultado, setResultado] = useState(resultadoInicial);
   const [objetivo, setObjetivo] = useState(objetivoInicial);
-  const [regenerando, setRegenerando] = useState(false);
-  const [mostrarEsqueleto, setMostrarEsqueleto] = useState(false);
   const [aviso, setAviso] = useState("");
   const [recienGenerado, setRecienGenerado] = useState(animarCuadre);
   /** El día anterior, para poder deshacer. Nada generado es inmutable. */
   const [anterior, setAnterior] = useState<ResultadoPlan | null>(null);
+
+  const { generando, mostrarEsqueleto, progreso, generar } = useGeneracion();
 
   // Lo ya visto se penaliza por repetición en la siguiente petición.
   const vistas = useRef<string[]>([]);
@@ -73,62 +81,30 @@ export function VistaPlan({
         ajustesAcumulados.current = { ...ajustesAcumulados.current, ...opciones.ajustes };
       }
 
-      setRegenerando(true);
       setAviso("Montando tu día.");
-      const temporizador = window.setTimeout(
-        () => setMostrarEsqueleto(true),
-        MS_ANTES_DEL_ESQUELETO,
+
+      // Sin `seed`: pedir otro día es pedir *otro*, así que la semilla la
+      // sortea el motor. La que salga vuelve en el resultado y se publica por
+      // `alGenerar`, que es lo que mantiene la URL compartible al día.
+      const { resultado: generado, objetivo: usado } = await generar({
+        datos,
+        recetasRecientes: vistas.current,
+        ajustes: ajustesAcumulados.current,
+      });
+
+      // Sólo se puede deshacer hacia un día que existió de verdad.
+      setAnterior(resultado.estado === "ok" ? resultado : null);
+      setResultado(generado);
+      setRecienGenerado(true);
+      setObjetivo(usado);
+      setAviso(
+        generado.estado === "ok"
+          ? opciones.mensaje ?? "Listo, tienes otro día."
+          : "No he podido montar el día.",
       );
-
-      try {
-        const respuesta = await fetch("/api/plan", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            campos: Object.fromEntries(aParametros(datos)),
-            recetasRecientes: vistas.current,
-            ajustes: ajustesAcumulados.current,
-          }),
-        });
-
-        const cuerpo = (await respuesta.json()) as {
-          resultado?: ResultadoPlan;
-          objetivo?: ObjetivoNutricional;
-        };
-
-        if (cuerpo.resultado) {
-          // Sólo se puede deshacer hacia un día que existió de verdad.
-          setAnterior(resultado.estado === "ok" ? resultado : null);
-          setResultado(cuerpo.resultado);
-          setRecienGenerado(true);
-          if (cuerpo.objetivo) setObjetivo(cuerpo.objetivo);
-          setAviso(
-            cuerpo.resultado.estado === "ok"
-              ? opciones.mensaje ?? "Listo, tienes otro día."
-              : "No he podido montar el día.",
-          );
-        } else {
-          setResultado({
-            estado: "sin_servicio",
-            motivo: "respuesta_ilegible",
-            detalle: `El proxy ha devuelto un ${respuesta.status} sin resultado.`,
-          });
-          setAviso("No he podido montar el día.");
-        }
-      } catch {
-        setResultado({
-          estado: "sin_servicio",
-          motivo: "sin_conexion",
-          detalle: "La petición al proxy no ha llegado a salir del navegador.",
-        });
-        setAviso("No he podido conectar.");
-      } finally {
-        window.clearTimeout(temporizador);
-        setMostrarEsqueleto(false);
-        setRegenerando(false);
-      }
+      if (generado.estado === "ok") alGenerar?.(generado.seed);
     },
-    [datos, resultado],
+    [alGenerar, datos, generar, resultado],
   );
 
   // El aviso se retira solo: 7 s cuando lleva [Deshacer], 5 s cuando no.
@@ -166,7 +142,7 @@ export function VistaPlan({
       </div>
 
       {mostrarEsqueleto ? (
-        <EstadoGeneracion slots={slotsDe(datos)} />
+        <EstadoGeneracion slots={slotsDe(datos)} progreso={progreso} objetivo={objetivo} />
       ) : resultado.estado === "ok" ? (
         <div className={estilos.aparicion}>
           {resultado.dias.map((dia, indice) => (
@@ -176,7 +152,7 @@ export function VistaPlan({
               recetas={resultado.recetas}
               catalogoDisponible={resultado.catalogoDisponible}
               animarCuadre={recienGenerado}
-              regenerando={regenerando}
+              regenerando={generando}
               alCambiarReceta={(recetaId) =>
                 pedirPlan({
                   evitar: recetaId,
@@ -201,7 +177,7 @@ export function VistaPlan({
           objetivo={objetivo}
           datos={datos}
           totalCatalogo={resultado.totalCatalogo}
-          ocupado={regenerando}
+          ocupado={generando}
           alAplicar={(ajustes) =>
             pedirPlan({ ajustes, mensaje: "Vuelvo a intentarlo con ese cambio." })
           }
@@ -210,7 +186,7 @@ export function VistaPlan({
         <SinServicio
           motivo={resultado.motivo}
           detalle={resultado.detalle}
-          ocupado={regenerando}
+          ocupado={generando}
           alReintentar={() => pedirPlan({})}
         />
       )}

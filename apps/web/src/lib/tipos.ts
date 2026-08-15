@@ -2,47 +2,35 @@
  * Tipos de la interfaz que no están en el contrato compartido.
  *
  * El contrato (`@planeat/shared`) devuelve `recetaId`, no recetas. La interfaz
- * necesita el título y el tiempo para poder dibujar un día, así que el proxy
- * enriquece la respuesta con un resumen de cada receta leído del catálogo. Si
- * el catálogo no está disponible, `recetas` viene vacío y la vista lo dice: no
- * se inventa ni un título ni una cifra.
+ * necesita el título y el tiempo para poder dibujar un día, así que el motor
+ * enriquece la respuesta con un resumen de cada receta sacado del catálogo de
+ * presentación (`packages/motor/datos/recetas-vista.json`). Si esa vista no
+ * está disponible, `recetas` viene vacío y la pantalla lo dice: no se inventa
+ * ni un título ni una cifra.
+ *
+ * Antes del port, `RecetaResumen` se declaraba aquí y el servidor la construía
+ * leyendo el catálogo del solver del disco. Ahora la misma forma vive en el
+ * motor, que es quien la compila: se **reexporta**, no se vuelve a escribir.
+ * Dos declaraciones estructuralmente idénticas compilan sin quejarse y
+ * divergen el día que una gana un campo.
  */
 
-import type { DiaPlan, FalloGeneracion, SlotComida } from "@planeat/shared";
+import type { DiaPlan, FalloGeneracion } from "@planeat/shared";
+import type { RecetaVista } from "@planeat/motor";
 
 /** Lo que la interfaz necesita saber de una receta para dibujarla. */
-export interface RecetaResumen {
-  id: string;
-  titulo: string;
-  minutos: number;
-  slots: SlotComida[];
-  alergenos: string[];
-  /** Nombres legibles de los ingredientes, ya resueltos. */
-  ingredientes: string[];
-  /** Por ración base. La ración servida es esto por `factorRacion`. */
-  porRacion: {
-    kcal: number;
-    proteinaG: number;
-    carbohidratoG: number;
-    grasaG: number;
-    fibraG: number;
-    sodioMg: number;
-  };
-  /** Marca por nutriente: `false` significa "no lo sé", no "cero". */
-  conocido: {
-    kcal: boolean;
-    proteinaG: boolean;
-    carbohidratoG: boolean;
-    grasaG: boolean;
-    fibraG: boolean;
-    sodioMg: boolean;
-  };
-  costeCents: number | null;
-  /** Trazabilidad de la revisión por dietista. Hoy es `null` en todo el catálogo. */
-  revisadaPor: string | null;
-}
+export type RecetaResumen = RecetaVista;
 
-/** Por qué no hay plan cuando no lo hay por causas nuestras, no del usuario. */
+/**
+ * Por qué no hay plan cuando no lo hay por causas nuestras, no del usuario.
+ *
+ * Sin backend, el motor sólo puede fallar de dos maneras (`error_motor` y
+ * `tiempo_agotado`, ver `@planeat/motor`), y aquí se traducen a `error_solver`
+ * y `tiempo_agotado`. Los otros tres describían modos de fallo de un `fetch`
+ * que ya no existe y **se conservan a propósito**: `sin-servicio.tsx` tiene un
+ * `Record<MotivoSinServicio, …>` exhaustivo con su texto escrito, y borrarlos
+ * de aquí sería romper un fichero de otro para ahorrar tres líneas muertas.
+ */
 export type MotivoSinServicio =
   | "sin_conexion"
   | "motor_no_implementado"
@@ -54,9 +42,12 @@ export type MotivoSinServicio =
  * Resultado de pedir un plan. Tres desenlaces, y son distintos entre sí:
  *
  * · `ok` — hay día.
- * · `sobre_restriccion` — el solver ha contestado que no llega. **No es un
+ * · `sobre_restriccion` — el motor ha contestado que no llega. **No es un
  *   error**: es un resultado, y tiene pantalla propia.
  * · `sin_servicio` — el fallo es nuestro. Se dice tal cual, sin datos falsos.
+ *
+ * El motor distingue un cuarto desenlace (`objetivo_invalido`) que aquí no
+ * aparece, y no por descuido: ver `aResultadoDeVista` en `solver.ts`.
  */
 export type ResultadoPlan =
   | {
@@ -66,6 +57,12 @@ export type ResultadoPlan =
       recetas: Record<string, RecetaResumen>;
       /** Falso cuando no se ha podido leer el catálogo: la vista lo refleja. */
       catalogoDisponible: boolean;
+      /**
+       * Semilla con la que se generó, en decimal y como **cadena**: son 63 bits
+       * y un `number` sólo garantiza 53. Es lo que hace que un plan concreto se
+       * pueda volver a generar, y por eso viaja a la query de `/plan`.
+       */
+      seed: string;
     }
   | {
       estado: "sobre_restriccion";

@@ -1,29 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
-import { VistaPlan } from "@/components/vista-plan";
-import { fechaLarga } from "@/lib/formato";
-import {
-  calcularObjetivoDelDia,
-  construirSolicitud,
-  hayErrores,
-  leerFormulario,
-  validar,
-} from "@/lib/perfil";
-import { generarPlan } from "@/lib/solver";
+
+import { PlanCliente } from "./plan-cliente";
 
 /**
- * Vista del plan del día, renderizada en servidor.
+ * Vista del plan del día.
  *
- * Es el destino del formulario de la portada cuando no hay JavaScript, y es
- * también una URL compartible: el perfil viaja en la query, así que el mismo
- * enlace devuelve el mismo tipo de día. No hay sesión ni base de datos todavía;
- * cuando las haya, esta página leerá el plan guardado y la query se quedará
- * como camino de entrada sin cuenta.
+ * Sigue siendo una **URL compartible**, y eso es producto, no implementación:
+ * el perfil viaja en la query, así que el mismo enlace devuelve el mismo tipo
+ * de día. Con el motor en el navegador se añade el `seed`, que lo hace además
+ * *reproducible*: mismo enlace, mismo plan, receta por receta. No hay sesión ni
+ * base de datos todavía; cuando las haya, esta página leerá el plan guardado y
+ * la query se quedará como camino de entrada sin cuenta.
  *
- * El trabajo pesado ocurre aquí, en el servidor: se calcula el objetivo, se
- * pide el plan al motor y se adjunta el catálogo. El cliente sólo recibe datos.
+ * Lo que ha cambiado con el port: el trabajo pesado ya no ocurre en el
+ * servidor, porque no hay servidor. Este fichero es el cascarón estático —lo
+ * único que se puede prerenderizar sin conocer la query— y todo lo que depende
+ * de ella baja a `plan-cliente.tsx`.
+ *
+ * El reparto no es de gusto: `export const metadata` y `"use client"` no pueden
+ * convivir en el mismo fichero, y `useSearchParams()` sin frontera de
+ * `<Suspense>` hace fallar el build con `output: "export"`.
  */
 
 export const metadata: Metadata = {
@@ -31,23 +31,7 @@ export const metadata: Metadata = {
   description: "Un día completo de comidas que cuadra con tus objetivos.",
 };
 
-/** La query cambia en cada visita: esta página nunca se prerrenderiza. */
-export const dynamic = "force-dynamic";
-
-export default async function PaginaPlan({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const crudos = await searchParams;
-  const datos = leerFormulario(crudos);
-  const errores = validar(datos);
-  const { objetivo } = calcularObjetivoDelDia(datos);
-
-  const resultado = hayErrores(errores)
-    ? null
-    : await generarPlan(construirSolicitud(datos));
-
+export default function PaginaPlan() {
   return (
     <div className="flex min-h-full flex-col">
       <header className="border-b border-line">
@@ -63,36 +47,37 @@ export default async function PaginaPlan({
       </header>
 
       <main className="mx-auto w-full max-w-[1120px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        {resultado == null ? (
+        {/*
+          Sin JavaScript no hay plan, y se dice. Antes esta página se
+          renderizaba en el servidor y el formulario de la portada funcionaba
+          por GET de principio a fin; el motor vive ahora en el navegador y ese
+          camino ha muerto. Lo que no se hace es quedarse en blanco ni enseñar
+          un día de ejemplo: eso sería exactamente la mentira que el resto del
+          producto se niega a contar.
+
+          Va antes que el `<Suspense>` para que sea lo primero que se lee, y
+          fuera del árbol de cliente para que exista en el HTML estático.
+        */}
+        <noscript>
           <section className="mx-auto max-w-xl rounded-[var(--radius-lg)] bg-surface p-6 sm:p-8">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Me falta algún dato para montar el día.
+              Necesito JavaScript para montar tu día.
             </h1>
-            <ul className="mt-4 flex flex-col gap-2">
-              {Object.entries(errores).map(([campo, mensaje]) => (
-                <li key={campo} className="text-[15px] leading-snug text-danger">
-                  {mensaje}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/"
-              className="mt-6 inline-flex min-h-12 items-center rounded-[var(--radius)] bg-brand px-5 font-medium text-on-brand hover:bg-brand-hover"
-            >
-              Volver al generador
-            </Link>
+            <p className="mt-3 text-[17px] leading-relaxed text-text-2">
+              El motor que calcula el plan corre aquí, en tu navegador: no hay
+              servidor que lo haga por ti. Sin JavaScript no puedo generarlo, y
+              prefiero decírtelo a enseñarte un día inventado.
+            </p>
+            <p className="mt-3 text-[17px] leading-relaxed text-text-2">
+              Tus datos no se pierden: están en la dirección de esta página. Si
+              activas JavaScript y recargas, el día sale.
+            </p>
           </section>
-        ) : (
-          <>
-            <h1 className="sr-only">
-              Tu día
-              {resultado.estado === "ok" && resultado.dias[0]
-                ? `: ${fechaLarga(resultado.dias[0].fecha)}`
-                : ""}
-            </h1>
-            <VistaPlan datos={datos} resultado={resultado} objetivo={objetivo} />
-          </>
-        )}
+        </noscript>
+
+        <Suspense fallback={<EsperandoLaQuery />}>
+          <PlanCliente />
+        </Suspense>
       </main>
 
       <footer className="border-t border-line">
@@ -107,4 +92,14 @@ export default async function PaginaPlan({
       </footer>
     </div>
   );
+}
+
+/**
+ * Lo que se ve entre que llega el HTML estático y React lee la query. Son
+ * milisegundos, así que no monta el estado de generación —que es la forma del
+ * día del usuario y aquí todavía no se sabe cuál es—, sólo reserva el sitio
+ * para que no haya salto de layout.
+ */
+function EsperandoLaQuery() {
+  return <div aria-hidden="true" className="min-h-[420px]" />;
 }

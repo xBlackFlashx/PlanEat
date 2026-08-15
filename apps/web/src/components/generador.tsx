@@ -11,10 +11,17 @@
  *
  * Decisiones que no son de estilo:
  *
- * · **Es un formulario de verdad.** `<form method="get" action="/plan">` con
- *   `<label>` reales asociados a cada campo. Sin JavaScript envía por GET y el
- *   servidor devuelve el día renderizado. Esto es un producto que se busca en
- *   Google: tiene que funcionar sin JS.
+ * · **Es un formulario de verdad.** `<form method="get" action="…/plan/">` con
+ *   `<label>` reales asociados a cada campo. Con JavaScript el día se genera
+ *   aquí mismo, sin salir de la página; sin JavaScript el navegador envía por
+ *   GET y aterriza en `/plan` con el perfil en la URL.
+ *
+ *   Eso ya no devuelve un plan, y hay que decirlo con todas las letras: desde
+ *   que el motor corre en el navegador (`packages/motor`) no hay servidor que
+ *   pueda montar el día, así que `/plan` sin JavaScript enseña un `<noscript>`
+ *   que lo explica. Se conserva el envío por GET porque llevar al usuario a una
+ *   página que le dice la verdad —con sus datos ya en la URL, listos para
+ *   cuando active JavaScript— es mejor que un botón que no hace nada.
  * · **Los campos vienen rellenos con valores medianos.** El usuario corrige, no
  *   rellena. Eso quita el pánico de la página en blanco y hace que el botón sea
  *   pulsable desde el primer instante.
@@ -30,13 +37,13 @@ import { useId, useRef, useState } from "react";
 import type { ObjetivoNutricional } from "@planeat/shared";
 
 import { kcal as formatearKcal } from "@/lib/formato";
+import { useGeneracion } from "@/lib/generar";
 import {
   ACTIVIDADES,
   DIETAS,
   FORMULARIO_POR_DEFECTO,
   OBJETIVOS,
   SEXOS,
-  aParametros,
   calcularObjetivoDelDia,
   hayErrores,
   slotsDe,
@@ -45,13 +52,12 @@ import {
   type DatosFormulario,
   type ErroresFormulario,
 } from "@/lib/perfil";
+import { rutaDe } from "@/lib/rutas";
 import type { ResultadoPlan } from "@/lib/tipos";
 
 import { EstadoGeneracion } from "./estado-generacion";
 import estilos from "./planeat.module.css";
 import { VistaPlan } from "./vista-plan";
-
-const MS_ANTES_DEL_ESQUELETO = 400;
 
 type Fase = "formulario" | "esperando" | "resultado";
 
@@ -60,9 +66,9 @@ export function Generador() {
   const [datos, setDatos] = useState<DatosFormulario>(FORMULARIO_POR_DEFECTO);
   const [errores, setErrores] = useState<ErroresFormulario>({});
   const [fase, setFase] = useState<Fase>("formulario");
-  const [mostrarEsqueleto, setMostrarEsqueleto] = useState(false);
   const [resultado, setResultado] = useState<ResultadoPlan | null>(null);
   const [objetivo, setObjetivo] = useState<ObjetivoNutricional | null>(null);
+  const { mostrarEsqueleto, progreso, generar } = useGeneracion();
 
   const formulario = useRef<HTMLFormElement>(null);
   const zonaResultado = useRef<HTMLDivElement>(null);
@@ -97,52 +103,17 @@ export function Generador() {
     }
 
     setFase("esperando");
-    const temporizador = window.setTimeout(
-      () => setMostrarEsqueleto(true),
-      MS_ANTES_DEL_ESQUELETO,
-    );
 
-    try {
-      const respuesta = await fetch("/api/plan", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ campos: Object.fromEntries(aParametros(datos)) }),
-      });
-      const cuerpo = (await respuesta.json()) as {
-        resultado?: ResultadoPlan;
-        objetivo?: ObjetivoNutricional;
-        errores?: ErroresFormulario;
-      };
+    // `generar` no lanza: todo desenlace, incluido el fallo del motor, vuelve
+    // como un `ResultadoPlan`. Por eso aquí no hay `try`: no habría nada que
+    // capturar, y un `catch` vacío sólo serviría para esconder un fallo real.
+    const { resultado: generado, objetivo: usado } = await generar({ datos });
 
-      if (cuerpo.errores) {
-        setErrores(cuerpo.errores);
-        setFase("formulario");
-        return;
-      }
-
-      setResultado(
-        cuerpo.resultado ?? {
-          estado: "sin_servicio",
-          motivo: "respuesta_ilegible",
-          detalle: `El proxy ha devuelto un ${respuesta.status} sin resultado.`,
-        },
-      );
-      setObjetivo(cuerpo.objetivo ?? objetivoPrevisto);
-      setFase("resultado");
-      // Tras cambiar de vista, el foco va al contenido nuevo.
-      window.requestAnimationFrame(() => zonaResultado.current?.focus());
-    } catch {
-      setResultado({
-        estado: "sin_servicio",
-        motivo: "sin_conexion",
-        detalle: "La petición no ha llegado a salir del navegador.",
-      });
-      setObjetivo(objetivoPrevisto);
-      setFase("resultado");
-    } finally {
-      window.clearTimeout(temporizador);
-      setMostrarEsqueleto(false);
-    }
+    setResultado(generado);
+    setObjetivo(usado);
+    setFase("resultado");
+    // Tras cambiar de vista, el foco va al contenido nuevo.
+    window.requestAnimationFrame(() => zonaResultado.current?.focus());
   };
 
   const idDe = (campo: string) => `${idBase}-${campo}`;
@@ -155,7 +126,7 @@ export function Generador() {
       <form
         ref={formulario}
         method="get"
-        action="/plan"
+        action={rutaDe("/plan")}
         onSubmit={enviar}
         className="rounded-[var(--radius-lg)] bg-surface p-5 sm:p-8"
       >
@@ -305,7 +276,9 @@ export function Generador() {
       {/* El resultado se monta aquí, en el sitio exacto donde va a aparecer.
           No hay navegación, no hay cambio de URL, no hay salto de layout. */}
       <div ref={zonaResultado} tabIndex={-1} className="scroll-mt-6 outline-none">
-        {mostrarEsqueleto && <EstadoGeneracion slots={slotsDe(datos)} />}
+        {mostrarEsqueleto && (
+          <EstadoGeneracion slots={slotsDe(datos)} progreso={progreso} objetivo={objetivoPrevisto} />
+        )}
 
         {fase === "resultado" && resultado && objetivo && (
           <VistaPlan
@@ -402,10 +375,16 @@ function CampoElegir({ id, name, etiqueta, valor, opciones, alCambiar }: PropsCa
           arrastraba el ancho de "bajo en carbohidratos" y dejaba un subrayado
           suelto en mitad de la frase. Este gemelo invisible lleva el texto de la
           opción elegida y es quien fija el ancho de la celda; el select se
-          estira encima. Efecto: el subrayado mide lo que mide la palabra. */}
+          estira encima. Efecto: el subrayado mide lo que mide la palabra.
+
+          `invisible` es `visibility: hidden`, no `display: none` ni `opacity: 0`,
+          y las tres cosas son distintas aquí: sin ocupar espacio no dimensiona
+          nada, y siendo transparente se seguiría viendo el texto duplicado
+          detrás del select. Faltaba, y el resultado era que cada campo de la
+          portada enseñaba su valor dos veces, ligeramente desplazado. */}
       <span
         aria-hidden="true"
-        className="col-start-1 row-start-1 h-11 whitespace-pre pr-5 font-semibold leading-[2.75rem]"
+        className="invisible col-start-1 row-start-1 h-11 whitespace-pre pr-5 font-semibold leading-[2.75rem]"
       >
         {opciones.find((opcion) => opcion.valor === valor)?.etiqueta ?? ""}
       </span>

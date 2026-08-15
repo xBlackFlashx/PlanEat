@@ -5,7 +5,7 @@ se anota aquí en lugar de borrarla — el historial de lo descartado vale tanto
 como lo elegido.
 
 Los tokens viven en `apps/web/src/app/globals.css`. Ningún componente declara un
-color literal.
+color literal. La referencia viva es `/sistema`.
 
 ---
 
@@ -66,11 +66,27 @@ reservado en exclusiva a error.
 ## Números tabulares, siempre
 
 Toda cifra nutricional o de precio lleva `font-variant-numeric: tabular-nums`,
-aplicado por la clase `.tnum`, por `[data-numeric]` y por defecto en tablas.
+aplicado por la clase `.tnum`, por `[data-numeric]`, por defecto en tablas y por
+la utilidad `.cifra`, que además pone el peso 600.
 
 Sin esto, las columnas de gramos se desplazan lateralmente al actualizarse y el
 producto se ve amateur en el momento exacto en que el usuario está evaluando si
 confiar en los números.
+
+**Medido, no supuesto** (Chrome sin cabeza sobre el sitio ya construido, Geist a
+15 px, anchura del texto):
+
+| Texto | Con `tabular-nums` | Sin ella |
+|---|---|---|
+| `1111111111` | 90,00 px | 52,20 px |
+| `0000000000` | 90,00 px | 100,81 px |
+| `1.111 kcal` | 71,25 px | 55,88 px |
+| `1.847 kcal` | 71,25 px | 66,70 px |
+
+Es decir: dos valores consecutivos de la misma celda cambian de anchura casi
+11 px al actualizarse si la fuente no aplica `tnum`. `/sistema` enseña las
+cuatro filas juntas para que el fallo sea visible y no haya que fiarse de esta
+tabla.
 
 ## Barra apilada, nunca donut
 
@@ -91,33 +107,240 @@ No es una preferencia estética. La app se usa en la cocina, de noche y con el
 móvil en la mano. Retrofitear un tema oscuro sobre componentes que asumen fondo
 claro cuesta aproximadamente el triple que construirlo desde el inicio.
 
-El patrón implementado cubre los tres estados reales del usuario:
+El patrón cubre los tres estados reales del usuario, y la regla que los ordena
+es que **la elección explícita gana sobre el sistema en ambas direcciones**.
 
-1. `:root` define la paleta clara completa.
-2. `@media (prefers-color-scheme: dark)` la redefine, acotado con
-   `:root:not([data-theme="light"])` para que una elección explícita de claro
-   gane sobre el sistema.
-3. `:root[data-theme="dark"]` la redefine de nuevo para que el interruptor gane
-   en la otra dirección.
+### Cómo se implementa (revisado)
+
+La primera versión usaba tres bloques de declaraciones: `:root` con la paleta
+clara, un `@media (prefers-color-scheme: dark)` acotado con
+`:root:not([data-theme="light"])`, y un `:root[data-theme="dark"]`. Funcionaba,
+pero los dos últimos eran **34 líneas duplicadas carácter a carácter**:
+cualquier retoque de un color oscuro había que hacerlo dos veces y nada lo
+verificaba.
+
+Ahora la paleta se escribe **una sola vez** con `light-dark()`, y los tres
+estados son tres declaraciones de `color-scheme`:
+
+| Estado | `color-scheme` | Resultado |
+|---|---|---|
+| Sin `data-theme` | `light dark` | manda el sistema |
+| `data-theme="light"` | `light` | gana la elección, aunque el sistema esté en oscuro |
+| `data-theme="dark"` | `dark` | gana la elección, aunque el sistema esté en claro |
+
+El patrón de tres estados queda intacto — es literalmente el mismo, expresado en
+tres líneas en vez de en tres bloques.
+
+**Y resuelve de paso un defecto que estaba en la primera pantalla:** no había
+ninguna declaración de `color-scheme`. Sin ella, los controles nativos —la rueda
+del `<select>` del generador, las barras de scroll, el autofill— se pintaban en
+claro sobre el tema oscuro. El `<select>` nativo se eligió precisamente porque
+abre la rueda del sistema; había que decirle al sistema de qué color es.
+
+**Descartado:**
+
+- *Dejar los dos bloques duplicados con un comentario cruzado.* Es lo que
+  proponía la auditoría como mínimo aceptable. Se descarta porque un comentario
+  no impide el olvido: sigue siendo un cambio que hay que hacer dos veces.
+- *Extraer la paleta oscura a un fichero importado dos veces.* Quita la
+  duplicación en el fuente pero no en la salida, y añade un fichero cuyo único
+  motivo de existir es una limitación de la cascada.
+- *La variante `dark:` de Tailwind.* Sólo mira `prefers-color-scheme`, así que
+  ignoraría la elección explícita. No se usa en ningún componente y no debe
+  usarse: todo color sale de un token, y el token ya sabe en qué tema está.
+
+**Lo que se paga y hay que saber:** `light-dark()` es Baseline desde 2024
+(Chrome 123, Safari 17.5, Firefox 120). En un navegador anterior los colores
+quedan sin valor y la página se ve sin estilar, no medio estilada. Es un riesgo
+asumido para un producto que se publica en 2026; si algún día hay que soportar
+navegadores de 2023, la salida es volver a los dos bloques duplicados, no un
+apaño intermedio.
+
+**Verificado** en Chrome sin cabeza sobre el sitio ya exportado, midiendo el
+color calculado en los cuatro cruces posibles de sistema × elección: los cuatro
+dan el fondo, el texto, el acento y la sombra correctos, y `color-mix()`
+—que Tailwind usa para `bg-surface/95`— resuelve bien con `light-dark()` dentro.
 
 El script de `layout.tsx` aplica el tema guardado antes del primer pintado; sin
 él, quien tenga elegido oscuro ve un destello claro en cada carga.
 
+## Tipografía: Geist para el trabajo, Instrument Serif para la voz
+
+**Decidida.** Antes estaba en "pendiente de decidir" con Geist puesta por
+defecto del andamiaje de Next. `diseno-producto.md` §2.2 ya había razonado el
+reparto; aquí se cierra con las comprobaciones que faltaban y se implementa.
+
+| Papel | Fuente | Uso exacto |
+|---|---|---|
+| **Trabajo** | Geist (variable, 100–900) | Toda la interfaz, todo el cuerpo, **todos los números** |
+| **Voz** | Instrument Serif 400 + itálica | Sólo cuatro sitios: H1 de portada, título de ficha de receta, titular de sobre-restricción y su cifra héroe |
+
+Las restricciones que mandaban sobre el gusto, y cómo las cumple cada una:
+
+1. **Números tabulares de verdad.** Es la que decide. Geist trae la feature
+   OpenType `tnum` y sustituye cada dígito por su variante `.tf` de 600/1000 em;
+   sus cifras por defecto son proporcionales (el «1» mide 384 y el «0» 663). Sin
+   esa tabla, `font-variant-numeric: tabular-nums` no haría nada y toda la regla
+   de la sección anterior sería decorativa. Comprobado sobre el fichero de la
+   fuente y medido después en el navegador.
+2. **Licencia libre y servible desde `next/font` sin coste ni gestión.** Las dos
+   son **OFL 1.1**, y esta vez verificado en el repositorio oficial y no sólo en
+   la ficha de Google Fonts: `github.com/vercel/geist-font` y
+   `github.com/Instrument/instrument-serif`, que trae su `OFL.txt`. Esto cierra
+   el pendiente C.1 de `diseno-producto.md`, que pedía exactamente esta
+   comprobación antes de producir material de marketing. Ambas se autoalojan en
+   `_next/static/media`: el sitio publicado no pide nada a un tercero, que es
+   requisito para un export estático en Pages.
+3. **Legible a 13–15 px en móvil**, que es el tamaño real de la tabla
+   nutricional. Geist es una grotesca de altura de x alta pensada para interfaz;
+   es donde mejor está.
+4. **Castellano completo.** Comprobado sobre los ficheros servidos: ambas cubren
+   `á é í ó ú ü ñ` y sus mayúsculas, y además `¿ ¡ « » — €`.
+
+**Descartado:**
+
+- *Söhne.* **Es de pago, y no se justifica antes de tener ingresos.** Con esas
+  palabras, porque es la mejor de las candidatas y el motivo del descarte es
+  presupuestario, no técnico: si algún día hay presupuesto, es la primera a la
+  que volver.
+- *Playfair Display.* Lee a boda. Contraste alto y ductus de invitación.
+- *Calistoga.* Lee a cartel de food truck.
+- *Sólo Geist.* Funciona y es la opción segura, pero el producto queda correcto
+  y sin memoria: la portada no se distingue de cualquier SaaS. La carencia de
+  calidez de Geist se resuelve con **una sola voz en un puñado de sitios**, no
+  cambiando la fuente que lleva los datos.
+- *Newsreader*, que `diseno-producto.md` guardaba como sustituta si la licencia
+  de Instrument Serif no encajaba. Ya no hace falta: la licencia encaja.
+
+**Geist Mono se retira.** Se cargaba en todas las rutas y su único uso en todo
+`src/` era una etiqueta `<code>` de `/sistema`: una familia entera descargada en
+la portada para una página interna. `--font-mono` cae ahora en la mono del
+sistema, que para nombres de token es exactamente igual de buena. §2.2 la
+reservaba para "códigos de plan en soporte"; cuando eso exista, se vuelve a
+cargar y se anota aquí.
+
+### Escala tipográfica: once tokens, una clase por token
+
+Los once tokens de §2.2 (`voz-1`, `voz-2`, `t-1`, `t-2`, `t-3`, `cuerpo`,
+`cuerpo-sm`, `etiqueta`, `micro`, `cifra-heroe`, `cifra`) existen ahora como
+utilidades con el nombre exacto de la tabla. Antes no existían y cada componente
+inventaba su tamaño con un valor arbitrario: `text-[34px]`, `text-[17px]`,
+`text-[15px]` en siete sitios, `text-[13px]`, `text-[19px]`…
+
+Son `@utility` y no claves `--text-*` de Tailwind porque cuatro de ellos llevan
+algo que una clave `--text-*` no sabe expresar: la familia serif de la voz, la
+versal de `micro` y los números tabulares de las cifras. Partirlos en "una clave
+para el tamaño y una clase para lo demás" daba dos vocabularios para lo mismo y
+garantizaba que alguien usara la mitad.
+
+**Desviación consciente:** la tabla de §2.2 da dos columnas, móvil y escritorio.
+Aquí el tamaño es fluido con `clamp()` entre esos dos valores exactos,
+interpolando de 375 px a 1024 px de ancho de ventana. El motivo es práctico: con
+dos columnas cada componente tendría que escribir `t-1 sm:t-1-escritorio`, que
+es justo la verbosidad que veníamos a quitar, y basta que alguien olvide la
+mitad para que la escala se rompa en silencio. Los extremos son los de la tabla
+—comprobados en navegador a 375, 1024 y 1440 px—; lo que cambia es que entre
+medias interpola en vez de saltar. La parte fija va en `rem` para que el texto
+siga respondiendo al tamaño de fuente del navegador (WCAG 1.4.4).
+
+**`micro` usa versal, no versalita.** §2.2 pedía versalita. Geist **no trae
+tabla `smcp`** — comprobado sobre el fichero de la fuente: sus features son
+`aalt case ccmp dlig dnom frac liga locl numr ordn pnum sinf ss01…ss11 subs sups
+tnum`. Sin `smcp`, `font-variant-caps` sólo puede sintetizar la versalita
+escalando las mayúsculas, y a 12 px eso se ve sucio y desigual. Se usa versal con
+tracking abierto, que es lo que la versalita venía a conseguir aquí: distinguir
+la cabecera de sección sin subir de tamaño. Si algún día la voz de marca pide
+versalita de verdad, hay que cambiar de fuente de trabajo, no forzar ésta.
+
 ## Forma y movimiento
 
-- Radios de 10 px. Suficiente calidez sin parecer un juguete.
-- Transiciones de 150 ms. Por debajo se sienten bruscas; por encima, lentas.
+- Radios de 10 px (7 y 14 los otros dos escalones). Suficiente calidez sin
+  parecer un juguete.
+- Transiciones de 150 ms genéricas, más la tabla de `diseno-producto.md` §5.1:
+  120 / 220 / 320 / 500 ms. Ningún componente declara una duración propia.
+- Regla de asimetría: la salida dura ≈ 65 % de la entrada.
 - `prefers-reduced-motion` respetado globalmente.
+
+**Los tokens de forma y movimiento ya están expuestos a Tailwind.** No lo
+estaban, y por eso todo el código escribe `rounded-[var(--radius-lg)]` en vez de
+una clase corta. Ahora existen `rounded-sm` / `rounded-base` / `rounded-lg`,
+`ease-entrada` / `ease-salida` / `ease-suave` y `dur-rapida` / `dur-media` /
+`dur-lenta` / `dur-cuadre`, más `shadow-pop`.
+
+Dos detalles que no son obvios y conviene no descubrir a golpes:
+
+- **Los radios pisan a propósito las claves homónimas de Tailwind.** Declarar
+  `--radius-sm: 7px` y `--radius-lg: 14px` hace que `rounded-sm` y `rounded-lg`
+  signifiquen los radios de este sistema y no los de la librería. Es deliberado:
+  un sistema de diseño no puede tener dos escalas de radio compitiendo.
+- **Las duraciones se declaran a mano** porque Tailwind no tiene espacio de
+  nombres para `duration-*`: sólo acepta números. Cada clase escribe también
+  `--tw-duration`, igual que hace la utilidad `duration-*` de la librería, para
+  que `transition` no la pise.
+
+El bloque usa `@theme static` y no `:root`, y eso importa: sin `static`, Tailwind
+sólo emite las variables cuyas clases ve usadas, y `planeat.module.css` es un
+CSS Module que Tailwind no escanea y que consume `var(--dur-media)`,
+`var(--ease-suave)`, `var(--radius-lg)` y `var(--shadow-pop)` directamente. Sin
+`static` se caerían sin que nada fallara en el build.
+
+## Las reglas base van dentro de `@layer base`
+
+No es cosmético y arregla dos defectos reales. Tailwind mete sus utilidades en
+`@layer utilities`, y en la cascada **cualquier declaración sin capa gana a
+cualquier declaración en capa, con independencia de la especificidad**. Con las
+reglas globales fuera de toda capa pasaban dos cosas:
+
+1. `:focus-visible` llevaba un `border-radius: var(--radius-sm)` que machacaba la
+   clase `rounded-*` del elemento enfocado con teclado. El botón principal
+   pasaba de 10 a 7 px al tabular, y un `rounded-full` habría pasado de círculo a
+   cuadrado redondeado.
+2. El `outline-none` de la zona de resultado perdía contra el `outline` de
+   `:focus-visible`. Al enviar el formulario con Enter aparecía un rectángulo
+   berenjena de 2 px alrededor de todo el plan, justo en el momento en que
+   aparece.
+
+Metidas en `base`, las utilidades vuelven a ganar y los dos desaparecen. Además
+se quitó el `border-radius` de la regla de foco, que sobraba de todas formas: el
+`outline` ya sigue la forma del elemento en los navegadores actuales.
+Comprobado en navegador: al enfocar, el botón de radio base sigue en 10 px, el
+redondo sigue redondo, y un contenedor con `outline-none` no dibuja contorno.
+
+El reset de `prefers-reduced-motion` también vive en `base`, y ahí gana más que
+fuera: para las declaraciones `!important` el orden de capas se invierte, así que
+desde `base` vence incluso a un `!important` que viniera de una utilidad.
 
 ---
 
 ## Pendiente de decidir
 
-- Tipografía definitiva. Ahora usa Geist (la que trae el andamiaje). La
-  especificación sugiere valorar Instrument Sans o Söhne según licencia y
-  presupuesto. No es urgente, pero conviene resolverlo antes de producir
-  material de marketing.
 - Micro-interacción del estado de generación. Es el único momento en que el
   usuario mira y no puede hacer nada; merece personalidad propia.
 - Tratamiento visual de la ficha de receta, donde la densidad baja y la foto
   manda. Es el punto donde el sistema actual está menos probado.
+- Estado deshabilitado. Hoy se resuelve con `disabled:opacity-60` sobre el botón
+  de marca: `--on-brand` sobre `--brand` da 8,82:1 a plena opacidad y al 60 %
+  cae a aproximadamente 3:1, por debajo de AA para 17 px. Hace falta un par de
+  tokens `--brand-disabled` / `--on-brand-disabled` con contraste medido, en vez
+  de opacidad. Toca componentes, así que no se ha hecho en el pulido del sistema.
+
+## Pendiente de limpieza (decidido, no aplicado)
+
+Lo de aquí abajo ya está decidido; sólo falta pasar por los componentes, y no se
+ha hecho porque hay más de un agente trabajando dentro del árbol.
+
+- **Migrar los valores arbitrarios a las clases nuevas.** Los componentes siguen
+  escribiendo `rounded-[var(--radius-lg)]`, `text-[17px]`, `text-[15px]`… Las
+  utilidades cortas y los once tokens tipográficos ya existen; nadie los usa
+  todavía fuera de `/sistema`.
+- **Aplicar la voz en sus cuatro sitios.** Hoy los cuatro están en Geist
+  semibold: H1 de portada, título de ficha de receta, titular de
+  sobre-restricción y su cifra héroe. La clase `voz-1` / `voz-2` está lista y
+  lleva la familia dentro, para que sea imposible pedir el tamaño de la voz y
+  quedarse con la fuente de trabajo.
+- **Retirar los escalones de radio sobrantes de Tailwind** (`rounded-md`,
+  `rounded-xl`…). Se pueden borrar con `--radius-*: initial`, pero eso rompe en
+  silencio cualquier componente que los use, así que primero hay que migrarlos.
+- **`viewport.themeColor` sólo reacciona a `prefers-color-scheme`.** Si el
+  usuario elige claro con el sistema en oscuro, el color del cromo del navegador
+  se queda oscuro. Se arregla desde el script de tema, no desde el CSS.

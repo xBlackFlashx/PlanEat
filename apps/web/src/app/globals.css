@@ -3,7 +3,8 @@
 /* ============================================================================
    PlanEat — Sistema de diseño
    ----------------------------------------------------------------------------
-   Decisiones documentadas en docs/design-decisions.md. Resumen:
+   Decisiones y descartes en docs/decisiones-de-diseno.md. Escala tipográfica y
+   tabla de movimiento en docs/diseno-producto.md §2.2 y §5.1. Resumen:
 
    · Acento de marca: berenjena profunda. Evita deliberadamente el verde-menta
      clínico de las apps de salud y el coral de los competidores.
@@ -12,142 +13,163 @@
    · "Éxito" NO usa verde: colisionaría con el color de grasa. Usa el acento
      de marca con icono. El rojo queda reservado a error.
    · Todo color se declara aquí como token. Ningún componente usa un literal.
+
+   Orden del fichero:
+     1. Tema: `color-scheme` y la paleta, en un solo bloque con `light-dark()`.
+     2. `@theme` — forma y movimiento (valores literales, sin tema).
+     3. `@theme inline` — puente de los tokens de color y de fuente a Tailwind.
+     4. `@utility` — duraciones y la escala tipográfica de §2.2.
+     5. `@layer base` — reglas globales.
    ========================================================================== */
+
+/* ----------------------------------------------------------------------------
+   1. Tema — los tres estados del usuario, y una sola lista de colores
+   ----------------------------------------------------------------------------
+   decisiones-de-diseno.md describe tres estados que hay que cubrir: sistema,
+   elección explícita de claro y elección explícita de oscuro; y la elección
+   explícita tiene que ganar sobre el sistema EN AMBAS DIRECCIONES.
+
+   Hasta ahora eso se resolvía con tres bloques, y los dos últimos eran 34
+   líneas duplicadas carácter a carácter: cualquier retoque de un color oscuro
+   había que hacerlo dos veces y nada lo verificaba.
+
+   Ahora los tres estados son tres declaraciones de `color-scheme` y la paleta
+   se escribe UNA vez con `light-dark()`, que lee el `color-scheme` calculado
+   del elemento. El patrón se conserva entero:
+
+     · sin `data-theme`  → `light dark` → manda el sistema.
+     · `data-theme="light"` → `light` → gana la elección aunque el sistema esté
+       en oscuro.
+     · `data-theme="dark"`  → `dark`  → gana la elección aunque el sistema esté
+       en claro.
+
+   Y de paso resuelve lo que faltaba: sin `color-scheme` los controles nativos
+   (la rueda del `<select>` del generador, las barras de scroll, el autofill)
+   se pintaban en claro sobre el tema oscuro. Se veía en la primera pantalla.
+
+   Lo que se paga: `light-dark()` es Baseline desde 2024 (Chrome 123, Safari
+   17.5, Firefox 120). En un navegador anterior los colores quedan sin valor y
+   la página se ve sin estilar, no medio estilada. Es un riesgo asumido y
+   anotado; si alguna vez hay que soportar navegadores de 2023, la salida es
+   volver a los dos bloques duplicados, no un apaño intermedio.
+   -------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
 
 :root {
   /* Superficies — neutro cálido, no gris puro */
-  --bg: #faf8f4;
-  --surface: #ffffff;
-  --surface-2: #f3efe8;
-  --surface-3: #e9e3d9;
+  --bg: light-dark(#faf8f4, #171512);
+  --surface: light-dark(#ffffff, #1f1d19);
+  --surface-2: light-dark(#f3efe8, #272420);
+  --surface-3: light-dark(#e9e3d9, #332f29);
 
-  /* Texto */
-  --text: #1c1917;
-  --text-2: #494440;
-  --text-3: #79726b;
+  /* Texto. Contrastes medidos en el Anexo A.2 de diseno-producto.md y
+     reproducidos en /sistema. `--text-3` da 4,47:1 sobre `--bg` en claro, por
+     debajo de AA: sólo sobre `--surface` o en texto ≥ 18,66 px. */
+  --text: light-dark(#1c1917, #f2ede5);
+  --text-2: light-dark(#494440, #cfc8bd);
+  --text-3: light-dark(#79726b, #9c948a);
 
-  /* Líneas */
-  --line: #e4ded4;
-  --line-strong: #cdc4b6;
+  /* Líneas — decorativas. Nunca como único indicador de foco o estado. */
+  --line: light-dark(#e4ded4, #332f29);
+  --line-strong: light-dark(#cdc4b6, #4a453d);
 
   /* Marca — berenjena */
-  --brand: #6b3a5b;
-  --brand-hover: #572e4a;
-  --brand-soft: #f4ecf1;
-  --brand-line: #d9c3d0;
-  --on-brand: #ffffff;
+  --brand: light-dark(#6b3a5b, #d4a3c2);
+  --brand-hover: light-dark(#572e4a, #e2b8d2);
+  --brand-soft: light-dark(#f4ecf1, #2a1f26);
+  --brand-line: light-dark(#d9c3d0, #4a3542);
+  --on-brand: light-dark(#ffffff, #2a1520);
 
   /* Macronutrientes — triada Okabe-Ito (segura para daltonismo) */
-  --protein: #0072b2;
-  --protein-soft: #e4f0f8;
-  --carb: #e69f00;
-  --carb-soft: #fdf2dd;
-  --fat: #009e73;
-  --fat-soft: #dff2ec;
+  --protein: light-dark(#0072b2, #56b4e9);
+  --protein-soft: light-dark(#e4f0f8, #16262f);
+  --carb: light-dark(#e69f00, #f0b73e);
+  --carb-soft: light-dark(#fdf2dd, #2e2413);
+  --fat: light-dark(#009e73, #3fc9a0);
+  --fat-soft: light-dark(#dff2ec, #12291f);
 
-  /* Estados semánticos */
-  --danger: #b3261e;
-  --danger-soft: #fbeceb;
-  --warning: #8a6116;
-  --warning-soft: #fbf3e2;
+  /* Estados semánticos. No hay token de "éxito": es intencionado. */
+  --danger: light-dark(#b3261e, #f2938c);
+  --danger-soft: light-dark(#fbeceb, #2e1917);
+  --warning: light-dark(#8a6116, #e0b565);
+  --warning-soft: light-dark(#fbf3e2, #2b2114);
 
-  /* Forma y movimiento */
-  --radius: 10px;
-  --radius-sm: 7px;
-  --radius-lg: 14px;
-  --shadow-pop: 0 6px 24px -6px rgb(28 25 23 / 0.16), 0 2px 6px -2px rgb(28 25 23 / 0.1);
-  --dur: 150ms;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Movimiento — tabla de docs/diseno-producto.md §5.1. Ningún componente
-     declara una duración propia: todas salen de aquí.
-     Regla de asimetría: la salida dura ≈ 65 % de la entrada. */
-  --dur-rapida: 120ms; /* color: hover, foco, borde */
-  --dur-media: 220ms; /* entrada de panel, hoja, crossfade */
-  --dur-lenta: 320ms; /* transición entre pantalla y resultado */
-  --dur-cuadre: 500ms; /* sólo el compás 4 del estado de generación */
-  --ease-entrada: cubic-bezier(0, 0, 0.2, 1);
-  --ease-salida: cubic-bezier(0.4, 0, 1, 1);
-  --ease-suave: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Colores de la única sombra del sistema. La geometría es la misma en los dos
+     temas y vive en `--shadow-pop`; lo que cambia es el color, así que sólo el
+     color necesita `light-dark()`. */
+  --sombra-cerca: light-dark(rgb(28 25 23 / 0.16), rgb(0 0 0 / 0.5));
+  --sombra-lejos: light-dark(rgb(28 25 23 / 0.1), rgb(0 0 0 / 0.4));
 
   /* Velo de la hoja inferior. Mismo valor en los dos temas: oscurece el fondo,
      no lo tiñe. */
   --scrim: rgb(0 0 0 / 0.4);
 }
 
-/* Oscuro por preferencia del sistema — sólo si no hay elección explícita de claro */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #171512;
-    --surface: #1f1d19;
-    --surface-2: #272420;
-    --surface-3: #332f29;
+/* ----------------------------------------------------------------------------
+   2. Forma y movimiento
+   ----------------------------------------------------------------------------
+   `@theme static` en vez de `:root` por dos razones concretas:
 
-    --text: #f2ede5;
-    --text-2: #cfc8bd;
-    --text-3: #9c948a;
+   a) Tailwind genera las utilidades a partir de sus espacios de nombres. Con
+      `--radius-*` y `--ease-*` declarados aquí, `rounded-sm`, `rounded-base`,
+      `rounded-lg`, `ease-entrada`, `ease-salida` y `ease-suave` existen como
+      clases cortas de verdad. Antes no existían y por eso todo el código
+      escribe `rounded-[var(--radius-lg)]`.
+   b) `static` obliga a Tailwind a emitir las variables aunque no vea la clase
+      usada. Hace falta: `planeat.module.css` es un CSS Module que Tailwind no
+      escanea y consume `var(--dur-media)`, `var(--ease-suave)`, `var(--radius-lg)`
+      y `var(--shadow-pop)` directamente. Sin `static` se caerían.
 
-    --line: #332f29;
-    --line-strong: #4a453d;
+   Los nombres `--radius-sm` y `--radius-lg` pisan a propósito las claves
+   homónimas de Tailwind: así `rounded-sm` y `rounded-lg` significan los radios
+   de este sistema y no los de la librería. El resto de la escala de Tailwind
+   (`rounded-md`, `rounded-xl`…) sigue existiendo y no debería usarse; retirarla
+   queda pendiente, cuando los componentes dejen de escribir valores arbitrarios.
+   -------------------------------------------------------------------------- */
 
-    --brand: #d4a3c2;
-    --brand-hover: #e2b8d2;
-    --brand-soft: #2a1f26;
-    --brand-line: #4a3542;
-    --on-brand: #2a1520;
+@theme static {
+  /* Forma. Radios de 10 px: calidez suficiente sin parecer un juguete. */
+  --radius: 10px;
+  --radius-sm: 7px;
+  --radius-base: 10px;
+  --radius-lg: 14px;
 
-    --protein: #56b4e9;
-    --protein-soft: #16262f;
-    --carb: #f0b73e;
-    --carb-soft: #2e2413;
-    --fat: #3fc9a0;
-    --fat-soft: #12291f;
+  /* La única sombra del sistema, reservada a elementos flotantes: popovers,
+     diálogos, arrastre. Las tarjetas de comida se separan por fondo. */
+  --shadow-pop: 0 6px 24px -6px var(--sombra-cerca), 0 2px 6px -2px var(--sombra-lejos);
 
-    --danger: #f2938c;
-    --danger-soft: #2e1917;
-    --warning: #e0b565;
-    --warning-soft: #2b2114;
+  /* Movimiento — tabla de docs/diseno-producto.md §5.1. Ningún componente
+     declara una duración propia: todas salen de aquí.
+     Regla de asimetría: la salida dura ≈ 65 % de la entrada. */
+  --dur: 150ms;
+  --dur-rapida: 120ms; /* color: hover, foco, borde */
+  --dur-media: 220ms; /* entrada de panel, hoja, crossfade */
+  --dur-lenta: 320ms; /* transición entre pantalla y resultado */
+  --dur-cuadre: 500ms; /* sólo el compás 4 del estado de generación */
 
-    --shadow-pop: 0 6px 24px -6px rgb(0 0 0 / 0.5), 0 2px 6px -2px rgb(0 0 0 / 0.4);
-  }
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-entrada: cubic-bezier(0, 0, 0.2, 1);
+  --ease-salida: cubic-bezier(0.4, 0, 1, 1);
+  --ease-suave: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Elección explícita de oscuro — gana sobre la preferencia del sistema */
-:root[data-theme="dark"] {
-  --bg: #171512;
-  --surface: #1f1d19;
-  --surface-2: #272420;
-  --surface-3: #332f29;
+/* ----------------------------------------------------------------------------
+   3. Puente a Tailwind
+   ----------------------------------------------------------------------------
+   `inline` significa que Tailwind usa el valor en la utilidad en vez de definir
+   una variable propia: `bg-brand` emite `var(--brand)` y quien decide el color
+   sigue siendo el bloque de arriba, con su `light-dark()` intacto.
+   -------------------------------------------------------------------------- */
 
-  --text: #f2ede5;
-  --text-2: #cfc8bd;
-  --text-3: #9c948a;
-
-  --line: #332f29;
-  --line-strong: #4a453d;
-
-  --brand: #d4a3c2;
-  --brand-hover: #e2b8d2;
-  --brand-soft: #2a1f26;
-  --brand-line: #4a3542;
-  --on-brand: #2a1520;
-
-  --protein: #56b4e9;
-  --protein-soft: #16262f;
-  --carb: #f0b73e;
-  --carb-soft: #2e2413;
-  --fat: #3fc9a0;
-  --fat-soft: #12291f;
-
-  --danger: #f2938c;
-  --danger-soft: #2e1917;
-  --warning: #e0b565;
-  --warning-soft: #2b2114;
-
-  --shadow-pop: 0 6px 24px -6px rgb(0 0 0 / 0.5), 0 2px 6px -2px rgb(0 0 0 / 0.4);
-}
-
-/* Exposición de los tokens como utilidades de Tailwind */
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -179,39 +201,224 @@
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* El velo también como utilidad (`bg-scrim`): lo usa la hoja inferior. */
+  --color-scrim: var(--scrim);
 
-  --radius-base: var(--radius);
+  /* Tipografía. Reparto estricto de §2.2: Geist hace el trabajo (toda la UI,
+     todo el cuerpo, TODOS los números) e Instrument Serif pone la voz en cuatro
+     sitios y en ninguno más. Los nombres de las variables los fija next/font en
+     layout.tsx.
+
+     Geist Mono ya no se carga: era una familia entera descargada en todas las
+     rutas para una etiqueta `<code>` de /sistema. `font-mono` cae ahora en la
+     mono del sistema, que para nombres de token es exactamente igual de buena.
+     §2.2 la reservaba para "códigos de plan en soporte"; cuando eso exista, se
+     vuelve a cargar y se anota. */
+  --font-sans: var(--fuente-trabajo);
+  --font-voz: var(--fuente-voz);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+/* ----------------------------------------------------------------------------
+   4a. Duraciones como utilidades
+   ----------------------------------------------------------------------------
+   Tailwind no tiene espacio de nombres para `duration-*` (sólo acepta números),
+   así que las cuatro duraciones del sistema se declaran a mano. Escriben también
+   `--tw-duration` para que `transition` no las pise, que es justo lo que hace la
+   utilidad `duration-*` de la librería.
+   -------------------------------------------------------------------------- */
+
+@utility dur-rapida {
+  --tw-duration: var(--dur-rapida);
+  transition-duration: var(--dur-rapida);
+}
+@utility dur-media {
+  --tw-duration: var(--dur-media);
+  transition-duration: var(--dur-media);
+}
+@utility dur-lenta {
+  --tw-duration: var(--dur-lenta);
+  transition-duration: var(--dur-lenta);
+}
+@utility dur-cuadre {
+  --tw-duration: var(--dur-cuadre);
+  transition-duration: var(--dur-cuadre);
 }
 
-/* Toda cifra nutricional o de precio usa números tabulares. Sin esto las
-   columnas de gramos bailan al actualizarse. */
-.tnum,
-table,
-[data-numeric] {
+/* ----------------------------------------------------------------------------
+   4b. Escala tipográfica — docs/diseno-producto.md §2.2
+   ----------------------------------------------------------------------------
+   Once tokens, una clase por token, con el nombre exacto de la tabla. Son
+   `@utility` y no claves `--text-*` de Tailwind porque cuatro de ellos llevan
+   algo que una clave `--text-*` no sabe expresar: la familia serif de la voz, la
+   versalita de `micro` y los números tabulares de las cifras. Partirlos en "una
+   clave para el tamaño y una clase para lo demás" daba dos vocabularios para lo
+   mismo y garantizaba que alguien usara la mitad.
+
+   DESVIACIÓN CONSCIENTE respecto de la tabla, que da dos columnas (móvil y
+   escritorio): aquí el tamaño es fluido con `clamp()` entre esos dos valores
+   exactos, interpolando de 375 px a 1024 px de ancho de ventana. El motivo es
+   práctico: con dos columnas cada componente tendría que escribir
+   `t-1 sm:t-1-escritorio`, que es la verbosidad que veníamos a quitar, y basta
+   que alguien olvide la mitad para que la escala se rompa en silencio. Los
+   extremos son los de la tabla; lo que cambia es que entre medias interpola en
+   vez de saltar. La parte fija va en `rem` para que el texto siga respondiendo
+   al tamaño de fuente del navegador (WCAG 1.4.4).
+
+   Los tamaños fijos (`cuerpo`, `cuerpo-sm`, `etiqueta`, `micro`) no llevan
+   `clamp()` porque la tabla les da el mismo valor en móvil y en escritorio.
+
+   PENDIENTE declarado: los componentes siguen escribiendo `text-[17px]`,
+   `text-[15px]` y compañía. No se han reescrito aquí a propósito —hay más de un
+   agente dentro del árbol— y queda como limpieza posterior.
+   -------------------------------------------------------------------------- */
+
+/* Voz — Instrument Serif. Sólo cuatro sitios: H1 de portada, título de ficha de
+   receta, titular de sobre-restricción y la cifra héroe de su veredicto. Nunca
+   en UI, nunca en un número de dato, nunca por debajo de 24 px, nunca en
+   negrita. La familia va dentro de la clase para que sea imposible pedir el
+   tamaño de la voz y quedarse con la fuente de trabajo. */
+@utility voz-1 {
+  font-family: var(--fuente-voz), ui-serif, Georgia, serif;
+  font-size: clamp(2.125rem, 1.692rem + 1.85vw, 2.875rem); /* 34 → 46 px */
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+@utility voz-2 {
+  font-family: var(--fuente-voz), ui-serif, Georgia, serif;
+  font-size: clamp(1.625rem, 1.408rem + 0.92vw, 2rem); /* 26 → 32 px */
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+
+/* Títulos — Geist */
+@utility t-1 {
+  font-size: clamp(1.5rem, 1.356rem + 0.62vw, 1.75rem); /* 24 → 28 px */
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+@utility t-2 {
+  font-size: clamp(1.1875rem, 1.115rem + 0.31vw, 1.3125rem); /* 19 → 21 px */
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  font-weight: 600;
+}
+@utility t-3 {
+  font-size: clamp(1rem, 0.964rem + 0.15vw, 1.0625rem); /* 16 → 17 px */
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+/* Cuerpo. 16 px en móvil también evita el auto-zoom de iOS en los campos. */
+@utility cuerpo {
+  font-size: 1rem; /* 16 px */
+  line-height: 1.55;
+  font-weight: 400;
+}
+@utility cuerpo-sm {
+  font-size: 0.875rem; /* 14 px */
+  line-height: 1.5;
+  font-weight: 400;
+}
+@utility etiqueta {
+  font-size: 0.8125rem; /* 13 px */
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+}
+
+/* `micro`: uso muy restringido, máximo dos por pantalla.
+   §2.2 pide versalita. Geist NO trae tabla `smcp` —comprobado sobre el fichero
+   de la fuente, sus features son aalt/case/ccmp/dlig/dnom/frac/liga/locl/numr/
+   ordn/pnum/sinf/ss01..ss11/subs/sups/tnum—, así que `font-variant-caps` sólo
+   podría sintetizarla escalando las mayúsculas, y a 12 px eso se ve sucio y
+   desigual. Se usa versal con tracking abierto, que es lo que la versalita
+   pretendía conseguir aquí: distinguir la cabecera sin subir de tamaño. */
+@utility micro {
+  font-size: 0.75rem; /* 12 px */
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Cifras. `tabular-nums` incluso en la cifra héroe, aunque no esté en columna:
+   la decisión está tomada y la consistencia vale más que el medio punto de
+   estética. Geist mapea cada dígito a su variante `.tf` de 600/1000 em; sin
+   `tnum` el «1» mide 384 y el «0» 663, que es exactamente el baile que se ve al
+   actualizarse una columna de gramos. */
+@utility cifra-heroe {
+  font-size: clamp(2.5rem, 1.922rem + 2.47vw, 3.5rem); /* 40 → 56 px */
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+@utility cifra {
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
-:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
+/* ----------------------------------------------------------------------------
+   5. Reglas globales
+   ----------------------------------------------------------------------------
+   Van dentro de `@layer base` y eso NO es cosmético. Tailwind mete sus
+   utilidades en `@layer utilities`, y en la cascada cualquier declaración sin
+   capa gana a cualquier declaración en capa, con independencia de la
+   especificidad. Con estas reglas fuera de toda capa pasaban dos cosas:
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+     · el `border-radius` de `:focus-visible` machacaba la clase `rounded-*` del
+       elemento enfocado con teclado — el botón principal pasaba de 10 a 7 px al
+       tabular, y un `rounded-full` habría pasado de círculo a cuadrado;
+     · el `outline-none` de la zona de resultado perdía contra el `outline` de
+       `:focus-visible`, y al enviar el formulario con Enter aparecía un
+       rectángulo berenjena alrededor de todo el plan.
+
+   Metidas en `base`, las utilidades vuelven a ganar y los dos defectos
+   desaparecen. Además se quita el `border-radius` de la regla de foco, que
+   sobraba: el `outline` ya sigue la forma del elemento en los navegadores
+   actuales.
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Toda cifra nutricional o de precio usa números tabulares. Sin esto las
+     columnas de gramos bailan al actualizarse. Tres vías: la clase `.tnum`, el
+     atributo `[data-numeric]` y por defecto en tablas. La utilidad `cifra` de
+     arriba es la cuarta y añade el peso. */
+  .tnum,
+  table,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  /* Red de seguridad, no la solución. diseno-producto.md §5.5 avisa de que este
+     reset no basta para bucles infinitos, y por eso `estado-generacion.tsx` y
+     `memoria-plegado.ts` consultan la media query de verdad.
+     Dentro de `base` a propósito: para las declaraciones `!important` el orden
+     de capas se invierte, así que aquí gana también a un `!important` que
+     viniera de una utilidad. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

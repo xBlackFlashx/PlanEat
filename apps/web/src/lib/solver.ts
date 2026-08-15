@@ -1,161 +1,126 @@
 /**
- * Cliente del servicio solver. **Sólo servidor.**
+ * Puerta de entrada al motor. **Sólo navegador.**
  *
- * Regla de la casa: si el solver no está levantado, la interfaz lo dice. No se
- * genera un plan de mentira ni se rellena con datos de ejemplo. Un producto de
- * nutrición que enseña números falsos cuando falla el backend pierde justo lo
- * único que vende.
+ * Regla de la casa, y no cambia porque el motor haya cruzado del servidor al
+ * cliente: si el motor no puede, la interfaz lo dice. No se genera un plan de
+ * mentira ni se rellena con datos de ejemplo. Un producto de nutrición que
+ * enseña números falsos cuando algo falla pierde justo lo único que vende.
  *
- * Por eso hay tres desenlaces y no dos (ver `ResultadoPlan`): que el solver
+ * Por eso hay tres desenlaces y no dos (ver `ResultadoPlan`): que el motor
  * conteste "no llego" es un resultado del producto y tiene pantalla propia; que
- * el solver no conteste es un fallo nuestro y tiene otra.
+ * el motor reviente o se pase del tiempo es un fallo nuestro y tiene otra.
+ *
+ * Qué queda de la versión anterior y qué no:
+ *
+ *  - Ya no hay `fetch`, ni `SOLVER_URL`, ni `process.env`, ni catálogo leído del
+ *    disco con `node:fs`. El catálogo compilado y la vista de presentación
+ *    entran en el bundle como JSON (49 KB en crudo): cero peticiones, cero
+ *    rutas absolutas que `basePath` pueda romper, y la versión del catálogo
+ *    queda atada al hash del bundle.
+ *  - `MS_LIMITE_GENERACION` sigue exportándose desde aquí porque sigue siendo
+ *    el mismo corte que la interfaz le declara al usuario. Ahora lo aplica el
+ *    cliente del worker con `terminate()`, que es lo único capaz de parar un
+ *    bucle síncrono de JavaScript.
+ *  - `recetasDelPlan` también sobrevive, reexportada del motor: la usa quien
+ *    quiera saber qué recetas salen en un plan sin recorrerlo a mano.
+ *
+ * El worker lo crea el cliente del motor, no este fichero. Que llegue al
+ * navegador empaquetado y no en crudo depende del bundler: ver la nota sobre
+ * `--webpack` en `next.config.ts`.
  */
 
-import type { DiaPlan, RespuestaGeneracion, SolicitudGeneracion } from "@planeat/shared";
+import { crearClienteMotor } from "@planeat/motor/cliente";
+import catalogoCompilado from "@planeat/motor/catalogo-compilado";
+import recetasVista from "@planeat/motor/recetas-vista";
+import type { ClienteMotor } from "@planeat/motor/cliente";
+import type {
+  CatalogoSerializado,
+  ResultadoPlan as ResultadoMotor,
+  VistaRecetas,
+} from "@planeat/motor";
 
-import { cargarCatalogo } from "./catalogo";
-import type { RecetaResumen, ResultadoPlan } from "./tipos";
+import type { ResultadoPlan } from "./tipos";
 
-const URL_POR_DEFECTO = "http://localhost:8000";
+export { MS_LIMITE_GENERACION, recetasDelPlan } from "@planeat/motor";
+export type { Progreso } from "@planeat/motor";
 
 /**
- * 20 s: el mismo corte que la interfaz declara al usuario en el estado de
- * generación (docs/diseno-producto.md §3.2). Si se cambia aquí, hay que
- * cambiarlo allí; por eso se exporta.
+ * Los dos JSON compilados, ya tipados.
+ *
+ * La anotación no es decorativa: es el único punto donde se comprueba que lo
+ * que `npm run motor:catalogo` ha escrito encaja con lo que el motor espera
+ * leer. `cargarCatalogo` vuelve a validarlo en runtime —el orden de las
+ * columnas no se puede comprobar con tipos— y lanza si no cuadra.
  */
-export const MS_LIMITE_GENERACION = 20_000;
+const catalogo: CatalogoSerializado = catalogoCompilado;
+const vista: VistaRecetas = recetasVista;
 
-function urlDelSolver(): string {
-  return (process.env.SOLVER_URL ?? URL_POR_DEFECTO).replace(/\/+$/, "");
+/**
+ * Un cliente para toda la pestaña.
+ *
+ * El cliente ya impone "una generación en vuelo": pedir otra cancela la
+ * anterior. Tener uno por componente rompería esa garantía —la portada y la
+ * vista del plan podrían generar a la vez— y además duplicaría el worker y la
+ * copia del catálogo transferida.
+ *
+ * Se crea perezosamente y nunca durante el render: `crearClienteMotor` no
+ * arranca el worker, pero este módulo se importa también desde el prerender del
+ * export estático, donde no hay `Worker` ni `window`.
+ */
+let cliente: ClienteMotor | null = null;
+
+export function clienteMotor(): ClienteMotor {
+  cliente ??= crearClienteMotor(catalogo, { vista });
+  return cliente;
 }
 
-/** Comprobación mínima de forma: una respuesta rara no debe llegar a la vista. */
-function pareceRespuesta(dato: unknown): dato is RespuestaGeneracion {
-  if (typeof dato !== "object" || dato === null) return false;
-  const posible = dato as { ok?: unknown; dias?: unknown; fallo?: unknown };
-  if (posible.ok === true) return Array.isArray(posible.dias);
-  if (posible.ok === false) return typeof posible.fallo === "object" && posible.fallo !== null;
-  return false;
-}
+/**
+ * Resultado del motor → resultado de la interfaz.
+ *
+ * El motor distingue cuatro desenlaces y la interfaz tiene tres pantallas. El
+ * que sobra es `objetivo_invalido`, y traducirlo a `error_solver` no es
+ * colapsar dos cosas distintas por pereza: en esta app el objetivo **no lo
+ * escribe el usuario**. Lo calculamos nosotros con `calcularObjetivoDelDia` a
+ * partir de un formulario que ya ha pasado `validar()`, y le aplicamos los
+ * ajustes de la pantalla de sobre-restricción. Si el motor dice que ese
+ * objetivo no se puede leer, el fallo es de nuestro código, que es exactamente
+ * lo que `error_solver` cuenta en pantalla ("no es cosa de lo que has pedido").
+ * El mensaje del motor viaja en el detalle técnico, plegado, sin adornar.
+ *
+ * Si algún día el usuario escribe su objetivo a mano, esto deja de ser cierto y
+ * hay que darle pantalla propia a `objetivo_invalido`.
+ */
+export function aResultadoDeVista(resultado: ResultadoMotor): ResultadoPlan {
+  switch (resultado.estado) {
+    case "ok":
+      return {
+        estado: "ok",
+        dias: resultado.dias,
+        msTranscurridos: resultado.msTranscurridos,
+        recetas: resultado.recetas,
+        catalogoDisponible: resultado.catalogoDisponible,
+        seed: resultado.respuesta.seed,
+      };
 
-/** Recetas que aparecen en el plan, en orden de aparición y sin repetir. */
-export function recetasDelPlan(dias: DiaPlan[]): string[] {
-  const vistas = new Set<string>();
-  for (const dia of dias) {
-    for (const comida of dia.comidas) {
-      for (const item of comida.items) vistas.add(item.recetaId);
-    }
+    case "sobre_restriccion":
+      return {
+        estado: "sobre_restriccion",
+        fallo: resultado.fallo,
+        totalCatalogo: resultado.totalCatalogo,
+      };
+
+    case "objetivo_invalido":
+      return {
+        estado: "sin_servicio",
+        motivo: "error_solver",
+        detalle: `El motor ha rechazado el objetivo que le he construido: ${resultado.mensaje}`,
+      };
+
+    case "sin_servicio":
+      return {
+        estado: "sin_servicio",
+        motivo: resultado.motivo === "tiempo_agotado" ? "tiempo_agotado" : "error_solver",
+        detalle: resultado.detalle,
+      };
   }
-  return [...vistas];
-}
-
-async function adjuntarRecetas(dias: DiaPlan[]): Promise<{
-  recetas: Record<string, RecetaResumen>;
-  catalogoDisponible: boolean;
-}> {
-  const catalogo = await cargarCatalogo();
-  if (!catalogo) return { recetas: {}, catalogoDisponible: false };
-
-  const recetas: Record<string, RecetaResumen> = {};
-  for (const id of recetasDelPlan(dias)) {
-    const receta = catalogo.recetas.get(id);
-    if (receta) recetas[id] = receta;
-  }
-  return { recetas, catalogoDisponible: true };
-}
-
-export async function generarPlan(
-  solicitud: SolicitudGeneracion,
-): Promise<ResultadoPlan> {
-  let respuesta: Response;
-
-  try {
-    respuesta = await fetch(`${urlDelSolver()}/v1/plan/generate`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(solicitud),
-      cache: "no-store",
-      signal: AbortSignal.timeout(MS_LIMITE_GENERACION),
-    });
-  } catch (error) {
-    const agotado =
-      error instanceof DOMException &&
-      (error.name === "TimeoutError" || error.name === "AbortError");
-    return {
-      estado: "sin_servicio",
-      motivo: agotado ? "tiempo_agotado" : "sin_conexion",
-      detalle: agotado
-        ? `El motor no ha contestado en ${MS_LIMITE_GENERACION / 1000} segundos.`
-        : `No hay nadie escuchando en ${urlDelSolver()}.`,
-    };
-  }
-
-  let cuerpo: unknown = null;
-  try {
-    cuerpo = await respuesta.json();
-  } catch {
-    cuerpo = null;
-  }
-
-  // El esqueleto del servicio contesta 501 mientras el motor no exista. Eso no
-  // es una sobre-restricción del usuario: es que no hay motor. Se distingue.
-  const culpable =
-    typeof cuerpo === "object" && cuerpo !== null
-      ? (cuerpo as { fallo?: { restriccionCulpable?: string } }).fallo?.restriccionCulpable
-      : undefined;
-
-  if (respuesta.status === 501 || culpable === "motor_no_implementado") {
-    return {
-      estado: "sin_servicio",
-      motivo: "motor_no_implementado",
-      detalle:
-        "El servicio responde, pero el motor de generación todavía no está implementado (fase 1 del roadmap).",
-    };
-  }
-
-  // 422 es "la petición está mal formada". La petición la construimos
-  // nosotros a partir del perfil, así que eso es un fallo nuestro y no una
-  // sobre-restricción del usuario, aunque el cuerpo tenga la misma forma. Se
-  // enseña como avería, no como resultado.
-  if (respuesta.status === 422) {
-    const mensaje =
-      typeof cuerpo === "object" && cuerpo !== null
-        ? ((cuerpo as { fallo?: { mensaje?: string } }).fallo?.mensaje ?? "")
-        : "";
-    return {
-      estado: "sin_servicio",
-      motivo: "error_solver",
-      detalle: mensaje
-        ? `El motor ha rechazado el objetivo que le he mandado: ${mensaje}`
-        : "El motor ha rechazado la petición por mal formada (422).",
-    };
-  }
-
-  if (!pareceRespuesta(cuerpo)) {
-    return {
-      estado: "sin_servicio",
-      motivo: respuesta.ok ? "respuesta_ilegible" : "error_solver",
-      detalle: respuesta.ok
-        ? "El motor ha contestado algo que no encaja con el contrato."
-        : `El motor ha devuelto un ${respuesta.status}.`,
-    };
-  }
-
-  if (!cuerpo.ok) {
-    const catalogo = await cargarCatalogo();
-    return {
-      estado: "sobre_restriccion",
-      fallo: cuerpo.fallo,
-      totalCatalogo: catalogo?.total ?? null,
-    };
-  }
-
-  const { recetas, catalogoDisponible } = await adjuntarRecetas(cuerpo.dias);
-  return {
-    estado: "ok",
-    dias: cuerpo.dias,
-    msTranscurridos: cuerpo.msTranscurridos,
-    recetas,
-    catalogoDisponible,
-  };
 }

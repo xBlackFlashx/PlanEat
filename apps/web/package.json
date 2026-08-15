@@ -3,16 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack && node herramientas/verificar-export.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verificar:export": "node herramientas/verificar-export.mjs"
   },
   "dependencies": {
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "@planeat/shared": "*"
+    "@planeat/shared": "*",
+    "@planeat/motor": "*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

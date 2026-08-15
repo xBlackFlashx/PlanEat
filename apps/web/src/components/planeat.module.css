@@ -30,11 +30,56 @@
   }
 }
 
-/* --- Barrido del compás 2 del estado de generación -------------------------
+/* --- Compás 1 del estado de generación: la cinta del objetivo --------------
+   Los tres segmentos se dibujan de izquierda a derecha al 25 % de opacidad
+   (docs/diseno-producto.md §5.4). Es el objetivo, no el resultado: la barra
+   real del día arranca desde aquí, y por eso esta cinta tiene que "venir" de
+   algún sitio en vez de aparecer de cero.
+
+   Dos decisiones que conviene no deshacer sin leer esto:
+
+   · La duración es 400 ms y **no sale de la tabla del §5.1**, porque la tabla
+     no la tiene: el propio §5.4 fija 400 ms para este compás y es la única
+     regla que habla de él. Se declara local a la clase para que no parezca un
+     token del sistema. Si se centraliza, que se llame igual.
+   · Se anima `clip-path` y no `transform`, que es lo que pide el §5.2. Un
+     `scaleX` desde 0 no dibujaría la cinta: la aplastaría, y a mitad de camino
+     se verían los tres macros comprimidos en la mitad izquierda, que es otra
+     cosa y encima falsa. `clip-path` no provoca reflow, que es lo que la regla
+     del §5.2 protege de verdad. */
+
+.cintaObjetivo {
+  --dur-compas1: 400ms;
+
+  opacity: 0.25;
+  animation: dibujarCinta var(--dur-compas1) var(--ease-entrada) backwards;
+}
+
+@keyframes dibujarCinta {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+/* --- Compás 2 del estado de generación: el barrido de las candidatas -------
    Bucle infinito. El componente consulta prefers-reduced-motion y no lo monta;
-   esta media query es la red de seguridad, no la implementación. */
+   esta media query es la red de seguridad, no la implementación.
+
+   El barrido es una CAPA sobre la fila, no el fondo de la fila. La diferencia
+   importa: cuando llega el título del compás 3 la capa se retira con una
+   opacidad de `--dur`, mientras el degradado sigue su recorrido por debajo. Si
+   el barrido fuera el fondo habría que quitárselo de golpe y el degradado se
+   congelaría a mitad de camino, que es exactamente el "fallo de renderizado"
+   del que avisa la regla 2 de honestidad temporal (§5.4). */
 
 .filaEsqueleto {
+  background: var(--surface-2);
+}
+
+.barrido {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   background: linear-gradient(
     90deg,
     var(--surface-2) 0%,
@@ -44,6 +89,11 @@
   background-size: 240% 100%;
   background-position: 120% 0;
   animation: barrido 1100ms linear infinite;
+  transition: opacity var(--dur) var(--ease-salida);
+}
+
+.barridoRetirado {
+  opacity: 0;
 }
 
 @keyframes barrido {
@@ -55,10 +105,36 @@
   }
 }
 
+/* --- Compás 3 del estado de generación: el título aterriza -----------------
+   El momento crítico del diseño: aquí el usuario deja de esperar y empieza a
+   leer. El escalonado entre filas (90 ms) lo pone el componente, que es quien
+   sabe el índice; aquí sólo está el gesto de una fila.
+
+   §5.4 dice 200 ms y esto usa `--dur-media` (220 ms), que es el token más
+   cercano. Los 20 ms de diferencia no se ven; declarar una duración propia por
+   ellos sí se nota en el sistema. */
+
+.tituloCuaja {
+  display: inline-block;
+  animation: cuajar var(--dur-media) var(--ease-entrada) backwards;
+}
+
+@keyframes cuajar {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .filaEsqueleto {
+  .cintaObjetivo,
+  .tituloCuaja {
     animation: none;
-    background: var(--surface-2);
+  }
+
+  .barrido {
+    animation: none;
+    opacity: 0;
   }
 }
 
@@ -212,6 +288,24 @@
   .panel[open] {
     animation: none;
   }
+}
+
+/* --- Ficha de receta: el hueco de la foto ----------------------------------
+   El título usa la utilidad `voz-2` de globals.css, no una clase de aquí: la
+   serif es del sistema, no de este componente.
+
+   La foto que todavía no existe. Ni una receta del catálogo trae `imagenUrl`,
+   pero la geometría se declara ya: `aspect-ratio` siempre, sin excepción, que
+   es la causa número uno de CLS en productos con foto (§2.5). A sangre en
+   móvil; en escritorio el panel ya recorta con su propio `overflow: hidden`,
+   así que tampoco aquí hace falta radio propio. */
+
+.fotoFicha {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: var(--surface-3);
 }
 
 /* --- Cabecera pegajosa del día --------------------------------------------
