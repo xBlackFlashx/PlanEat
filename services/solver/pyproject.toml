@@ -43,3 +43,16 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# La raíz del servicio, en el path de importación de los tests.
+#
+# `scripts/` es un paquete de verdad (tiene `__init__.py`) y dos tests de
+# catálogo importan de él las constantes con las que se construyó el catálogo
+# —los grupos de ingredientes animales y el umbral de bajo en carbohidratos—,
+# que es justamente lo que hace que el test compruebe algo: si las copiara,
+# comprobaría su propia copia.
+#
+# Pero es herramienta de construcción, no del servicio, así que no entra en
+# `[tool.setuptools] packages`. Antes se importaba de rebote, porque la
+# instalación editable sin `packages` declarado dejaba la raíz entera en el
+# path; al declararlo, dejó de estar y estos dos tests fallaron sólo en CI.
+pythonpath = ["."]
