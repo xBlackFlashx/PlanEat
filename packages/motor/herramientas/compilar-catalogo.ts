@@ -143,9 +143,21 @@ export interface RecetaVista {
   revisadaPor: string | null;
 }
 
+/** Un alimento tal y como lo elige el usuario en un selector de exclusión. */
+export interface AlimentoVista {
+  id: string;
+  nombre: string;
+  categoria: string;
+}
+
 export interface VistaRecetas {
   version: string;
   total: number;
+  /** Sólo los alimentos citados por alguna receta, alfabético por id: el mismo
+   * conjunto y el mismo orden que `alimentoId` en `compilar()`. Es lo que
+   * permite construir un selector de "qué evitas" que sólo ofrece exclusiones
+   * que el motor puede aplicar de verdad. */
+  alimentos: AlimentoVista[];
   recetas: Record<string, RecetaVista>;
 }
 
@@ -339,19 +351,32 @@ function leerFilas(jsonl: string): FilaCruda[] {
   return filas;
 }
 
-/** Los nombres legibles de ingredientes.json, por id. */
-function leerNombres(ingredientes: unknown): Map<string, string> {
-  const nombres = new Map<string, string>();
+/** Nombre legible y categoría de ingredientes.json, por id. */
+function leerInfoIngredientes(ingredientes: unknown): Map<string, { nombre: string; categoria: string }> {
+  const info = new Map<string, { nombre: string; categoria: string }>();
   const raiz = comoObjeto(ingredientes, "ingredientes.json");
   const lista = comoLista(raiz["ingredientes"] ?? [], "ingredientes.json.ingredientes");
   for (let i = 0; i < lista.length; i++) {
     const item = comoObjeto(lista[i], `ingredientes.json.ingredientes[${i}]`);
-    nombres.set(
-      comoTexto(item["id"], `ingredientes.json.ingredientes[${i}].id`),
-      comoTexto(item["nombre"], `ingredientes.json.ingredientes[${i}].nombre`),
-    );
+    info.set(comoTexto(item["id"], `ingredientes.json.ingredientes[${i}].id`), {
+      nombre: comoTexto(item["nombre"], `ingredientes.json.ingredientes[${i}].nombre`),
+      categoria: comoTexto(item["categoria"], `ingredientes.json.ingredientes[${i}].categoria`),
+    });
   }
-  return nombres;
+  return info;
+}
+
+/**
+ * Los alimentos citados por el `ingredientes` de alguna receta, alfabético por
+ * id. Único punto de derivación: lo usan `compilar()` (para el vocabulario de
+ * bits) y `vistaDeRecetas()` (para el selector de exclusión), y tienen que
+ * coincidir exactamente o un alimento ofrecido en la UI no tendría bit que
+ * excluir, o viceversa.
+ */
+function alimentosCitados(filas: readonly FilaCruda[]): string[] {
+  const presentes = new Set<string>();
+  for (const f of filas) for (const a of f.ingredientes) presentes.add(a);
+  return [...presentes].sort(comparaCodePoint);
 }
 
 /** Índice de un valor en su tupla canónica, o −1 si no pertenece al vocabulario. */
@@ -409,15 +434,13 @@ export function compilar(jsonl: string, ingredientes: unknown): CatalogoSerializ
   // Sólo los alimentos que aparecen en `ingredientes` de alguna receta (hoy 66),
   // no los 73 de ingredientes.json: es lo que hace Python y añadir los que nadie
   // usa desplazaría todos los bits siguientes.
-  const presentes = new Set<string>();
-  for (const f of filas) for (const a of f.ingredientes) presentes.add(a);
-  const alimentoId = [...presentes].sort(comparaCodePoint);
+  const alimentoId = alimentosCitados(filas);
   const alimentoIdx = new Map<string, number>(alimentoId.map((a, i) => [a, i]));
   const nAlimentos = alimentoId.length;
   const w32 = Math.max(1, Math.ceil(nAlimentos / BITS_POR_PALABRA));
 
-  const nombres = leerNombres(ingredientes);
-  const huerfanos = alimentoId.filter((a) => !nombres.has(a));
+  const info = leerInfoIngredientes(ingredientes);
+  const huerfanos = alimentoId.filter((a) => !info.has(a));
   if (huerfanos.length > 0) {
     fallo(
       `El catálogo cita alimentos que no están en ingredientes.json: ${huerfanos.join(", ")}. ` +
@@ -547,8 +570,14 @@ export function compilar(jsonl: string, ingredientes: unknown): CatalogoSerializ
  */
 export function vistaDeRecetas(jsonl: string, ingredientes: unknown, version: string): VistaRecetas {
   const filas = leerFilas(jsonl);
-  const nombres = leerNombres(ingredientes);
+  const info = leerInfoIngredientes(ingredientes);
   const recetas: Record<string, RecetaVista> = {};
+
+  const alimentos: AlimentoVista[] = alimentosCitados(filas).map((id) => ({
+    id,
+    nombre: info.get(id)?.nombre ?? id,
+    categoria: info.get(id)?.categoria ?? "otros",
+  }));
 
   for (const f of filas) {
     const v = (c: number): number => f.nutr[c] ?? 0;
@@ -560,7 +589,7 @@ export function vistaDeRecetas(jsonl: string, ingredientes: unknown, version: st
       minutos: f.minutos,
       slots: f.slots,
       alergenos: f.alergenos,
-      ingredientes: f.ingredientes.map((id) => nombres.get(id) ?? id),
+      ingredientes: f.ingredientes.map((id) => info.get(id)?.nombre ?? id),
       porRacion: {
         kcal: v(0),
         proteinaG: v(1),
@@ -584,7 +613,7 @@ export function vistaDeRecetas(jsonl: string, ingredientes: unknown, version: st
     };
   }
 
-  return { version, total: filas.length, recetas };
+  return { version, total: filas.length, alimentos, recetas };
 }
 
 // --------------------------------------------------------------------------
@@ -606,13 +635,15 @@ function serializarColumnar(cat: CatalogoSerializado): string {
 
 /** Idem para la vista: una receta por línea. */
 function serializarVista(vista: VistaRecetas): string {
-  const lineas = Object.entries(vista.recetas).map(
+  const lineasAlimentos = vista.alimentos.map((a) => ` ${JSON.stringify(a)}`);
+  const lineasRecetas = Object.entries(vista.recetas).map(
     ([id, receta]) => ` ${JSON.stringify(id)}: ${JSON.stringify(receta)}`,
   );
   return (
     `{\n"version": ${JSON.stringify(vista.version)},\n` +
     `"total": ${vista.total},\n` +
-    `"recetas": {\n${lineas.join(",\n")}\n}\n}\n`
+    `"alimentos": [\n${lineasAlimentos.join(",\n")}\n],\n` +
+    `"recetas": {\n${lineasRecetas.join(",\n")}\n}\n}\n`
   );
 }
 

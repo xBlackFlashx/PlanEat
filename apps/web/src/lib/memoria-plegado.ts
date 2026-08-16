@@ -23,7 +23,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
-export type TipoBloquePlegable = "tabla-nutricional" | "ficha-receta";
+export type TipoBloquePlegable = "tabla-nutricional" | "ficha-receta" | "exclusiones";
 
 const PREFIJO = "planeat-plegado:";
 

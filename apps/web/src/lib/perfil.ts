@@ -156,6 +156,10 @@ export interface DatosFormulario {
   objetivo: Objetivo;
   dieta: TipoDieta;
   comidas: number;
+  /** Alérgenos a excluir. Filtra por seguridad alimentaria (`mAlergeno`). */
+  alergenosExcluidos: Alergeno[];
+  /** Ids de `apps/web/src/lib/alimentos.ts` a excluir. Filtra por gusto. */
+  ingredientesExcluidos: string[];
 }
 
 /** Medianas de la población adulta española, redondeadas. */
@@ -168,6 +172,8 @@ export const FORMULARIO_POR_DEFECTO: DatosFormulario = {
   objetivo: "mantener",
   dieta: "omnivora",
   comidas: 3,
+  alergenosExcluidos: [],
+  ingredientesExcluidos: [],
 };
 
 export const LIMITES = {
@@ -221,6 +227,13 @@ function texto(crudos: ParametrosCrudos, clave: string): string | undefined {
   return Array.isArray(valor) ? valor[0] : valor;
 }
 
+/** Un parámetro repetido (`?alergeno=gluten&alergeno=lacteos`) como lista. */
+function lista(crudos: ParametrosCrudos, clave: string): string[] {
+  const valor = crudos[clave];
+  if (valor === undefined) return [];
+  return Array.isArray(valor) ? valor : [valor];
+}
+
 function enteroOPorDefecto(bruto: string | undefined, porDefecto: number): number {
   if (bruto == null || bruto.trim() === "") return porDefecto;
   // Se acepta la coma decimal: quien escribe "1,68" merece un mensaje, no un NaN.
@@ -262,12 +275,21 @@ export function leerFormulario(crudos: ParametrosCrudos): DatosFormulario {
     comidas: [3, 4, 5].includes(enteroOPorDefecto(texto(crudos, "comidas"), 3))
       ? enteroOPorDefecto(texto(crudos, "comidas"), 3)
       : 3,
+    // Alérgenos desconocidos se descartan aquí (vocabulario cerrado, ver
+    // `NOMBRE_ALERGENO`). Los ids de alimento NO se validan contra el
+    // catálogo: `bitsDe` en `packages/motor/src/pool.ts` ya los ignora en
+    // silencio si no existen, y duplicar esa validación aquí sólo daría dos
+    // sitios que mantener de acuerdo.
+    alergenosExcluidos: lista(crudos, "alergeno").filter(
+      (a): a is Alergeno => a in NOMBRE_ALERGENO,
+    ),
+    ingredientesExcluidos: lista(crudos, "evitar"),
   };
 }
 
 /** Los mismos datos, de vuelta a la URL. Sirve para compartir y para reintentar. */
 export function aParametros(datos: DatosFormulario): URLSearchParams {
-  return new URLSearchParams({
+  const parametros = new URLSearchParams({
     sexo: datos.sexo,
     edad: String(datos.edad),
     altura: String(datos.altura),
@@ -277,6 +299,9 @@ export function aParametros(datos: DatosFormulario): URLSearchParams {
     dieta: datos.dieta,
     comidas: String(datos.comidas),
   });
+  for (const alergeno of datos.alergenosExcluidos) parametros.append("alergeno", alergeno);
+  for (const id of datos.ingredientesExcluidos) parametros.append("evitar", id);
+  return parametros;
 }
 
 // ---------------------------------------------------------------------------
@@ -368,8 +393,8 @@ export function construirSolicitud(
     objetivos: [aplicarAjustes(objetivo, opciones.ajustes)],
     restricciones: {
       dieta: opciones.ajustes?.dieta ?? datos.dieta,
-      alergenosExcluidos: [],
-      ingredientesExcluidos: [],
+      alergenosExcluidos: datos.alergenosExcluidos,
+      ingredientesExcluidos: datos.ingredientesExcluidos,
       slots: slotsDe(datos),
       comensales: 1,
       // Ordenada de más reciente a más antigua: el término de penalización de

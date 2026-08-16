@@ -34,14 +34,16 @@
  */
 
 import { useId, useRef, useState } from "react";
-import type { ObjetivoNutricional } from "@planeat/shared";
+import type { Alergeno, ObjetivoNutricional } from "@planeat/shared";
 
+import { alimentosPorCategoria, NOMBRE_CATEGORIA } from "@/lib/alimentos";
 import { kcal as formatearKcal } from "@/lib/formato";
 import { useGeneracion } from "@/lib/generar";
 import {
   ACTIVIDADES,
   DIETAS,
   FORMULARIO_POR_DEFECTO,
+  NOMBRE_ALERGENO,
   OBJETIVOS,
   SEXOS,
   calcularObjetivoDelDia,
@@ -55,9 +57,15 @@ import {
 import { rutaDe } from "@/lib/rutas";
 import type { ResultadoPlan } from "@/lib/tipos";
 
+import { DetallePlegable } from "./detalle-plegable";
 import { EstadoGeneracion } from "./estado-generacion";
 import estilos from "./planeat.module.css";
 import { VistaPlan } from "./vista-plan";
+
+const ALERGENOS_OPCIONES = Object.entries(NOMBRE_ALERGENO).map(([valor, etiqueta]) => ({
+  valor: valor as Alergeno,
+  etiqueta,
+}));
 
 type Fase = "formulario" | "esperando" | "resultado";
 
@@ -241,6 +249,44 @@ export function Generador() {
               />{" "}
               comidas.
             </p>
+          </div>
+
+          <div className="border-t border-line pt-6 sm:pt-7">
+            <p className="micro text-text-3">Qué evitas</p>
+            <p className="mt-2 text-sm text-text-2">
+              Filtra por seguridad alimentaria, no sustituye leer la
+              etiqueta del producto que compres.
+            </p>
+            <div className="mt-3">
+              <CampoChips
+                name="alergeno"
+                opciones={ALERGENOS_OPCIONES}
+                seleccionados={datos.alergenosExcluidos}
+                alCambiar={(nuevos) => cambiar("alergenosExcluidos", nuevos as Alergeno[])}
+              />
+            </div>
+
+            <div className="mt-4">
+              <DetallePlegable tipo="exclusiones" resumen="Más alimentos a excluir">
+                <div className="flex flex-col gap-4 pt-1">
+                  {[...alimentosPorCategoria().entries()].map(([categoria, alimentos]) => (
+                    <div key={categoria}>
+                      <p className="etiqueta text-text-3">
+                        {NOMBRE_CATEGORIA[categoria] ?? categoria}
+                      </p>
+                      <div className="mt-2">
+                        <CampoChips
+                          name="evitar"
+                          opciones={alimentos.map((a) => ({ valor: a.id, etiqueta: a.nombre }))}
+                          seleccionados={datos.ingredientesExcluidos}
+                          alCambiar={(nuevos) => cambiar("ingredientesExcluidos", nuevos)}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </DetallePlegable>
+            </div>
           </div>
         </div>
 
@@ -430,5 +476,58 @@ function CampoElegir({ id, name, etiqueta, valor, opciones, alCambiar }: PropsCa
         <path d="m6 9 6 6 6-6" />
       </svg>
     </span>
+  );
+}
+
+interface PropsCampoChips {
+  name: string;
+  opciones: readonly { valor: string; etiqueta: string }[];
+  seleccionados: readonly string[];
+  alCambiar: (valores: string[]) => void;
+}
+
+/**
+ * Selección múltiple como casillas nativas, vestidas de píldora. Sigue
+ * enviándose con el formulario (`name` repetido, como en `aParametros`), así
+ * que la exclusión funciona también en el envío por GET sin JavaScript.
+ * `has-[:focus-visible]` en vez de esconder el foco: el `<input>` está oculto
+ * visualmente (`sr-only`), no del árbol de accesibilidad ni del tabulador, y
+ * el anillo tiene que dibujarse en la píldora, no en el cuadrado invisible.
+ */
+function CampoChips({ name, opciones, seleccionados, alCambiar }: PropsCampoChips) {
+  const alternar = (valor: string) => {
+    alCambiar(
+      seleccionados.includes(valor)
+        ? seleccionados.filter((v) => v !== valor)
+        : [...seleccionados, valor],
+    );
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {opciones.map((opcion) => {
+        const marcado = seleccionados.includes(opcion.valor);
+        return (
+          <label
+            key={opcion.valor}
+            className={`flex min-h-11 cursor-pointer items-center rounded-[var(--radius)] border px-3.5 text-sm font-medium transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
+              marcado
+                ? "border-brand-line bg-brand-soft text-brand"
+                : "border-line bg-surface text-text-2 hover:border-line-strong"
+            }`}
+          >
+            <input
+              type="checkbox"
+              name={name}
+              value={opcion.valor}
+              checked={marcado}
+              onChange={() => alternar(opcion.valor)}
+              className="sr-only"
+            />
+            {opcion.etiqueta}
+          </label>
+        );
+      })}
+    </div>
   );
 }
