@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import { DiaReal } from "@/components/dia-real";
 import { Generador } from "@/components/generador";
+import { MotoresConfianza } from "@/components/motores-confianza";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 /**
@@ -46,6 +48,12 @@ export default function Portada() {
             >
               Sistema de diseño
             </Link>
+            <a
+              href="#generador"
+              className="hidden min-h-11 items-center rounded-[var(--radius)] bg-brand px-4 text-sm font-medium text-on-brand hover:bg-brand-hover sm:inline-flex"
+            >
+              Generar mi día
+            </a>
             <ThemeToggle />
           </div>
         </div>
@@ -62,24 +70,46 @@ export default function Portada() {
           </p>
         </div>
 
-        <div className="mx-auto mt-8 max-w-2xl">
+        <div id="generador" className="mx-auto mt-8 max-w-2xl scroll-mt-14">
           <Generador />
         </div>
 
-        <section className="mx-auto mt-16 max-w-2xl border-t border-line pt-10 sm:mt-24">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            En qué se diferencia
-          </h2>
-          <dl className="mt-6 flex flex-col gap-8">
+        <DiaReal />
+
+        <section className="mx-auto mt-16 w-full max-w-[1120px] border-t border-line pt-10 sm:mt-24">
+          <h2 className="t-1">En qué se diferencia</h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {PILARES.map((pilar) => (
-              <div key={pilar.titulo}>
-                <dt className="text-[17px] font-semibold">{pilar.titulo}</dt>
-                <dd className="mt-1.5 text-pretty leading-relaxed text-text-2">
+              <div
+                key={pilar.titulo}
+                className="rounded-[var(--radius-lg)] border border-line bg-surface p-5 sm:p-6"
+              >
+                <h3 className="t-3">{pilar.titulo}</h3>
+                <p className="mt-2 text-pretty leading-relaxed text-text-2">
                   {pilar.texto}
-                </dd>
+                </p>
               </div>
             ))}
-          </dl>
+          </div>
+        </section>
+
+        <MotoresConfianza />
+
+        <section className="mx-auto mt-16 w-full max-w-[1120px] border-t border-line pt-10 sm:mt-24">
+          <div className="rounded-[var(--radius-lg)] bg-brand-soft p-6 text-center sm:p-10">
+            <h2 className="t-1">Sin cuenta, sin tarjeta, sin plan de precios</h2>
+            <p className="mx-auto mt-3 max-w-xl text-pretty leading-relaxed text-text-2">
+              PlanEat es gratis porque no hay nada que vender: no hay
+              suscripción, no hay niveles, no hay letra pequeña que descubrir
+              después de registrarte.
+            </p>
+            <a
+              href="#generador"
+              className="mt-6 inline-flex min-h-11 items-center rounded-[var(--radius)] bg-brand px-6 font-medium text-on-brand hover:bg-brand-hover"
+            >
+              Generar mi día
+            </a>
+          </div>
         </section>
       </main>
 
