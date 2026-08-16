@@ -130,110 +130,124 @@ export function Generador() {
         onSubmit={enviar}
         className="rounded-[var(--radius-lg)] bg-surface p-5 sm:p-8"
       >
-        <p className="text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
-          Soy{" "}
-          <CampoElegir
-            id={idDe("sexo")}
-            name="sexo"
-            etiqueta="Sexo"
-            valor={datos.sexo}
-            opciones={SEXOS}
-            alCambiar={(valor) => cambiar("sexo", valor as DatosFormulario["sexo"])}
-          />{" "}
-          de{" "}
-          <CampoNumero
-            id={idDe("edad")}
-            name="edad"
-            etiqueta="Edad en años"
-            valor={datos.edad}
-            invalido={Boolean(errores.edad)}
-            alCambiar={(valor) => cambiar("edad", valor)}
-            alSalir={() => validarCampo("edad")}
-          />{" "}
-          años, mido{" "}
-          <CampoNumero
-            id={idDe("altura")}
-            name="altura"
-            etiqueta="Altura en centímetros"
-            valor={datos.altura}
-            invalido={Boolean(errores.altura)}
-            alCambiar={(valor) => cambiar("altura", valor)}
-            alSalir={() => validarCampo("altura")}
-          />{" "}
-          cm y peso{" "}
-          <CampoNumero
-            id={idDe("peso")}
-            name="peso"
-            etiqueta="Peso en kilogramos"
-            valor={datos.peso}
-            invalido={Boolean(errores.peso)}
-            alCambiar={(valor) => cambiar("peso", valor)}
-            alSalir={() => validarCampo("peso")}
-          />{" "}
-          kg.
-        </p>
+        {/* Tres grupos con micro-etiqueta y divisor, no tres párrafos sueltos:
+            la prosa sigue siendo el campo (§9.1.1), pero necesita bordes
+            visibles para leerse como tres preguntas y no como un bloque. */}
+        <div className="flex flex-col gap-6 sm:gap-7">
+          <div>
+            <p className="micro text-text-3">Tu perfil</p>
+            <p className="mt-2 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
+              Soy{" "}
+              <CampoElegir
+                id={idDe("sexo")}
+                name="sexo"
+                etiqueta="Sexo"
+                valor={datos.sexo}
+                opciones={SEXOS}
+                alCambiar={(valor) => cambiar("sexo", valor as DatosFormulario["sexo"])}
+              />{" "}
+              de{" "}
+              <CampoNumero
+                id={idDe("edad")}
+                name="edad"
+                etiqueta="Edad en años"
+                valor={datos.edad}
+                invalido={Boolean(errores.edad)}
+                alCambiar={(valor) => cambiar("edad", valor)}
+                alSalir={() => validarCampo("edad")}
+              />{" "}
+              años, mido{" "}
+              <CampoNumero
+                id={idDe("altura")}
+                name="altura"
+                etiqueta="Altura en centímetros"
+                valor={datos.altura}
+                invalido={Boolean(errores.altura)}
+                alCambiar={(valor) => cambiar("altura", valor)}
+                alSalir={() => validarCampo("altura")}
+              />{" "}
+              cm y peso{" "}
+              <CampoNumero
+                id={idDe("peso")}
+                name="peso"
+                etiqueta="Peso en kilogramos"
+                valor={datos.peso}
+                invalido={Boolean(errores.peso)}
+                alCambiar={(valor) => cambiar("peso", valor)}
+                alSalir={() => validarCampo("peso")}
+              />{" "}
+              kg.
+            </p>
+          </div>
 
-        <p className="mt-4 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
-          Me muevo{" "}
-          <CampoElegir
-            id={idDe("actividad")}
-            name="actividad"
-            etiqueta="Nivel de actividad"
-            valor={datos.actividad}
-            opciones={ACTIVIDADES}
-            alCambiar={(valor) =>
-              cambiar("actividad", valor as DatosFormulario["actividad"])
-            }
-          />{" "}
-          y quiero{" "}
-          <CampoElegir
-            id={idDe("objetivo")}
-            name="objetivo"
-            etiqueta="Objetivo"
-            valor={datos.objetivo}
-            opciones={OBJETIVOS}
-            alCambiar={(valor) => cambiar("objetivo", valor as DatosFormulario["objetivo"])}
-          />
-          .
-        </p>
+          <div className="border-t border-line pt-6 sm:pt-7">
+            <p className="micro text-text-3">Movimiento y objetivo</p>
+            <p className="mt-2 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
+              Me muevo{" "}
+              <CampoElegir
+                id={idDe("actividad")}
+                name="actividad"
+                etiqueta="Nivel de actividad"
+                valor={datos.actividad}
+                opciones={ACTIVIDADES}
+                alCambiar={(valor) =>
+                  cambiar("actividad", valor as DatosFormulario["actividad"])
+                }
+              />{" "}
+              y quiero{" "}
+              <CampoElegir
+                id={idDe("objetivo")}
+                name="objetivo"
+                etiqueta="Objetivo"
+                valor={datos.objetivo}
+                opciones={OBJETIVOS}
+                alCambiar={(valor) => cambiar("objetivo", valor as DatosFormulario["objetivo"])}
+              />
+              .
+            </p>
 
-        <p className="mt-4 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
-          Como{" "}
-          <CampoElegir
-            id={idDe("dieta")}
-            name="dieta"
-            etiqueta="Tipo de dieta"
-            valor={datos.dieta}
-            opciones={DIETAS}
-            alCambiar={(valor) => cambiar("dieta", valor as DatosFormulario["dieta"])}
-          />{" "}
-          en{" "}
-          <CampoElegir
-            id={idDe("comidas")}
-            name="comidas"
-            etiqueta="Comidas al día"
-            valor={String(datos.comidas)}
-            opciones={[
-              { valor: "3", etiqueta: "3" },
-              { valor: "4", etiqueta: "4" },
-              { valor: "5", etiqueta: "5" },
-            ]}
-            alCambiar={(valor) => cambiar("comidas", Number(valor))}
-          />{" "}
-          comidas.
-        </p>
+            {/* Microcopy de calibración, justo donde está el sesgo: la gente
+                elige la semana que le gustaría tener, no la que tiene. */}
+            <p className="mt-3 text-sm leading-relaxed text-text-2">
+              <span className="font-medium text-text">{actividad.ayuda}.</span>{" "}
+              Elige tu semana típica, no la más ambiciosa.
+            </p>
+          </div>
 
-        {/* Microcopy de calibración, justo donde está el sesgo: la gente elige
-            la semana que le gustaría tener, no la que tiene. */}
-        <p className="mt-5 text-sm leading-relaxed text-text-2">
-          <span className="font-medium text-text">{actividad.ayuda}.</span> Elige
-          tu semana típica, no la más ambiciosa.
-        </p>
+          <div className="border-t border-line pt-6 sm:pt-7">
+            <p className="micro text-text-3">Cómo comes</p>
+            <p className="mt-2 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
+              Como{" "}
+              <CampoElegir
+                id={idDe("dieta")}
+                name="dieta"
+                etiqueta="Tipo de dieta"
+                valor={datos.dieta}
+                opciones={DIETAS}
+                alCambiar={(valor) => cambiar("dieta", valor as DatosFormulario["dieta"])}
+              />{" "}
+              en{" "}
+              <CampoElegir
+                id={idDe("comidas")}
+                name="comidas"
+                etiqueta="Comidas al día"
+                valor={String(datos.comidas)}
+                opciones={[
+                  { valor: "3", etiqueta: "3" },
+                  { valor: "4", etiqueta: "4" },
+                  { valor: "5", etiqueta: "5" },
+                ]}
+                alCambiar={(valor) => cambiar("comidas", Number(valor))}
+              />{" "}
+              comidas.
+            </p>
+          </div>
+        </div>
 
         {/* Los errores aparecen bajo la frase completa, no bajo cada campo:
             partirían la prosa. Siempre proponen la corrección. */}
         {erroresVisibles.length > 0 && (
-          <div role="alert" className="mt-5 flex flex-col gap-1">
+          <div role="alert" className="mt-6 flex flex-col gap-1">
             {erroresVisibles.map((campo) => (
               <p key={campo} className="text-[15px] leading-snug text-danger">
                 {errores[campo]}
