@@ -61,9 +61,7 @@ export default function Portada() {
 
       <main className="mx-auto w-full max-w-[1120px] flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mx-auto max-w-2xl">
-          <h1 className="text-balance text-[34px] font-semibold leading-[1.05] tracking-tight sm:text-5xl">
-            Tu semana, resuelta.
-          </h1>
+          <h1 className="voz-1 text-balance">Tu semana, resuelta.</h1>
           <p className="mt-4 text-pretty text-[17px] leading-relaxed text-text-2">
             Qué comer, cuánto cuesta y qué comprar. Sin listas de sesenta
             ingredientes.

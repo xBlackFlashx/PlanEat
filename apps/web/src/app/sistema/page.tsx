@@ -204,8 +204,8 @@ function Muestras({ items }: { items: Muestra[] }) {
 }
 
 const ESCALA = [
-  { clase: "voz-1", valor: "34 → 46 px · 1,05 · 400 serif", texto: "Tu día, resuelto" },
-  { clase: "voz-2", valor: "26 → 32 px · 1,10 · 400 serif", texto: "Lentejas con verduras" },
+  { clase: "voz-1", valor: "34 → 46 px · 1,05 · 400 Space Grotesk", texto: "Tu día, resuelto" },
+  { clase: "voz-2", valor: "26 → 32 px · 1,10 · 400 Space Grotesk", texto: "Lentejas con verduras" },
   { clase: "t-1", valor: "24 → 28 px · 1,20 · 600", texto: "Martes 12" },
   { clase: "t-2", valor: "19 → 21 px · 1,25 · 600", texto: "Comida" },
   { clase: "t-3", valor: "16 → 17 px · 1,30 · 600", texto: "Ensalada de garbanzos" },
@@ -259,7 +259,7 @@ export default function SistemaDeDiseno() {
 
         <Seccion
           titulo="Tipografía"
-          nota="Dos fuentes con reparto estricto. Geist hace el trabajo: toda la interfaz, todo el cuerpo y todos los números. Instrument Serif pone la voz, y sólo en cuatro sitios: el titular de portada, el título de una ficha de receta, el titular de sobre-restricción y su cifra héroe. Nunca en interfaz, nunca en un número, nunca por debajo de 24 px, nunca en negrita. Las dos son OFL 1.1 y se sirven desde el propio dominio."
+          nota="Dos fuentes con reparto estricto. Inter hace el trabajo: toda la interfaz, todo el cuerpo y todos los números. Space Grotesk pone la voz, y sólo en cuatro sitios: el titular de portada, el título de una ficha de receta, el titular de sobre-restricción y su cifra héroe. Nunca en interfaz, nunca en un número, nunca por debajo de 24 px, nunca en negrita. Las dos son OFL 1.1 y se sirven desde el propio dominio."
         >
           <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
             {ESCALA.map((e) => (
@@ -292,7 +292,7 @@ export default function SistemaDeDiseno() {
 
         <Seccion
           titulo="Números tabulares"
-          nota="Geist trae la feature OpenType «tnum» de verdad: sustituye cada dígito por una variante de anchura fija. Sin ella el «1» mide 384 milésimas de eme y el «0» 663, y las columnas de gramos se desplazan a cada actualización. Las dos filas de abajo son el mismo texto: la de arriba con tabular-nums, la de abajo sin ella. Si se ven iguales, la fuente no está cargando."
+          nota="Inter trae la feature OpenType «tnum» de verdad: sustituye cada dígito por una variante de anchura fija. Sin ella las columnas de gramos se desplazan a cada actualización. Las dos filas de abajo son el mismo texto: la de arriba con tabular-nums, la de abajo sin ella. Si se ven iguales, la fuente no está cargando."
         >
           <div className="overflow-x-auto rounded-lg border border-line bg-surface">
             <table className="w-full">
@@ -367,7 +367,7 @@ export default function SistemaDeDiseno() {
 
         <Seccion
           titulo="Superficies"
-          nota="Neutro cálido, no gris puro: un gris neutro se lee como «no elegido». Las tarjetas de comida se separan por fondo, no por sombra. El número es el contraste de cada superficie contra el fondo de página; son diferencias de superficie, no de texto, y por eso son pequeñas a propósito."
+          nota="Gris frío de índigo, no gris puro: un gris sin sesgo se lee como «no elegido», y un fondo cálido chocaba con un acento frío. Las tarjetas de comida se separan por fondo, no por sombra. El número es el contraste de cada superficie contra el fondo de página; son diferencias de superficie, no de texto, y por eso son pequeñas a propósito."
         >
           <Muestras items={SUPERFICIES} />
         </Seccion>
@@ -388,7 +388,7 @@ export default function SistemaDeDiseno() {
 
         <Seccion
           titulo="Marca y estados"
-          nota="El acento de marca es berenjena: evita a propósito el verde-menta clínico de las apps de salud y el coral de media categoría. No hay token de «éxito», y es intencionado: el verde ya significa grasa, y un confirmador verde junto a una barra de macros crea ambigüedad justo donde el usuario está aprendiendo el código de color. El éxito se resuelve con el acento de marca y un icono; el rojo queda reservado a error."
+          nota="El acento de marca es índigo: evita a propósito el verde-menta clínico de las apps de salud, el coral de media categoría, y también el verde o el teal que otras paletas de «salud» comparten con el macro de grasa. No hay token de «éxito», y es intencionado: el verde ya significa grasa, y un confirmador verde junto a una barra de macros crea ambigüedad justo donde el usuario está aprendiendo el código de color. El éxito se resuelve con el acento de marca y un icono; el rojo queda reservado a error."
         >
           <Muestras items={ESTADOS} />
         </Seccion>

@@ -9,27 +9,67 @@ color literal. La referencia viva es `/sistema`.
 
 ---
 
-## Acento de marca: berenjena `#6b3a5b`
+## Acento de marca: berenjena `#6b3a5b` (revisado a índigo `#4338ca`)
 
-**Descartado a propósito:**
+**Revisado.** No se borra la decisión original porque el motivo de fondo sigue
+vigente: se anota la nueva encima, como pide la cabecera de este documento.
+
+**Descartado a propósito, entonces y ahora:**
 
 - *Verde menta / verde salud.* Es el color por defecto de toda app de nutrición
   y fitness. Comunica "clínico" antes que "comida", y no diferencia nada.
 - *Coral / salmón.* Es el acento de Eat This Much y de media categoría.
 - *Azul corporativo.* Legible pero sin relación con el dominio.
+- *Verde/teal de "salud" genérico.* Motivo nuevo, añadido en la revisión: una
+  búsqueda de paletas para "producto de nutrición" devuelve casi siempre
+  verde o teal como acento. Aquí ese hueco ya está ocupado por el macro de
+  grasa (`--fat`); ponerlo también de marca haría indistinguibles el color de
+  la interfaz y el color de un dato, justo el error que la sección de
+  Macronutrientes existe para evitar.
 
-Berenjena es un color de comida real (berenjena, remolacha, vino), es cálido,
-funciona sobre crema y sobre fondo oscuro, y no lo usa ningún competidor
-directo. En oscuro se aclara a `#d4a3c2` para mantener contraste sobre el fondo.
+Berenjena era un color de comida real (berenjena, remolacha, vino), cálido, y
+no lo usaba ningún competidor directo. Se revisa igualmente porque un pedido
+explícito de rediseño completo (color, tipografía, distribución) es la
+ocasión de comprobar si sigue siendo la mejor opción, no sólo de conservarla
+por inercia.
 
-## Superficies: neutro cálido, no gris puro
+**Índigo** cumple las mismas dos condiciones duras —no coincide con ningún
+macro, no es el verde/coral/azul-corporativo ya descartados— y añade una
+tercera: es un tono que ninguna paleta de "salud" genérica ofrece por
+defecto (la búsqueda de referencia sobre 192 paletas del catálogo devolvió
+verde o teal en prácticamente todos los resultados para "nutrición"), así
+que sigue sin parecerse a ningún competidor directo ni a la plantilla por
+defecto de la categoría.
 
-Un gris neutro puro se lee como "no elegido". Las superficies tienen un sesgo
-cálido (`#faf8f4` en claro, `#171512` en oscuro) que acompaña al acento y evita
-el aspecto de panel de administración.
+Contraste verificado con la misma fórmula WCAG del Anexo A.2 de
+`diseno-producto.md` (relative luminance, no una herramienta de terceros):
+
+| Par | Claro | Oscuro |
+|---|---|---|
+| `--on-brand` sobre `--brand` (botón) | 7,90:1 | 6,78:1 |
+| `--brand` sobre `--bg` (enlace) | 7,40:1 | 7,52:1 |
+| `--brand` sobre `--brand-soft` (etiqueta de chip) | 6,72:1 | 6,23:1 |
+
+Las superficies neutras se revisan a la vez (ver "Superficies", debajo): un
+fondo cálido y un acento frío convivían mal.
+
+## Superficies: gris frío de índigo, no gris puro (revisado de "neutro cálido")
+
+**Revisado junto con el acento.** Un gris neutro puro se sigue leyendo como
+"no elegido" — eso no cambia —, pero el sesgo cálido que acompañaba a la
+berenjena (`#faf8f4` en claro, `#171512` en oscuro) chocaba con un acento
+frío como el índigo. El sesgo ahora es frío, hacia el mismo índigo
+(`#f7f7fb` en claro, `#0e0e16` en oscuro): la superficie sigue sin ser gris
+puro, sigue evitando el aspecto de panel de administración, y ahora
+acompaña al acento en vez de tironear contra él.
+
+`--text-3`, la única superficie de texto con margen estrecho, se recalculó
+igual: 5,02:1 sobre `--surface` y 4,70:1 (sólo texto grande) sobre `--bg` en
+claro — con margen sobre el mínimo AA, no al límite como antes.
 
 Las tarjetas de comida se separan **por fondo, no por sombra**. La sombra queda
-reservada a elementos flotantes: popovers, diálogos, arrastre.
+reservada a elementos flotantes: popovers, diálogos, arrastre. Esto no cambia
+con la revisión.
 
 ## Colores de macronutriente: triada Okabe-Ito
 
@@ -50,6 +90,12 @@ Requisitos que cumplen y hay que preservar si alguien los cambia:
 2. Ninguno coincide con el acento de marca.
 3. Funcionan sobre fondo claro y oscuro.
 4. Son los mismos en todo el producto: se aprenden una vez, sin leyenda.
+
+**Sin cambios en la revisión a índigo.** Los tres tonos Okabe-Ito no se tocan:
+cambiar un color validado contra deuteranopia y protanopia sin un motivo
+funcional invalidaría esa validación sin necesidad. Lo único recalculado son
+los tintes `*-soft` (el fondo suave de cada franja), porque cambiaron las
+superficies contra las que se miden — ver "Superficies" arriba.
 
 **Pendiente:** verificarlos con un simulador de daltonismo sobre capturas reales
 de la vista de plan, no sólo sobre las muestras de `/sistema`.
@@ -164,60 +210,86 @@ dan el fondo, el texto, el acento y la sombra correctos, y `color-mix()`
 El script de `layout.tsx` aplica el tema guardado antes del primer pintado; sin
 él, quien tenga elegido oscuro ve un destello claro en cada carga.
 
-## Tipografía: Geist para el trabajo, Instrument Serif para la voz
+## Tipografía: Inter para el trabajo, Space Grotesk para la voz (revisado de Geist / Instrument Serif)
 
-**Decidida.** Antes estaba en "pendiente de decidir" con Geist puesta por
-defecto del andamiaje de Next. `diseno-producto.md` §2.2 ya había razonado el
-reparto; aquí se cierra con las comprobaciones que faltaban y se implementa.
+**Revisado.** La decisión original (Geist / Instrument Serif) queda íntegra
+más abajo, marcada como histórica: el reparto de papeles — una fuente hace
+todo el trabajo, otra pone la voz en un puñado de sitios — no cambia, sólo
+las dos familias concretas.
 
 | Papel | Fuente | Uso exacto |
 |---|---|---|
-| **Trabajo** | Geist (variable, 100–900) | Toda la interfaz, todo el cuerpo, **todos los números** |
-| **Voz** | Instrument Serif 400 + itálica | Sólo cuatro sitios: H1 de portada, título de ficha de receta, titular de sobre-restricción y su cifra héroe |
+| **Trabajo** | Inter (variable, 100–900) | Toda la interfaz, todo el cuerpo, **todos los números** |
+| **Voz** | Space Grotesk 400 | Sólo cuatro sitios: H1 de portada, título de ficha de receta, titular de sobre-restricción y su cifra héroe |
 
-Las restricciones que mandaban sobre el gusto, y cómo las cumple cada una:
+Las mismas cuatro restricciones que mandaban sobre el gusto la vez anterior,
+comprobadas otra vez sobre el fichero real de cada fuente descargado de
+Google Fonts (`fontTools.ttLib`, tabla `GSUB` y `cmap`; no supuesto por
+reputación):
 
-1. **Números tabulares de verdad.** Es la que decide. Geist trae la feature
-   OpenType `tnum` y sustituye cada dígito por su variante `.tf` de 600/1000 em;
-   sus cifras por defecto son proporcionales (el «1» mide 384 y el «0» 663). Sin
-   esa tabla, `font-variant-numeric: tabular-nums` no haría nada y toda la regla
-   de la sección anterior sería decorativa. Comprobado sobre el fichero de la
-   fuente y medido después en el navegador.
-2. **Licencia libre y servible desde `next/font` sin coste ni gestión.** Las dos
-   son **OFL 1.1**, y esta vez verificado en el repositorio oficial y no sólo en
-   la ficha de Google Fonts: `github.com/vercel/geist-font` y
-   `github.com/Instrument/instrument-serif`, que trae su `OFL.txt`. Esto cierra
-   el pendiente C.1 de `diseno-producto.md`, que pedía exactamente esta
-   comprobación antes de producir material de marketing. Ambas se autoalojan en
-   `_next/static/media`: el sitio publicado no pide nada a un tercero, que es
-   requisito para un export estático en Pages.
-3. **Legible a 13–15 px en móvil**, que es el tamaño real de la tabla
-   nutricional. Geist es una grotesca de altura de x alta pensada para interfaz;
-   es donde mejor está.
-4. **Castellano completo.** Comprobado sobre los ficheros servidos: ambas cubren
-   `á é í ó ú ü ñ` y sus mayúsculas, y además `¿ ¡ « » — €`.
+1. **Números tabulares de verdad.** Inter trae la feature OpenType `tnum`
+   —confirmado en la tabla `GSUB` del fichero, junto a `pnum`, `dnom`, `numr`,
+   `frac`—, así que `font-variant-numeric: tabular-nums` sigue funcionando.
+2. **Licencia libre y servible desde `next/font` sin coste ni gestión.** Las
+   dos son **OFL 1.1** (`github.com/rsms/inter`,
+   `github.com/floriankarsten/space-grotesk`), autoalojadas en
+   `_next/static/media`.
+3. **Legible a 13–15 px en móvil.** Inter está diseñada específicamente para
+   interfaz de pantalla, con x-height alta; es donde mejor está.
+4. **Castellano completo.** Comprobado sobre el `cmap` de ambos ficheros:
+   cubren `á é í ó ú ü ñ` y sus mayúsculas, y además `¿ ¡ « » — €`.
 
-**Descartado:**
+**Por qué género distinto en la voz, no otro serif.** Las dos candidatas
+serif que ya se habían descartado (Playfair Display por "lee a boda",
+Calistoga por "lee a cartel de food truck") fallaban por el mismo motivo:
+tono equivocado para un producto que dice explícitamente "no somos un
+recetario". Una tercera candidata serif corría el mismo riesgo. Space
+Grotesk cambia de género —grotesca de display, no serif— y con eso se sale
+de esa familia de problemas en vez de esquivarla por casualidad. Sigue
+siendo **una sola voz en un puñado de sitios**, el mismo mecanismo de
+antes: el contraste con Inter no viene de serif contra sans, viene de la
+geometría distintiva de Space Grotesk (el descendente de la «g», la «S»)
+contra una grotesca de interfaz neutra.
 
-- *Söhne.* **Es de pago, y no se justifica antes de tener ingresos.** Con esas
-  palabras, porque es la mejor de las candidatas y el motivo del descarte es
-  presupuestario, no técnico: si algún día hay presupuesto, es la primera a la
-  que volver.
-- *Playfair Display.* Lee a boda. Contraste alto y ductus de invitación.
-- *Calistoga.* Lee a cartel de food truck.
-- *Sólo Geist.* Funciona y es la opción segura, pero el producto queda correcto
-  y sin memoria: la portada no se distingue de cualquier SaaS. La carencia de
-  calidez de Geist se resuelve con **una sola voz en un puñado de sitios**, no
-  cambiando la fuente que lleva los datos.
-- *Newsreader*, que `diseno-producto.md` guardaba como sustituta si la licencia
-  de Instrument Serif no encajaba. Ya no hace falta: la licencia encaja.
+**Descartado (revisión):**
 
-**Geist Mono se retira.** Se cargaba en todas las rutas y su único uso en todo
-`src/` era una etiqueta `<code>` de `/sistema`: una familia entera descargada en
-la portada para una página interna. `--font-mono` cae ahora en la mono del
-sistema, que para nombres de token es exactamente igual de buena. §2.2 la
-reservaba para "códigos de plan en soporte"; cuando eso exista, se vuelve a
-cargar y se anota aquí.
+- *Playfair Display, Calistoga.* Se reafirma el descarte anterior — mismo
+  motivo, ver arriba.
+- *Emparejamientos con una tercera familia mono para etiquetas de dato*
+  (p. ej. Space Grotesk + Inter + JetBrains Mono). Un fichero de fuente más
+  para un uso que `tabular-nums` sobre Inter ya resuelve es exactamente el
+  motivo por el que se retiró Geist Mono (ver abajo); no se repite el error.
+
+**Sin mono.** Sigue sin cargarse ninguna: nada en `src/` la necesita todavía.
+Motivo histórico (Geist Mono): se cargaba en todas las rutas para una sola
+etiqueta `<code>` de `/sistema`. §2.2 reservaba una mono para "códigos de
+plan en soporte"; cuando eso exista, se carga y se anota aquí.
+
+<details>
+<summary>Decisión original (Geist / Instrument Serif), histórica</summary>
+
+**Decidida** en su momento. Antes estaba en "pendiente de decidir" con Geist
+puesta por defecto del andamiaje de Next. `diseno-producto.md` §2.2 ya había
+razonado el reparto; aquí se cerró con las comprobaciones que faltaban.
+
+| Papel | Fuente | Uso exacto |
+|---|---|---|
+| Trabajo | Geist (variable, 100–900) | Toda la interfaz, todo el cuerpo, todos los números |
+| Voz | Instrument Serif 400 + itálica | Los mismos cuatro sitios de la tabla de arriba |
+
+1. Números tabulares: Geist traía `tnum` (sus cifras proporcionales de
+   partida median 384/663 milésimas de eme el «1» y el «0»).
+2. Licencia OFL 1.1 verificada en `github.com/vercel/geist-font` y
+   `github.com/Instrument/instrument-serif`.
+3. Legible a 13–15 px en móvil.
+4. Castellano completo.
+
+Descartadas entonces: *Söhne* (de pago, no justificado sin ingresos),
+*Playfair Display* ("lee a boda"), *Calistoga* ("lee a cartel de food
+truck"), *sólo Geist* (correcto pero sin memoria de marca), *Newsreader*
+(sustituta de reserva que dejó de hacer falta).
+
+</details>
 
 ### Escala tipográfica: once tokens, una clase por token
 
@@ -228,7 +300,7 @@ inventaba su tamaño con un valor arbitrario: `text-[34px]`, `text-[17px]`,
 `text-[15px]` en siete sitios, `text-[13px]`, `text-[19px]`…
 
 Son `@utility` y no claves `--text-*` de Tailwind porque cuatro de ellos llevan
-algo que una clave `--text-*` no sabe expresar: la familia serif de la voz, la
+algo que una clave `--text-*` no sabe expresar: la familia distinta de la voz, la
 versal de `micro` y los números tabulares de las cifras. Partirlos en "una clave
 para el tamaño y una clase para lo demás" daba dos vocabularios para lo mismo y
 garantizaba que alguien usara la mitad.
@@ -243,14 +315,15 @@ mitad para que la escala se rompa en silencio. Los extremos son los de la tabla
 medias interpola en vez de saltar. La parte fija va en `rem` para que el texto
 siga respondiendo al tamaño de fuente del navegador (WCAG 1.4.4).
 
-**`micro` usa versal, no versalita.** §2.2 pedía versalita. Geist **no trae
-tabla `smcp`** — comprobado sobre el fichero de la fuente: sus features son
-`aalt case ccmp dlig dnom frac liga locl numr ordn pnum sinf ss01…ss11 subs sups
-tnum`. Sin `smcp`, `font-variant-caps` sólo puede sintetizar la versalita
-escalando las mayúsculas, y a 12 px eso se ve sucio y desigual. Se usa versal con
-tracking abierto, que es lo que la versalita venía a conseguir aquí: distinguir
-la cabecera de sección sin subir de tamaño. Si algún día la voz de marca pide
-versalita de verdad, hay que cambiar de fuente de trabajo, no forzar ésta.
+**`micro` usa versal, no versalita.** §2.2 pedía versalita. Ni Geist ni Inter
+traen tabla `smcp` — comprobado sobre el fichero de cada fuente con
+`fontTools`: las features de Inter son `calt ccmp dnom frac locl numr pnum
+tnum`, sin `smcp` igual que Geist. Sin ella, `font-variant-caps` sólo puede
+sintetizar la versalita escalando las mayúsculas, y a 12 px eso se ve sucio y
+desigual. Se usa versal con tracking abierto, que es lo que la versalita
+venía a conseguir aquí: distinguir la cabecera de sección sin subir de
+tamaño. Si algún día la voz de marca pide versalita de verdad, hay que
+cambiar de fuente de trabajo, no forzar ésta.
 
 ## Forma y movimiento
 

@@ -49,9 +49,7 @@ export function SobreRestriccion({
     <section
       className={`${estilos.aparicion} mx-auto w-full max-w-xl rounded-[var(--radius-lg)] bg-surface p-6 sm:p-8`}
     >
-      <h2 className="text-[26px] font-semibold leading-tight tracking-tight sm:text-3xl">
-        Con lo que me has dicho, no llego.
-      </h2>
+      <h2 className="voz-2">Con lo que me has dicho, no llego.</h2>
 
       {/* El texto del motor, tal cual: sale de las variables de holgura del LP
           y explica qué restricción ata. No se reescribe aquí. */}
@@ -59,7 +57,7 @@ export function SobreRestriccion({
 
       {/* La cifra, con su contexto inmediato debajo. */}
       <div className="mt-8">
-        <p className="text-5xl font-semibold tabular-nums tracking-tight sm:text-6xl" data-numeric>
+        <p className="cifra-heroe" data-numeric>
           {numero(fallo.recetasCandidatas)}
         </p>
         <p className="mt-2 text-[15px] leading-relaxed text-text-2">
