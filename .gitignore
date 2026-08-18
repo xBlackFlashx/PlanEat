@@ -45,9 +45,12 @@ coverage/
 # + 2.171 instancias de la etapa B). Fuera del repo por tamaño; se regenera en
 # ~4 s y es determinista (semilla fija), así que dos regeneraciones dan el mismo
 # fichero byte a byte:
-#   cd services/solver && python scripts/volcar_paridad.py
-# Los fixtures pequeños y legibles de data/fixtures/ SÍ van versionados.
+#   cd services/solver && python scripts/volcar_paridad.py --salida ../../packages/motor/pruebas/datos/
+# Los fixtures pequeños y legibles de data/fixtures/ SÍ van versionados, igual
+# que el manifiesto (ata el volcado a una versión del catálogo, pero pesa poco).
 services/solver/data/paridad/
+packages/motor/pruebas/datos/funciones-puras.jsonl
+packages/motor/pruebas/datos/porciones.jsonl
 
 # Vercel / despliegue
 .vercel
