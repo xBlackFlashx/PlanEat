@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { NavCuenta } from "@/components/nav-cuenta";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 import { PlanCliente } from "./plan-cliente";
@@ -12,18 +13,19 @@ import { PlanCliente } from "./plan-cliente";
  * Sigue siendo una **URL compartible**, y eso es producto, no implementación:
  * el perfil viaja en la query, así que el mismo enlace devuelve el mismo tipo
  * de día. Con el motor en el navegador se añade el `seed`, que lo hace además
- * *reproducible*: mismo enlace, mismo plan, receta por receta. No hay sesión ni
- * base de datos todavía; cuando las haya, esta página leerá el plan guardado y
- * la query se quedará como camino de entrada sin cuenta.
+ * *reproducible*: mismo enlace, mismo plan, receta por receta. Este día suelto
+ * sigue sin sesión ni base de datos a propósito — es el camino de entrada sin
+ * cuenta — aunque el resto de la app ya tenga las dos (ver `/semana` para el
+ * plan Pro guardado por usuario).
  *
- * Lo que ha cambiado con el port: el trabajo pesado ya no ocurre en el
- * servidor, porque no hay servidor. Este fichero es el cascarón estático —lo
- * único que se puede prerenderizar sin conocer la query— y todo lo que depende
- * de ella baja a `plan-cliente.tsx`.
+ * El trabajo pesado sigue ocurriendo en el navegador, no en el servidor: el
+ * motor es un Web Worker (`src/lib/solver.ts`). Este fichero es el cascarón
+ * —lo único que se puede prerenderizar sin conocer la query— y todo lo que
+ * depende de ella baja a `plan-cliente.tsx`.
  *
  * El reparto no es de gusto: `export const metadata` y `"use client"` no pueden
  * convivir en el mismo fichero, y `useSearchParams()` sin frontera de
- * `<Suspense>` hace fallar el build con `output: "export"`.
+ * `<Suspense>` hace fallar el build.
  */
 
 export const metadata: Metadata = {
@@ -42,7 +44,10 @@ export default function PaginaPlan() {
           >
             PlanEat
           </Link>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <NavCuenta />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

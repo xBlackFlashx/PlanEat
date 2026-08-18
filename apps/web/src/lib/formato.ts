@@ -47,14 +47,6 @@ export function gramos(valor: number): string {
   return numero(valor);
 }
 
-/** Precio en rango, nunca exacto (docs/spec.md §9.1.5). */
-export function rangoPrecio(cents: number): string {
-  const euros = cents / 100;
-  const min = Math.floor(euros * 0.92);
-  const max = Math.ceil(euros * 1.08);
-  return `${numero(min)}–${numero(max)}${ESPACIO_FINO}€`;
-}
-
 /** `1` → `1 ración`; `1,5` → `1 ración y media`; el resto, con un decimal. */
 export function racion(factor: number): string {
   if (Math.abs(factor - 1) < 0.02) return "1 ración";

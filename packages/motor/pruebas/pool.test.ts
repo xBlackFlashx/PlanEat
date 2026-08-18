@@ -70,12 +70,12 @@ test("cada dieta deja exactamente las recetas que deja el construir_pool de Pyth
   // spec señala como candidatas a caer siempre en sobre-restricción con 36
   // recetas (vegana y baja_en_carbohidratos).
   const esperado: ReadonlyArray<readonly [TipoDieta, number]> = [
-    ["omnivora", 36],
-    ["vegetariana", 21],
-    ["vegana", 8],
-    ["pescetariana", 29],
-    ["baja_en_carbohidratos", 10],
-    ["mediterranea", 24],
+    ["omnivora", 240],
+    ["vegetariana", 138],
+    ["vegana", 73],
+    ["pescetariana", 176],
+    ["baja_en_carbohidratos", 133],
+    ["mediterranea", 105],
   ];
   for (const [dieta, p] of esperado) {
     assert.equal(construirPool(CAT, restr({ dieta })).p, p, `dieta ${dieta}`);
@@ -86,26 +86,214 @@ test("la dieta no filtra por conteo sino por receta: los ids son los del Python"
   // Un conteo correcto con las recetas equivocadas es indistinguible de un
   // acierto, y es exactamente lo que produce leer la columna de dieta contigua.
   assert.deepEqual(idsDe(construirPool(CAT, restr({ dieta: "vegana" }))), [
-    "lentejas_guisadas",
-    "ensalada_garbanzos",
-    "quinoa_tofu_pimiento",
-    "curry_garbanzos",
-    "revuelto_champinones_tofu",
-    "tostada_cacahuete_platano",
-    "manzana_almendras",
-    "cuscus_verduras_garbanzos",
+  "lentejas_guisadas",
+  "ensalada_garbanzos",
+  "quinoa_tofu_pimiento",
+  "curry_garbanzos",
+  "revuelto_champinones_tofu",
+  "tostada_cacahuete_platano",
+  "manzana_almendras",
+  "cuscus_verduras_garbanzos",
+  "avena_crema_cacahuete_platano",
+  "ensalada_pepino_tomate_verano",
+  "esparragos_horno",
+  "ensalada_espinacas_sencilla",
+  "sandwich_mermelada_cacahuete_grande",
+  "arroz_blanco_sencillo",
+  "coles_bruselas_ajo",
+  "pasta_aceite_tomate_albahaca",
+  "hummus_pan_centeno",
+  "patatas_pimientos_sarten",
+  "boniato_microondas",
+  "tofu_revuelto_verduras",
+  "avena_platano_chia_vegana",
+  "tempeh_salteado_verduras",
+  "ensalada_quinoa_garbanzos",
+  "curry_lentejas_espinacas",
+  "hummus_verduras_crudas",
+  "tazon_tofu_arroz",
+  "wrap_hummus_verduras",
+  "batido_verde_platano",
+  "ensalada_alubias_aguacate",
+  "tacos_soja_texturizada",
+  "sopa_lentejas_verduras",
+  "bowl_tempeh_cuscus",
+  "tostada_aguacate_tomate_vegana",
+  "ensalada_kale_manzana",
+  "tazon_soja_arroz_verduras",
+  "ensalada_pepino_alubias_eneldo",
+  "tofu_horneado_boniato",
+  "platano_crema_cacahuate_snack",
+  "palitos_zanahoria_hummus",
+  "manzana_crema_cacahuate",
+  "mix_frutos_secos_pasas",
+  "apio_crema_cacahuate",
+  "pimientos_rellenos_soja",
+  "ensalada_col_lombarda_manzana",
+  "ensalada_tempeh_kale",
+  "tofu_teriyaki_arroz",
+  "ensalada_tabule_quinoa",
+  "hamburguesa_garbanzos",
+  "arroz_frito_tofu_verduras",
+  "tempeh_teriyaki_verduras",
+  "burrito_frijoles_verduras",
+  "pasta_lentejas_tomate",
+  "tazon_quinoa_verduras_asadas",
+  "sopa_garbanzos_espinacas",
+  "tostada_alubias_aguacate",
+  "ensalada_lentejas_verduras_vegana",
+  "tofu_curry_verduras_vegano",
+  "quinoa_desayuno_frutas",
+  "wrap_tempeh_verduras",
+  "crema_lentejas_zanahoria",
+  "ensalada_cuscus_verduras_vegana",
+  "tostada_hummus_pepino",
+  "batido_verde_manzana_espinaca",
+  "tofu_salteado_pimientos_vegano",
+  "lentejas_curry_boniato",
+  "ensalada_garbanzos_espinacas_pasas",
+  "sopa_alubias_verduras",
+  "tazon_tempeh_quinoa_verduras",
+  "avena_nocturna_cacao_platano",
+  "ensalada_col_lombarda_alubias",
+  "tostada_aguacate_pimienta",
+  "brocoli_almendras_salteado",
+  "coliflor_horno_curry",
   ]);
   assert.deepEqual(idsDe(construirPool(CAT, restr({ dieta: "baja_en_carbohidratos" }))), [
-    "tortilla_claras_espinacas",
-    "yogur_fresas_almendras",
-    "salmon_calabacin",
-    "crema_calabacin_requeson",
-    "revuelto_champinones_tofu",
-    "pollo_coliflor_aceitunas",
-    "salmon_espinacas_aguacate",
-    "revuelto_gambas_bajo_carb",
-    "yogur_nueces",
-    "requeson_miel_almendras",
+  "tortilla_claras_espinacas",
+  "yogur_fresas_almendras",
+  "salmon_calabacin",
+  "crema_calabacin_requeson",
+  "revuelto_champinones_tofu",
+  "pollo_coliflor_aceitunas",
+  "salmon_espinacas_aguacate",
+  "revuelto_gambas_bajo_carb",
+  "yogur_nueces",
+  "requeson_miel_almendras",
+  "huevos_duros_faciles",
+  "revuelto_espinacas_pimiento",
+  "tortilla_francesa_cheddar",
+  "revuelto_espinacas_feta",
+  "frittata_calabacin",
+  "ensalada_pollo_cesar",
+  "ensalada_atun_clasica",
+  "ensalada_pepino_tomate_verano",
+  "salteado_pollo_verduras",
+  "ensalada_atun_aguacate_paleo",
+  "pollo_limon_sarten",
+  "pollo_espinacas_queso",
+  "salteado_ternera_verduras",
+  "pollo_costra_parmesano",
+  "esparragos_horno",
+  "salmon_horno_hierbas",
+  "brocoli_vapor_parmesano",
+  "ensalada_espinacas_sencilla",
+  "brocoli_vapor_mantequilla",
+  "tortilla_claras_queso",
+  "pollo_caprese",
+  "salmon_balsamico",
+  "esparragos_parmesano",
+  "ensalada_pollo_verduras",
+  "coles_bruselas_ajo",
+  "ensalada_rucula_pollo",
+  "judias_verdes_ajo",
+  "salteado_col_verde_bacon",
+  "pollo_teriyaki_parrilla",
+  "ensalada_atun_americana",
+  "pollo_asado_aderezo_italiano",
+  "wrap_pollo_lechuga",
+  "ensalada_pollo_curry",
+  "revuelto_pavo_queso_tostada",
+  "revuelto_bacon_champinones",
+  "tofu_revuelto_verduras",
+  "ensalada_kale_manzana",
+  "manzana_crema_cacahuate",
+  "huevo_duro_pepino_sal",
+  "queso_cottage_pina",
+  "mix_frutos_secos_pasas",
+  "tostada_queso_tomate",
+  "batido_proteico_fresas",
+  "rollitos_pavo_queso",
+  "melon_jamon",
+  "sandia_queso_feta",
+  "apio_crema_cacahuate",
+  "pepinillos_atun_pan",
+  "requeson_pasas_canela",
+  "pechuga_pollo_verduras_vapor",
+  "claras_huevo_espinacas",
+  "atun_ensalada_pepino_ligera",
+  "pechuga_pollo_esparragos_ajo",
+  "bacalao_verduras_horno",
+  "gambas_salteadas_ajo_limon",
+  "merluza_espinacas_vapor",
+  "pollo_curry_ligero_yogur",
+  "ensalada_pollo_espinacas_balsamico",
+  "tortilla_claras_pavo_pimiento",
+  "lomo_cerdo_verduras_plancha",
+  "salmon_esparragos_limon",
+  "berenjena_horno_parmesano",
+  "coliflor_arroz_salteado",
+  "ensalada_cesar_ligera_pollo",
+  "brocheta_gambas_limon_pimenton",
+  "sopa_verduras_pollo_desmenuzado",
+  "rollitos_pepino_atun",
+  "ensalada_col_lombarda_manzana",
+  "lomo_cerdo_manzana_romero",
+  "ensalada_esparragos_huevo_parmesano",
+  "ensalada_tempeh_kale",
+  "pollo_champinones_salsa_ligera",
+  "tempeh_teriyaki_verduras",
+  "tofu_curry_verduras_vegano",
+  "tofu_salteado_pimientos_vegano",
+  "queso_curado_manzana",
+  "yogur_pina_snack",
+  "nueces_miel_snack",
+  "requeson_pepino_snack",
+  "apio_requeson_snack",
+  "yogur_manzana_canela_snack",
+  "batido_arandanos_yogur",
+  "huevo_duro_tomate_snack",
+  "pavo_queso_manzana_snack",
+  "tostada_aguacate_pimienta",
+  "fresas_requeson_snack",
+  "pepino_atun_snack",
+  "galletas_integrales_queso",
+  "jamon_melon_snack",
+  "muslo_pollo_horno_verduras",
+  "claras_huevo_pavo_tostada",
+  "pechuga_pollo_brocoli_limon",
+  "atun_tomate_relleno",
+  "merluza_limon_horno",
+  "ensalada_pollo_manzana_ligera",
+  "gambas_limon_espinacas",
+  "bacalao_tomate_horno",
+  "pechuga_pavo_espinacas_plancha",
+  "claras_huevo_champinones",
+  "ensalada_atun_esparragos",
+  "salmon_vapor_brocoli",
+  "ternera_verduras_plancha",
+  "huevos_duros_espinacas_snack",
+  "pollo_pimenton_horno",
+  "ensalada_gambas_espinacas",
+  "pavo_verduras_salteado",
+  "merluza_esparragos_limon",
+  "revuelto_claras_pimiento_cebolla",
+  "ensalada_pollo_aguacate_maiz",
+  "salmon_mostaza_horno",
+  "ternera_champinones_salsa",
+  "pollo_limon_esparragos_horno",
+  "brocoli_almendras_salteado",
+  "ensalada_pepino_menta_queso",
+  "ensalada_atun_huevo_aceitunas",
+  "pollo_salsa_mostaza_champinones",
+  "ensalada_espinacas_queso_feta_nueces",
+  "salmon_teriyaki_brocoli",
+  "coliflor_horno_curry",
+  "berenjena_relleno_pavo",
+  "ensalada_rucula_queso_curado",
+  "ensalada_espinacas_pollo_manzana",
+  "pollo_cebolla_caramelizada",
   ]);
 });
 
@@ -131,9 +319,9 @@ test("toda receta del pool está marcada con la dieta pedida", () => {
 
 test("los alérgenos excluidos quitan las recetas que dice Python, y sólo ésas", () => {
   const casos: ReadonlyArray<readonly [Alergeno[], number]> = [
-    [["gluten"], 26],
-    [["lacteos", "gluten"], 21],
-    [["huevos"], 31],
+    [["gluten"], 174],
+    [["lacteos", "gluten"], 132],
+    [["huevos"], 204],
   ];
   for (const [alergenos, p] of casos) {
     assert.equal(
@@ -152,6 +340,48 @@ test("los alérgenos excluidos quitan las recetas que dice Python, y sólo ésas
       "curry_garbanzos",
       "revuelto_champinones_tofu",
       "manzana_almendras",
+      "ensalada_pepino_tomate_verano",
+      "esparragos_horno",
+      "ensalada_espinacas_sencilla",
+      "arroz_blanco_sencillo",
+      "coles_bruselas_ajo",
+      "patatas_pimientos_sarten",
+      "boniato_microondas",
+      "tofu_revuelto_verduras",
+      "tempeh_salteado_verduras",
+      "ensalada_quinoa_garbanzos",
+      "curry_lentejas_espinacas",
+      "hummus_verduras_crudas",
+      "tazon_tofu_arroz",
+      "ensalada_alubias_aguacate",
+      "sopa_lentejas_verduras",
+      "ensalada_kale_manzana",
+      "tazon_soja_arroz_verduras",
+      "ensalada_pepino_alubias_eneldo",
+      "tofu_horneado_boniato",
+      "platano_crema_cacahuate_snack",
+      "palitos_zanahoria_hummus",
+      "manzana_crema_cacahuate",
+      "mix_frutos_secos_pasas",
+      "apio_crema_cacahuate",
+      "pimientos_rellenos_soja",
+      "ensalada_col_lombarda_manzana",
+      "ensalada_tempeh_kale",
+      "ensalada_tabule_quinoa",
+      "arroz_frito_tofu_verduras",
+      "tazon_quinoa_verduras_asadas",
+      "sopa_garbanzos_espinacas",
+      "ensalada_lentejas_verduras_vegana",
+      "tofu_curry_verduras_vegano",
+      "crema_lentejas_zanahoria",
+      "tofu_salteado_pimientos_vegano",
+      "lentejas_curry_boniato",
+      "ensalada_garbanzos_espinacas_pasas",
+      "sopa_alubias_verduras",
+      "tazon_tempeh_quinoa_verduras",
+      "ensalada_col_lombarda_alubias",
+      "brocoli_almendras_salteado",
+      "coliflor_horno_curry",
     ],
   );
 });
@@ -186,10 +416,10 @@ test("el orden en que se piden los alérgenos no cambia el pool", () => {
 // ---------------------------------------------------------------------------
 
 test("los ingredientes excluidos quitan las recetas que los usan", () => {
-  assert.equal(construirPool(CAT, restr({ ingredientesExcluidos: ["pechuga_pollo"] })).p, 30);
+  assert.equal(construirPool(CAT, restr({ ingredientesExcluidos: ["pechuga_pollo"] })).p, 203);
   assert.equal(
     construirPool(CAT, restr({ ingredientesExcluidos: ["pechuga_pollo", "arroz_blanco"] })).p,
-    28,
+    196,
   );
 });
 
@@ -198,7 +428,7 @@ test("un ingrediente que el catálogo no conoce se ignora en silencio", () => {
   // o la arrastra una versión anterior del catálogo, y un alimento que no existe
   // no puede estar en ninguna receta, así que ignorarlo da el mismo pool.
   const pool = construirPool(CAT, restr({ ingredientesExcluidos: ["no_existe_este_alimento"] }));
-  assert.equal(pool.p, 36);
+  assert.equal(pool.p, CAT.n);
 });
 
 test("ninguna receta del pool contiene un ingrediente excluido", () => {
@@ -220,16 +450,17 @@ test("ninguna receta del pool contiene un ingrediente excluido", () => {
 
 test("el nivel 1 poda con el MÁXIMO de los topes pedidos, no con el más estricto", () => {
   // Es el bug clásico del módulo: si el pool se filtrara con el tope del
-  // desayuno (15 min), las 23 recetas que sólo caben en comida o cena se
-  // perderían y el día se quedaría sin cenas. Python devuelve 36 aquí.
+  // desayuno (15 min), las recetas que sólo caben en comida o cena se
+  // perderían y el día se quedaría sin cenas. Con un solo slot topado no hay
+  // MÁXIMO que aplicar sobre los demás, así que el pool sale completo.
   const pool = construirPool(CAT, restr({ minutosMaxPorSlot: { desayuno: 15 } }));
-  assert.equal(pool.p, 36);
+  assert.equal(pool.p, CAT.n);
 });
 
 test("un tope en TODOS los slots pedidos sí poda, y poda lo mismo que Python", () => {
   assert.equal(
     construirPool(CAT, restr({ minutosMaxPorSlot: { desayuno: 15, comida: 15, cena: 15 } })).p,
-    13,
+    109,
   );
   assert.deepEqual(
     idsDe(
@@ -248,6 +479,84 @@ test("un tope en TODOS los slots pedidos sí poda, y poda lo mismo que Python", 
       "requeson_miel_almendras",
       "manzana_almendras",
       "queso_batido_fresas",
+      "tortilla_francesa_cheddar",
+      "tostada_crema_cacahuete_platano",
+      "avena_platano_leche",
+      "revuelto_espinacas_feta",
+      "avena_crema_cacahuete_platano",
+      "yogur_griego_bayas_granola",
+      "yogur_canela_manzana",
+      "ensalada_atun_clasica",
+      "ensalada_pepino_tomate_verano",
+      "ensalada_atun_aguacate_paleo",
+      "ensalada_espinacas_sencilla",
+      "sandwich_pavo_sencillo",
+      "sandwich_jamon_queso",
+      "tortilla_claras_queso",
+      "sandwich_mermelada_cacahuete_grande",
+      "salmon_balsamico",
+      "batido_tropical",
+      "hummus_pan_centeno",
+      "boniato_microondas",
+      "ensalada_atun_americana",
+      "wrap_pavo_espinacas_queso",
+      "sandwich_aguacate_lechuga_tomate",
+      "avena_platano_chia_vegana",
+      "hummus_verduras_crudas",
+      "wrap_hummus_verduras",
+      "batido_verde_platano",
+      "ensalada_alubias_aguacate",
+      "tostada_aguacate_tomate_vegana",
+      "ensalada_kale_manzana",
+      "ensalada_pepino_alubias_eneldo",
+      "platano_crema_cacahuate_snack",
+      "yogur_granola_arandanos",
+      "palitos_zanahoria_hummus",
+      "manzana_crema_cacahuate",
+      "queso_cottage_pina",
+      "mix_frutos_secos_pasas",
+      "tostada_queso_tomate",
+      "batido_proteico_fresas",
+      "rollitos_pavo_queso",
+      "melon_jamon",
+      "sandia_queso_feta",
+      "apio_crema_cacahuate",
+      "pepinillos_atun_pan",
+      "requeson_pasas_canela",
+      "atun_ensalada_pepino_ligera",
+      "rollitos_pepino_atun",
+      "ensalada_col_lombarda_manzana",
+      "wrap_atun_aguacate",
+      "tazon_desayuno_proteico",
+      "tostada_alubias_aguacate",
+      "ensalada_lentejas_verduras_vegana",
+      "tostada_hummus_pepino",
+      "batido_verde_manzana_espinaca",
+      "ensalada_garbanzos_espinacas_pasas",
+      "avena_nocturna_cacao_platano",
+      "ensalada_col_lombarda_alubias",
+      "queso_curado_manzana",
+      "platano_yogur_granola",
+      "bolitas_avena_cacahuate",
+      "sandwich_atun_pepinillo",
+      "yogur_pina_snack",
+      "nueces_miel_snack",
+      "requeson_pepino_snack",
+      "apio_requeson_snack",
+      "yogur_manzana_canela_snack",
+      "tostada_platano_canela",
+      "batido_arandanos_yogur",
+      "pavo_queso_manzana_snack",
+      "tostada_aguacate_pimienta",
+      "fresas_requeson_snack",
+      "pepino_atun_snack",
+      "galletas_integrales_queso",
+      "batido_fresas_platano",
+      "jamon_melon_snack",
+      "atun_tomate_relleno",
+      "ensalada_pepino_menta_queso",
+      "ensalada_espinacas_queso_feta_nueces",
+      "ensalada_rucula_queso_curado",
     ],
   );
 });
@@ -255,7 +564,7 @@ test("un tope en TODOS los slots pedidos sí poda, y poda lo mismo que Python", 
 test("sin slots pedidos no hay tope global que aplicar", () => {
   // Un máximo sobre el conjunto vacío no puede podar nada: no hay ningún slot
   // cuyo límite respetar. Con un `-Infinity` mal puesto, el pool saldría vacío.
-  assert.equal(construirPool(CAT, restr({ slots: [] })).p, 36);
+  assert.equal(construirPool(CAT, restr({ slots: [] })).p, CAT.n);
 });
 
 test("topesPorSlot rellena los CINCO slots, no sólo los pedidos", () => {
@@ -280,15 +589,21 @@ test("topesPorSlot rellena los CINCO slots, no sólo los pedidos", () => {
 // ---------------------------------------------------------------------------
 
 test("bitsDe pone un bit por alimento conocido y ninguno por los demás", () => {
-  // El bit 0 es `aceite_oliva` y el 65 es `zanahoria`, que cae en la tercera
-  // palabra: es el caso que distingue las palabras de 32 bits de los uint64 de
-  // numpy (allí sale [1, 2]; aquí, [1, 0, 2]).
+  // El bit 0 es `aceite_oliva`; `zanahoria` cae en una palabra posterior a la
+  // primera, que es el caso que distingue las palabras de 32 bits de los
+  // uint64 de numpy. El índice y la palabra/posición se derivan del propio
+  // catálogo cargado, no se fijan a mano: cambian cada vez que el vocabulario
+  // de alimentos crece.
+  const idxZanahoria = CAT.alimentoIdx.get("zanahoria");
   assert.equal(CAT.alimentoIdx.get("aceite_oliva"), 0);
-  assert.equal(CAT.alimentoIdx.get("zanahoria"), 65);
+  assert.ok(idxZanahoria !== undefined && idxZanahoria >= 32, "zanahoria debería caer fuera de la primera palabra");
   const bits = bitsDe(CAT, ["aceite_oliva", "no_existe", "zanahoria"]);
   assert.equal(bits.length, CAT.w32);
-  assert.deepEqual([...bits], [1, 0, 2]);
-  assert.deepEqual([...bitsDe(CAT, [])], [0, 0, 0]);
+  const esperadas = new Array(CAT.w32).fill(0);
+  esperadas[0] = 1;
+  esperadas[Math.floor(idxZanahoria! / 32)] |= 1 << (idxZanahoria! % 32);
+  assert.deepEqual([...bits], esperadas);
+  assert.deepEqual([...bitsDe(CAT, [])], new Array(CAT.w32).fill(0));
 });
 
 test("bitsDe coloca el bit 31 sin volverlo negativo", () => {

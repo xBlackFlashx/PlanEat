@@ -1,0 +1,88 @@
+# Verificación en cada push. Ya NO despliega: el sitio se sirve desde Vercel,
+# que construye y publica por su cuenta al conectar el repositorio (build de
+# servidor real — cuentas, Stripe, admin — ya no cabe en GitHub Pages, que es
+# sólo estático). Ver SETUP.md § Vercel para la conexión.
+#
+# El solver Python sigue siendo la fuente de verdad del algoritmo. Sus tests
+# corren aquí también: si el motor Python y el portado se separan, esto se pone
+# en rojo antes de que nadie lo note en producción.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: planeat
+          POSTGRES_PASSWORD: planeat
+          POSTGRES_DB: planeat_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://planeat:planeat@localhost:5432/planeat_ci?schema=public
+      AUTH_SECRET: ci-no-es-un-secreto-real
+      NEXT_PUBLIC_PRECIO_PRO_MXN: "99"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Migrar el esquema (CI)
+        working-directory: apps/web
+        run: npx prisma migrate deploy
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar el solver de referencia
+        working-directory: services/solver
+        run: pip install -e ".[dev]"
+
+      - name: Tests del solver de referencia
+        working-directory: services/solver
+        run: pytest -q
+
+      # El volcado de paridad pesa ~7 MB y está fuera del repositorio, así que en
+      # un clon limpio los tests que lo consumen se SALTAN. Regenerarlo aquí es
+      # lo que hace que la comparación TS↔Python se ejecute de verdad en CI.
+      - name: Regenerar el volcado de paridad
+        working-directory: services/solver
+        run: python scripts/volcar_paridad.py
+
+      # El catálogo se compila a JSON en build; se recompila aquí en vez de
+      # confiar en el fichero versionado, para detectar un catálogo editado sin
+      # recompilar antes de que llegue a producción.
+      - name: Compilar catálogo
+        run: npm run motor:catalogo
+
+      - name: Tests (motor + web)
+        run: npm test
+
+      - name: Build de producción
+        run: npm run build --workspace @planeat/web

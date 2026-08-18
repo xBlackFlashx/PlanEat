@@ -2,7 +2,7 @@
  * `DiaReal` — la prueba, no la promesa.
  *
  * Sección de portada, debajo del generador. Enseña un desayuno, una comida y
- * una cena reales del catálogo de 36 recetas —no una maqueta ni datos de
+ * una cena reales del catálogo de 91 recetas —no una maqueta ni datos de
  * ejemplo inventados— y la misma barra de progreso que ve quien genera un
  * plan de verdad, con el perfil por defecto del formulario
  * (`FORMULARIO_POR_DEFECTO`). La frase de capa 1 sale de `fraseDelDia`, la
@@ -18,7 +18,7 @@ import type { SlotComida } from "@planeat/shared";
 import type { VistaRecetas } from "@planeat/motor";
 import recetasVista from "@planeat/motor/recetas-vista";
 
-import { kcal, minutos, rangoPrecio } from "@/lib/formato";
+import { kcal, minutos } from "@/lib/formato";
 import { calcularVeredicto, fraseDelDia, sumarPaneles } from "@/lib/nutricion-ui";
 import { calcularObjetivoDelDia, FORMULARIO_POR_DEFECTO, NOMBRE_SLOT } from "@/lib/perfil";
 
@@ -57,10 +57,9 @@ export function DiaReal() {
       <h2 className="t-1">Un día real, no una maqueta</h2>
       <p className="mt-3 max-w-2xl text-pretty leading-relaxed text-text-2">
         Estas tres recetas y esta barra de progreso son un desayuno, una
-        comida y una cena reales, sacadas del mismo catálogo de 36 recetas que
-        usa el generador, con sus minutos, sus euros y sus gramos ya
-        calculados. No es una ilustración de lo que podría salir: es lo que
-        sale.
+        comida y una cena reales, sacadas del mismo catálogo de 91 recetas que
+        usa el generador, con sus minutos y sus gramos ya calculados. No es
+        una ilustración de lo que podría salir: es lo que sale.
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -77,14 +76,6 @@ export function DiaReal() {
               <span className="tabular-nums" data-numeric>
                 {minutos(receta.minutos)}
               </span>
-              {receta.costeCents != null && (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <span className="tabular-nums" data-numeric>
-                    {rangoPrecio(receta.costeCents)}
-                  </span>
-                </>
-              )}
             </p>
 
             <p className="cifra-heroe mt-4 text-text">

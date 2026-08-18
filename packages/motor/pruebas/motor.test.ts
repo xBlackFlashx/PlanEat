@@ -9,11 +9,14 @@
  *    tener. Se comparan las invariantes, que es lo único honesto: kcal en banda,
  *    macros en rango, la suma de las comidas cuadrando con el total del día y el
  *    tope de usos por receta.
- *  - **Las tres puertas de §6.0**, incluido el test de humo del despliegue: con
- *    las 36 recetas del catálogo semilla y un MIN_POOL de 40, un umbral absoluto
- *    rechazaría el 100 % de las peticiones culpando al usuario de restricciones
- *    que no ha puesto. Es el fallo de producto más caro del port y por eso tiene
- *    un test por puerta.
+ *  - **Las tres puertas de §6.0**, incluido el test de humo del despliegue: un
+ *    umbral absoluto sobre MIN_POOL rechazaría el 100 % de las peticiones
+ *    culpando al usuario de restricciones que no ha puesto. Es el fallo de
+ *    producto más caro del port y por eso tiene un test por puerta. El test de
+ *    humo y la puerta 3 usan `CAT_ESTRECHO` (36 recetas, las primeras del
+ *    catálogo real) porque el catálogo semilla ya creció más allá del punto en
+ *    el que MIN_POOL sigue siendo mayor que la mitad del catálogo — ver su
+ *    comentario.
  *  - **Determinismo**, que es la promesa que el port sí hace: mismo seed, mismo
  *    catálogo, mismo motor JS → el mismo JSON byte a byte.
  *  - **Contrato de salida**: orden cronológico, fechas, totales que cuadran, los
@@ -57,10 +60,62 @@ function leerJson<T>(ruta: string): T {
   return JSON.parse(readFileSync(ruta, "utf8")) as T;
 }
 
-const CAT: CatalogoCompilado = cargarCatalogo(
-  leerJson<CatalogoSerializado>(resolve(AQUI, "../datos/catalogo-compilado.json")),
+const CATALOGO_JSON = leerJson<CatalogoSerializado>(
+  resolve(AQUI, "../datos/catalogo-compilado.json"),
 );
+const CAT: CatalogoCompilado = cargarCatalogo(CATALOGO_JSON);
 const VISTA = leerJson<VistaRecetas>(resolve(AQUI, "../datos/recetas-vista.json"));
+
+/**
+ * Recorta el catálogo compilado real a las primeras `n` filas, para las tres
+ * puertas de §6.0. Esas puertas comparan `pool.p` contra `MIN_POOL` (40) y
+ * `FRACCION_POOL_ATRIBUIBLE * cat.n` (0,5): con los 97 del catálogo semilla
+ * actual, 0,5×97 = 48,5 > 40, así que la ventana de la puerta 3
+ * (`pool.p < 40` Y `pool.p ≥ 48,5`) queda vacía por construcción — ninguna
+ * combinación de filtros sobre el catálogo real puede caer ahí. No es un bug
+ * de las puertas: es que el catálogo ya creció más allá del punto en el que
+ * MIN_POOL sigue siendo mayor que la mitad del catálogo, que es justo la
+ * relación que el catálogo semilla de 36 recetas cumplía por casualidad. Se
+ * recorta aquí, en vez de tocar MIN_POOL o el catálogo de producto, porque
+ * cambiar esas constantes es una decisión de producto, no de datos.
+ */
+function catalogoRecortado(n: number): CatalogoCompilado {
+  const w32 = CATALOGO_JSON.w32;
+  return cargarCatalogo({
+    ...CATALOGO_JSON,
+    // `construirPool` cachea por `cat.version` (`src/pool.ts`, `claveCache`).
+    // Sin cambiarla aquí, una restricción idéntica a la de un test que ya usó
+    // el CAT completo devolvería del caché el pool de 97 filas, no el
+    // recortado: el recorte se vería aplicado pero el pool cacheado no.
+    version: `${CATALOGO_JSON.version}-recortado-${n}`,
+    n,
+    ids: CATALOGO_JSON.ids.slice(0, n),
+    nutr: CATALOGO_JSON.nutr.slice(0, n * 6),
+    conocido: CATALOGO_JSON.conocido.slice(0, n * 6),
+    vMacro: CATALOGO_JSON.vMacro.slice(0, n * 3),
+    tieneMacro: CATALOGO_JSON.tieneMacro.slice(0, n),
+    escalaMin: CATALOGO_JSON.escalaMin.slice(0, n),
+    escalaMax: CATALOGO_JSON.escalaMax.slice(0, n),
+    mDieta: CATALOGO_JSON.mDieta.slice(0, n),
+    mAlergeno: CATALOGO_JSON.mAlergeno.slice(0, n),
+    mSlot: CATALOGO_JSON.mSlot.slice(0, n),
+    minutos: CATALOGO_JSON.minutos.slice(0, n),
+    ingrBits: CATALOGO_JSON.ingrBits.slice(0, n * w32),
+    ingrPerecBits: CATALOGO_JSON.ingrPerecBits.slice(0, n * w32),
+    nIngredientes: CATALOGO_JSON.nIngredientes.slice(0, n),
+    costeCents: CATALOGO_JSON.costeCents.slice(0, n),
+    costeConocido: CATALOGO_JSON.costeConocido.slice(0, n),
+  });
+}
+
+/**
+ * 36 filas: el tamaño exacto del catálogo semilla original, elegido porque es
+ * menor que MIN_POOL (40) Y más del doble de `FRACCION_POOL_ATRIBUIBLE × 36`
+ * (18) — la relación que hace que las tres puertas tengan una ventana no
+ * vacía cada una. Sirve sólo para las puertas; el resto de los tests usa el
+ * catálogo real completo.
+ */
+const CAT_ESTRECHO = catalogoRecortado(36);
 
 /** Objetivo de referencia: el de los fixtures, 2.000 kcal con macros holgados. */
 function objetivo(cambios: Partial<ObjetivoNutricional> = {}): ObjetivoNutricional {
@@ -285,17 +340,20 @@ test("el peor día de todos los escenarios del fixture queda bajo el umbral de h
 // Las tres puertas de §6.0
 // ---------------------------------------------------------------------------
 
-test("el catálogo semilla genera día: 36 recetas < MIN_POOL y aun así hay plan", () => {
+test("catálogo estrecho (36 recetas) < MIN_POOL y aun así hay plan", () => {
   // Espejo de `test_catalogo_semilla_genera_dia`. Es el test de humo del
   // despliegue: si la puerta 3 se porta como umbral absoluto, esto falla y la
-  // demo rechaza el 100 % de las peticiones culpando al usuario.
-  const { respuesta, traza } = generar(solicitud(1), CAT, { hoy: HOY, seed: "1" });
+  // demo rechaza el 100 % de las peticiones culpando al usuario. Usa
+  // CAT_ESTRECHO (ver su comentario) porque el catálogo real ya no es
+  // estrecho — 97 recetas es más del doble de MIN_POOL— y forzar esta
+  // combinación ahí es matemáticamente imposible, no un fallo del código.
+  const { respuesta, traza } = generar(solicitud(1), CAT_ESTRECHO, { hoy: HOY, seed: "1" });
   assert.ok(respuesta.ok, respuesta.ok ? "" : JSON.stringify(respuesta.fallo));
   assert.equal(traza.catalogoEstrecho, true);
   assert.equal(respuesta.catalogoEstrecho, true);
   assert.equal(respuesta.dias.length, 1);
   assert.ok(respuesta.msTranscurridos > 0);
-  assert.ok(traza.pool < 40 && traza.pool === FIXTURES.nRecetas);
+  assert.ok(traza.pool < 40 && traza.pool === CAT_ESTRECHO.n);
 });
 
 test("el catálogo semilla genera la semana entera con los cinco slots", () => {
@@ -319,8 +377,14 @@ test("puerta 1: un slot sin candidatos suficientes falla aunque el pool sea gran
 });
 
 test("puerta 2: si los filtros se comen más de la mitad del catálogo, la culpa es del usuario", () => {
+  // Vegana sola ya no vale: la ampliación la llevó de 19 a 73 recetas, muy
+  // por ENCIMA de MIN_POOL (40). Vegana + gluten + soja tampoco: el pool baja
+  // a 35, pero el desayuno se queda con 1 sola candidata y dispara antes la
+  // puerta 1 (slot_sin_candidatos), no la 2. Vegana + gluten + ajonjolí +
+  // sulfitos excluidos deja 34 de 240, con las tres comidas por encima del
+  // mínimo por slot — comprobado contra el catálogo real, no adivinado.
   const { respuesta, traza } = generar(
-    solicitud(1, { dieta: "baja_en_carbohidratos" }),
+    solicitud(1, { dieta: "vegana", alergenosExcluidos: ["gluten", "sesamo", "sulfitos"] }),
     CAT,
     { hoy: HOY, seed: "1" },
   );
@@ -333,13 +397,16 @@ test("puerta 2: si los filtros se comen más de la mitad del catálogo, la culpa
 test("puerta 3: pool corto pero no atribuible al usuario se genera igual y se anota", () => {
   // La vegetariana deja 21 de 36 recetas: por debajo de MIN_POOL (40) pero por
   // encima de la mitad del catálogo. Es exactamente el caso que la puerta 3
-  // existe para salvar.
-  const { respuesta, traza } = generar(solicitud(3, { dieta: "vegetariana" }), CAT, {
+  // existe para salvar. Usa CAT_ESTRECHO por el mismo motivo que el test de
+  // humo de arriba: con las 97 recetas reales, MIN_POOL (40) es menor que la
+  // mitad del catálogo (48,5), así que la ventana de la puerta 3 está vacía
+  // para cualquier filtro sobre el catálogo real.
+  const { respuesta, traza } = generar(solicitud(3, { dieta: "vegetariana" }), CAT_ESTRECHO, {
     hoy: HOY,
     seed: "3",
   });
   assert.ok(respuesta.ok, respuesta.ok ? "" : JSON.stringify(respuesta.fallo));
-  assert.ok(traza.pool < 40 && traza.pool >= 0.5 * CAT.n);
+  assert.ok(traza.pool < 40 && traza.pool >= 0.5 * CAT_ESTRECHO.n);
   assert.equal(respuesta.catalogoEstrecho, true);
 });
 
@@ -696,11 +763,19 @@ test("generarPlan distingue los cuatro desenlaces y nunca lanza", () => {
   const ok = generarPlan(solicitud(1), CAT, { hoy: HOY, seed: "1", vista: VISTA });
   assert.equal(ok.estado, "ok");
 
-  const restringido = generarPlan(solicitud(1, { dieta: "baja_en_carbohidratos" }), CAT, {
-    hoy: HOY,
-    seed: "1",
-    vista: VISTA,
-  });
+  // Ver el test de la puerta 2 para el detalle: vegana sola, y vegana +
+  // gluten + soja, ya no sirven. Vegana + gluten + ajonjolí + sulfitos deja
+  // 34 de 240 con las tres comidas por encima del mínimo por slot, así que
+  // sigue disparando la puerta 2 y atribuyéndola al usuario.
+  const restringido = generarPlan(
+    solicitud(1, { dieta: "vegana", alergenosExcluidos: ["gluten", "sesamo", "sulfitos"] }),
+    CAT,
+    {
+      hoy: HOY,
+      seed: "1",
+      vista: VISTA,
+    },
+  );
   assert.ok(restringido.estado === "sobre_restriccion");
   assert.equal(restringido.totalCatalogo, VISTA.total);
   assert.ok(restringido.fallo.sugerencias.length === 3);

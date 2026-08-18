@@ -151,17 +151,8 @@
         },
         "seed": 2
       },
-      "ok": false,
-      "fallo": {
-        "restriccionCulpable": "slot_sin_candidatos:desayuno",
-        "mensaje": "Sólo encuentro 2 recetas para el desayuno con tus filtros, y necesito al menos 8 para armar el plan sin repetir.",
-        "recetasCandidatas": 8,
-        "sugerencias": [
-          "Ampliar la dieta más allá de «vegana» (+28 recetas)",
-          "Planificar 4 comidas al día en vez de 5",
-          "Avisarte en cuanto el catálogo tenga más recetas que te encajen"
-        ]
-      }
+      "ok": true,
+      "fallo": null
     },
     {
       "nombre": "todos_los_alergenos",
@@ -216,12 +207,12 @@
       "ok": false,
       "fallo": {
         "restriccionCulpable": "slot_sin_candidatos:desayuno",
-        "mensaje": "Sólo encuentro 0 recetas para el desayuno con tus filtros, y necesito al menos 3 para armar el plan sin repetir.",
-        "recetasCandidatas": 9,
+        "mensaje": "Sólo encuentro 1 recetas para el desayuno con tus filtros, y necesito al menos 3 para armar el plan sin repetir.",
+        "recetasCandidatas": 64,
         "sugerencias": [
+          "Elegir otras comidas del día (+6 recetas)",
           "Planificar 2 comidas al día en vez de 3",
-          "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
-          "Escríbenos y ampliamos el catálogo con lo que te falta."
+          "Avisarte en cuanto el catálogo tenga más recetas que te encajen"
         ]
       }
     },
@@ -271,12 +262,12 @@
       },
       "ok": false,
       "fallo": {
-        "restriccionCulpable": "slot_sin_candidatos:desayuno",
-        "mensaje": "Sólo encuentro 0 recetas para el desayuno con tus filtros, y necesito al menos 3 para armar el plan sin repetir.",
-        "recetasCandidatas": 8,
+        "restriccionCulpable": "slot_sin_candidatos:cena",
+        "mensaje": "Sólo encuentro 1 recetas para el cena con tus filtros, y necesito al menos 3 para armar el plan sin repetir.",
+        "recetasCandidatas": 51,
         "sugerencias": [
-          "Subir el tiempo del desayuno de 3 a 13 min (+5 recetas)",
-          "Elegir otras comidas del día (+3 recetas)",
+          "Subir el tiempo del desayuno de 3 a 13 min (+24 recetas)",
+          "Elegir otras comidas del día (+20 recetas)",
           "Planificar 2 comidas al día en vez de 3"
         ]
       }
@@ -334,6 +325,6 @@
       }
     }
   ],
-  "catalogoVersion": "6b4fe8f81196dd7e",
-  "nRecetas": 36
+  "catalogoVersion": "c6949aca1558dab1",
+  "nRecetas": 240
 }

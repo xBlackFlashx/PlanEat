@@ -11,6 +11,7 @@ no fabricando paneles.
 
 from __future__ import annotations
 
+import dataclasses
 import math
 import re
 import statistics
@@ -65,6 +66,45 @@ def cat():
     return cargar_catalogo()
 
 
+def _catalogo_recortado(cat, n: int):
+    """Primeras `n` filas del catálogo real, con `version` distinta para no
+
+    colisionar con la caché de pool del catálogo completo (`scoring._cache_pool`
+    indexa por `cat.version`). El catálogo semilla ya no es lo bastante
+    estrecho para disparar la puerta 3 de §6.0 ni forzar reparaciones duras
+    tras la ampliación a 91 recetas: MIN_POOL(40) < 0.5·91, así que la ventana
+    de la puerta 3 queda vacía en el catálogo real. Se recorta, no se inventa.
+    """
+    ids = cat.ids[:n]
+    return dataclasses.replace(
+        cat,
+        version=f"{cat.version}-recortado-{n}",
+        ids=ids,
+        idx_por_id={aid: i for i, aid in enumerate(ids)},
+        titulos=cat.titulos[:n],
+        nutr=cat.nutr[:n],
+        conocido=cat.conocido[:n],
+        v_macro=cat.v_macro[:n],
+        tiene_macro=cat.tiene_macro[:n],
+        escala_min=cat.escala_min[:n],
+        escala_max=cat.escala_max[:n],
+        m_dieta=cat.m_dieta[:n],
+        m_alergeno=cat.m_alergeno[:n],
+        m_slot=cat.m_slot[:n],
+        minutos=cat.minutos[:n],
+        ingr_bits=cat.ingr_bits[:n],
+        ingr_perec_bits=cat.ingr_perec_bits[:n],
+        n_ingredientes=cat.n_ingredientes[:n],
+        coste_cents=cat.coste_cents[:n],
+        coste_conocido=cat.coste_conocido[:n],
+    )
+
+
+@pytest.fixture(scope="module")
+def cat_estrecho(cat):
+    return _catalogo_recortado(cat, 36)
+
+
 def objetivo(**cambios) -> dict:
     """Objetivo diario razonable para un adulto de ~2.000 kcal.
 
@@ -102,13 +142,21 @@ def plan(cat, **kw):
 
 
 def test_catalogo_semilla_genera_dia(cat):
+    r, traza = plan(cat)
+    assert r.ok, getattr(r, "fallo", None)
+    assert len(r.dias) == 1
+    assert r.msTranscurridos > 0
+
+
+def test_catalogo_estrecho_puerta_3(cat_estrecho):
     """Puerta 3 de §6.0: 36 recetas < MIN_POOL y aun así se genera.
 
     Es el test del fallo de diseño que el umbral absoluto habría provocado:
     rechazar el 100 % de las peticiones culpando al usuario de restricciones
-    que no ha puesto.
+    que no ha puesto. El catálogo real ya tiene demasiadas recetas para
+    disparar esta puerta por sí solo (ver `_catalogo_recortado`).
     """
-    r, traza = plan(cat)
+    r, traza = plan(cat_estrecho)
     assert r.ok, getattr(r, "fallo", None)
     assert traza.catalogo_estrecho is True
     assert len(r.dias) == 1
@@ -210,12 +258,30 @@ def test_dieta_se_respeta(cat):
                 assert cat.m_dieta[fila, IDX_DIETA[dieta]]
 
 
-def test_dieta_estrecha_falla_de_forma_honesta(cat):
-    """La mediterránea a 7 días no cabe en el catálogo semilla: hay que decirlo."""
-    r, _ = plan(cat, dias=7, slots=SLOTS_3, dieta="mediterranea")
+def test_dieta_estrecha_falla_de_forma_honesta(cat_estrecho):
+    """La vegana a 7 días no cabe en un catálogo estrecho: hay que decirlo.
+
+    Antes se probaba contra el catálogo semilla completo, pero éste ya no es
+    estrecho para la dieta vegana a propósito (pasó de 19 a 45 recetas
+    veganas en esta ampliación) — un catálogo rico fallando aquí sería el bug,
+    no el caso a probar. `cat_estrecho` (36 recetas, ver su fixture) es la
+    versión deliberadamente limitada que sigue disparando este fallo.
+    """
+    r, _ = plan(cat_estrecho, dias=7, slots=SLOTS_3, dieta="vegana")
     assert not r.ok
     assert r.fallo.restriccionCulpable.startswith("slot_sin_candidatos")
     assert len(r.fallo.sugerencias) == 3
+
+
+def test_dieta_vegana_7_dias_ya_cabe_en_el_catalogo_semilla(cat):
+    """Lo contrario del test anterior: la ampliación cumplió lo que prometía.
+
+    Regresión para el día en que alguien recorte el catálogo vegano sin
+    darse cuenta — si esto vuelve a fallar, hay que mirar por qué antes de
+    tocar el test.
+    """
+    r, _ = plan(cat, dias=7, slots=SLOTS_3, dieta="vegana")
+    assert r.ok, getattr(r, "fallo", None)
 
 
 def test_ingredientes_excluidos_respetados(cat):
@@ -550,13 +616,17 @@ def test_repeticion_semanal_degrada_pero_no_se_dispara(cat):
     assert peor <= MAX_USOS_RECETA_SEMANA + 1
 
 
-def test_la_reparacion_dura_conserva_los_totales(cat):
+def test_la_reparacion_dura_conserva_los_totales(cat_estrecho):
     """Sustituir un item obliga a rehacer el LP: los totales no pueden quedarse
     con los de la receta vieja. Es la mentira más fácil de colar aquí.
+
+    Necesita un catálogo estrecho (ver `_catalogo_recortado`): con las 91
+    recetas del catálogo real, siete días de cinco comidas ya no agotan el
+    tope de dos usos por receta lo bastante como para forzar una reparación.
     """
     visto = False
     for seed in range(15):
-        r, traza = plan(cat, dias=7, slots=SLOTS_5, seed=seed)
+        r, traza = plan(cat_estrecho, dias=7, slots=SLOTS_5, seed=seed)
         assert r.ok
         if traza.reparaciones_duras:
             visto = True
@@ -702,10 +772,10 @@ def test_cinco_comidas_pocas_kcal(cat):
         cat,
         slots=SLOTS_5,
         obj=objetivo(
-            kcal=400,
-            proteinaG={"min": 20, "max": 40},
-            carbohidratoG={"min": 30, "max": 60},
-            grasaG={"min": 8, "max": 20},
+            kcal=200,
+            proteinaG={"min": 5, "max": 40},
+            carbohidratoG={"min": 10, "max": 60},
+            grasaG={"min": 2, "max": 20},
             fibraMinG=0,
         ),
     )
@@ -718,12 +788,18 @@ def test_cinco_comidas_pocas_kcal(cat):
 
 
 def test_proteina_imposible_identifica_culpable(cat):
+    # El mínimo (antes 280 g) subió a 350 g al ampliar el catálogo: recetas
+    # nuevas como claras de huevo con espinacas son tan densas en proteína
+    # que 280 g dejó de superar la cota teórica `prot_max` de §6.2 y el fallo
+    # pasaba a genérico. 350 g sigue por encima de esa cota — comprobado
+    # contra el catálogo real, no adivinado — así que la rama que se quiere
+    # probar (culpable = proteina_vs_kcal) sigue siendo la que dispara.
     r, _ = plan(
         cat,
         slots=SLOTS_3,
         obj=objetivo(
             kcal=1600,
-            proteinaG={"min": 280, "max": 330},
+            proteinaG={"min": 350, "max": 400},
             carbohidratoG={"min": 0, "max": 100},
             grasaG={"min": 0, "max": 45},
             fibraMinG=0,
@@ -731,7 +807,7 @@ def test_proteina_imposible_identifica_culpable(cat):
     )
     assert not r.ok
     assert r.fallo.restriccionCulpable == "proteina_vs_kcal"
-    assert r.fallo.recetasCandidatas == 36
+    assert r.fallo.recetasCandidatas == 240
 
 
 def test_sugerencia_a_funciona(cat):
@@ -740,9 +816,11 @@ def test_sugerencia_a_funciona(cat):
     Se aplica literalmente la primera sugerencia y se vuelve a pedir plan: si
     el motor prometía algo que no puede cumplir, aquí sale.
     """
+    # Mismo mínimo que test_proteina_imposible_identifica_culpable y por la
+    # misma razón: tiene que seguir cayendo en la rama proteina_vs_kcal.
     obj = objetivo(
         kcal=1600,
-        proteinaG={"min": 280, "max": 330},
+        proteinaG={"min": 350, "max": 400},
         carbohidratoG={"min": 0, "max": 100},
         grasaG={"min": 0, "max": 45},
         fibraMinG=0,

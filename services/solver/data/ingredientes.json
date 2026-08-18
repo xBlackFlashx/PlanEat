@@ -6,85 +6,3022 @@
     "precios": "Estimaciones orientativas para España a fecha de creación. Sirven para probar el término de coste del solver, no para mostrar al usuario."
   },
   "ingredientes": [
-    { "id": "pechuga_pollo", "nombre": "Pechuga de pollo", "estado": "crudo", "categoria": "carniceria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 120, "proteinaG": 22.5, "carbohidratoG": 0, "grasaG": 2.6, "fibraG": 0, "sodioMg": 60 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 500 g", "gramos": 500, "precioEstimadoCents": 450 }] },
-    { "id": "muslo_pollo", "nombre": "Contramuslo de pollo sin piel", "estado": "crudo", "categoria": "carniceria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 121, "proteinaG": 19.4, "carbohidratoG": 0, "grasaG": 4.4, "fibraG": 0, "sodioMg": 85 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 500 g", "gramos": 500, "precioEstimadoCents": 380 }] },
-    { "id": "ternera_magra", "nombre": "Ternera magra (redondo)", "estado": "crudo", "categoria": "carniceria", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 131, "proteinaG": 21.5, "carbohidratoG": 0, "grasaG": 4.6, "fibraG": 0, "sodioMg": 55 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 400 g", "gramos": 400, "precioEstimadoCents": 720 }] },
-    { "id": "lomo_cerdo", "nombre": "Lomo de cerdo", "estado": "crudo", "categoria": "carniceria", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 143, "proteinaG": 21.5, "carbohidratoG": 0, "grasaG": 6.0, "fibraG": 0, "sodioMg": 55 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 500 g", "gramos": 500, "precioEstimadoCents": 500 }] },
-    { "id": "salmon", "nombre": "Salmón", "estado": "crudo", "categoria": "pescaderia", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 208, "proteinaG": 20.0, "carbohidratoG": 0, "grasaG": 13.0, "fibraG": 0, "sodioMg": 60 }, "alergenos": ["pescado"], "formatosCompra": [{ "descripcion": "2 lomos, 300 g", "gramos": 300, "precioEstimadoCents": 750 }] },
-    { "id": "merluza", "nombre": "Merluza", "estado": "crudo", "categoria": "pescaderia", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 86, "proteinaG": 17.0, "carbohidratoG": 0, "grasaG": 1.8, "fibraG": 0, "sodioMg": 100 }, "alergenos": ["pescado"], "formatosCompra": [{ "descripcion": "bandeja de 400 g", "gramos": 400, "precioEstimadoCents": 640 }] },
-    { "id": "bacalao", "nombre": "Bacalao fresco", "estado": "crudo", "categoria": "pescaderia", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 82, "proteinaG": 18.0, "carbohidratoG": 0, "grasaG": 0.7, "fibraG": 0, "sodioMg": 54 }, "alergenos": ["pescado"], "formatosCompra": [{ "descripcion": "bandeja de 400 g", "gramos": 400, "precioEstimadoCents": 700 }] },
-    { "id": "atun_natural", "nombre": "Atún claro al natural", "estado": "conserva", "categoria": "conservas", "perecedero": false, "fuente": "BEDCA", "panel": { "kcal": 116, "proteinaG": 26.0, "carbohidratoG": 0, "grasaG": 1.0, "fibraG": 0, "sodioMg": 320 }, "alergenos": ["pescado"], "formatosCompra": [{ "descripcion": "pack de 3 latas, 156 g escurrido", "gramos": 156, "precioEstimadoCents": 280 }] },
-    { "id": "gambas", "nombre": "Gambas peladas", "estado": "crudo", "categoria": "pescaderia", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 85, "proteinaG": 20.0, "carbohidratoG": 0, "grasaG": 0.5, "fibraG": 0, "sodioMg": 260 }, "alergenos": ["crustaceos"], "formatosCompra": [{ "descripcion": "bolsa congelada de 400 g", "gramos": 400, "precioEstimadoCents": 650 }] },
-    { "id": "huevo", "nombre": "Huevo", "estado": "crudo", "categoria": "huevos", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 143, "proteinaG": 12.6, "carbohidratoG": 0.7, "grasaG": 9.5, "fibraG": 0, "sodioMg": 142 }, "alergenos": ["huevos"], "formatosCompra": [{ "descripcion": "docena (unos 60 g por huevo)", "gramos": 720, "precioEstimadoCents": 290 }] },
-    { "id": "clara_huevo", "nombre": "Clara de huevo", "estado": "crudo", "categoria": "huevos", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 52, "proteinaG": 10.9, "carbohidratoG": 0.7, "grasaG": 0.2, "fibraG": 0, "sodioMg": 166 }, "alergenos": ["huevos"], "formatosCompra": [{ "descripcion": "brik de 500 ml", "gramos": 500, "precioEstimadoCents": 250 }] },
-
-    { "id": "leche_semi", "nombre": "Leche semidesnatada", "estado": "liquido", "categoria": "lacteos", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 46, "proteinaG": 3.2, "carbohidratoG": 4.8, "grasaG": 1.6, "fibraG": 0, "sodioMg": 44 }, "alergenos": ["lacteos"], "formatosCompra": [{ "descripcion": "brik de 1 L", "gramos": 1030, "precioEstimadoCents": 95 }] },
-    { "id": "yogur_natural", "nombre": "Yogur natural", "estado": "listo", "categoria": "lacteos", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 61, "proteinaG": 3.5, "carbohidratoG": 4.7, "grasaG": 3.3, "fibraG": 0, "sodioMg": 46 }, "alergenos": ["lacteos"], "formatosCompra": [{ "descripcion": "pack de 4, 125 g cada uno", "gramos": 500, "precioEstimadoCents": 150 }] },
-    { "id": "yogur_griego", "nombre": "Yogur griego natural", "estado": "listo", "categoria": "lacteos", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 97, "proteinaG": 9.0, "carbohidratoG": 3.6, "grasaG": 5.0, "fibraG": 0, "sodioMg": 35 }, "alergenos": ["lacteos"], "formatosCompra": [{ "descripcion": "tarrina de 500 g", "gramos": 500, "precioEstimadoCents": 220 }] },
-    { "id": "queso_batido_0", "nombre": "Queso fresco batido 0 %", "estado": "listo", "categoria": "lacteos", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 47, "proteinaG": 8.0, "carbohidratoG": 4.0, "grasaG": 0.2, "fibraG": 0, "sodioMg": 50 }, "alergenos": ["lacteos"], "formatosCompra": [{ "descripcion": "tarrina de 500 g", "gramos": 500, "precioEstimadoCents": 180 }] },
-    { "id": "requeson", "nombre": "Requesón", "estado": "listo", "categoria": "lacteos", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 96, "proteinaG": 11.0, "carbohidratoG": 3.0, "grasaG": 4.3, "fibraG": 0, "sodioMg": 330 }, "alergenos": ["lacteos"], "formatosCompra": [{ "descripcion": "tarrina de 250 g", "gramos": 250, "precioEstimadoCents": 200 }] },
-    { "id": "queso_curado", "nombre": "Queso curado", "estado": "listo", "categoria": "lacteos", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 390, "proteinaG": 25.0, "carbohidratoG": 1.4, "grasaG": 32.0, "fibraG": 0, "sodioMg": 700 }, "alergenos": ["lacteos"], "formatosCompra": [{ "descripcion": "cuña de 250 g", "gramos": 250, "precioEstimadoCents": 400 }] },
-    { "id": "mozzarella", "nombre": "Mozzarella fresca", "estado": "listo", "categoria": "lacteos", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 250, "proteinaG": 18.0, "carbohidratoG": 3.0, "grasaG": 19.0, "fibraG": 0, "sodioMg": 480 }, "alergenos": ["lacteos"], "formatosCompra": [{ "descripcion": "bola de 125 g", "gramos": 125, "precioEstimadoCents": 110 }] },
-
-    { "id": "lentejas_cocidas", "nombre": "Lentejas cocidas", "estado": "conserva", "categoria": "conservas", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 116, "proteinaG": 9.0, "carbohidratoG": 16.0, "grasaG": 0.4, "fibraG": 7.9, "sodioMg": 240 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 400 g escurrido", "gramos": 400, "precioEstimadoCents": 110 }] },
-    { "id": "garbanzos_cocidos", "nombre": "Garbanzos cocidos", "estado": "conserva", "categoria": "conservas", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 139, "proteinaG": 8.9, "carbohidratoG": 21.0, "grasaG": 2.6, "fibraG": 7.6, "sodioMg": 240 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 400 g escurrido", "gramos": 400, "precioEstimadoCents": 110 }] },
-    { "id": "alubias_cocidas", "nombre": "Alubias blancas cocidas", "estado": "conserva", "categoria": "conservas", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 105, "proteinaG": 7.0, "carbohidratoG": 17.0, "grasaG": 0.5, "fibraG": 6.0, "sodioMg": 240 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 400 g escurrido", "gramos": 400, "precioEstimadoCents": 110 }] },
-    { "id": "lentejas_secas", "nombre": "Lentejas secas", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 336, "proteinaG": 24.0, "carbohidratoG": 52.0, "grasaG": 1.9, "fibraG": 11.0, "sodioMg": 6 }, "alergenos": [], "formatosCompra": [{ "descripcion": "paquete de 500 g", "gramos": 500, "precioEstimadoCents": 150 }] },
-    { "id": "tofu_firme", "nombre": "Tofu firme", "estado": "listo", "categoria": "refrigerados", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 144, "proteinaG": 15.0, "carbohidratoG": 3.5, "grasaG": 8.0, "fibraG": 2.0, "sodioMg": 14 }, "alergenos": ["soja"], "formatosCompra": [{ "descripcion": "bloque de 250 g", "gramos": 250, "precioEstimadoCents": 220 }] },
-    { "id": "tempeh", "nombre": "Tempeh", "estado": "listo", "categoria": "refrigerados", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 192, "proteinaG": 20.0, "carbohidratoG": 7.6, "grasaG": 11.0, "fibraG": 0, "sodioMg": 9 }, "alergenos": ["soja"], "formatosCompra": [{ "descripcion": "bloque de 200 g", "gramos": 200, "precioEstimadoCents": 300 }] },
-    { "id": "soja_texturizada", "nombre": "Soja texturizada fina", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 340, "proteinaG": 50.0, "carbohidratoG": 30.0, "grasaG": 1.5, "fibraG": 17.0, "sodioMg": 20 }, "alergenos": ["soja"], "formatosCompra": [{ "descripcion": "paquete de 400 g", "gramos": 400, "precioEstimadoCents": 320 }] },
-
-    { "id": "arroz_blanco", "nombre": "Arroz blanco", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "BEDCA", "panel": { "kcal": 360, "proteinaG": 7.0, "carbohidratoG": 79.0, "grasaG": 0.6, "fibraG": 1.0, "sodioMg": 5 }, "alergenos": [], "formatosCompra": [{ "descripcion": "paquete de 1 kg", "gramos": 1000, "precioEstimadoCents": 130 }] },
-    { "id": "arroz_integral", "nombre": "Arroz integral", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 362, "proteinaG": 7.5, "carbohidratoG": 76.0, "grasaG": 2.7, "fibraG": 3.5, "sodioMg": 5 }, "alergenos": [], "formatosCompra": [{ "descripcion": "paquete de 1 kg", "gramos": 1000, "precioEstimadoCents": 180 }] },
-    { "id": "pasta_seca", "nombre": "Pasta", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "BEDCA", "panel": { "kcal": 371, "proteinaG": 13.0, "carbohidratoG": 74.0, "grasaG": 1.5, "fibraG": 3.0, "sodioMg": 6 }, "alergenos": ["gluten"], "formatosCompra": [{ "descripcion": "paquete de 500 g", "gramos": 500, "precioEstimadoCents": 100 }] },
-    { "id": "pasta_integral", "nombre": "Pasta integral", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 348, "proteinaG": 14.0, "carbohidratoG": 67.0, "grasaG": 2.5, "fibraG": 8.0, "sodioMg": 8 }, "alergenos": ["gluten"], "formatosCompra": [{ "descripcion": "paquete de 500 g", "gramos": 500, "precioEstimadoCents": 150 }] },
-    { "id": "pan_integral", "nombre": "Pan integral", "estado": "listo", "categoria": "panaderia", "perecedero": true, "fuente": "BEDCA", "panel": { "kcal": 247, "proteinaG": 9.0, "carbohidratoG": 41.0, "grasaG": 3.5, "fibraG": 6.0, "sodioMg": 450 }, "alergenos": ["gluten"], "formatosCompra": [{ "descripcion": "barra de 400 g", "gramos": 400, "precioEstimadoCents": 160 }] },
-    { "id": "avena_copos", "nombre": "Copos de avena", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 389, "proteinaG": 16.9, "carbohidratoG": 66.0, "grasaG": 6.9, "fibraG": 10.6, "sodioMg": 2 }, "alergenos": ["gluten"], "formatosCompra": [{ "descripcion": "paquete de 500 g", "gramos": 500, "precioEstimadoCents": 140 }] },
-    { "id": "patata", "nombre": "Patata", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 77, "proteinaG": 2.0, "carbohidratoG": 17.0, "grasaG": 0.1, "fibraG": 2.2, "sodioMg": 6 }, "alergenos": [], "formatosCompra": [{ "descripcion": "malla de 2 kg", "gramos": 2000, "precioEstimadoCents": 220 }] },
-    { "id": "boniato", "nombre": "Boniato", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 86, "proteinaG": 1.6, "carbohidratoG": 20.0, "grasaG": 0.1, "fibraG": 3.0, "sodioMg": 55 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 1 kg", "gramos": 1000, "precioEstimadoCents": 250 }] },
-    { "id": "quinoa", "nombre": "Quinoa", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 368, "proteinaG": 14.0, "carbohidratoG": 64.0, "grasaG": 6.0, "fibraG": 7.0, "sodioMg": 5 }, "alergenos": [], "formatosCompra": [{ "descripcion": "paquete de 500 g", "gramos": 500, "precioEstimadoCents": 350 }] },
-    { "id": "cuscus", "nombre": "Cuscús", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 376, "proteinaG": 12.8, "carbohidratoG": 77.0, "grasaG": 0.6, "fibraG": 5.0, "sodioMg": 10 }, "alergenos": ["gluten"], "formatosCompra": [{ "descripcion": "paquete de 500 g", "gramos": 500, "precioEstimadoCents": 160 }] },
-    { "id": "tortilla_trigo", "nombre": "Tortilla de trigo integral", "estado": "listo", "categoria": "panaderia", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 300, "proteinaG": 9.0, "carbohidratoG": 50.0, "grasaG": 7.0, "fibraG": 5.0, "sodioMg": 570 }, "alergenos": ["gluten"], "formatosCompra": [{ "descripcion": "paquete de 8 unidades, 320 g", "gramos": 320, "precioEstimadoCents": 190 }] },
-
-    { "id": "brocoli", "nombre": "Brócoli", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 34, "proteinaG": 2.8, "carbohidratoG": 7.0, "grasaG": 0.4, "fibraG": 2.6, "sodioMg": 33 }, "alergenos": [], "formatosCompra": [{ "descripcion": "pieza de 500 g", "gramos": 500, "precioEstimadoCents": 180 }] },
-    { "id": "espinacas", "nombre": "Espinacas", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 23, "proteinaG": 2.9, "carbohidratoG": 3.6, "grasaG": 0.4, "fibraG": 2.2, "sodioMg": 79 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bolsa de 300 g", "gramos": 300, "precioEstimadoCents": 170 }] },
-    { "id": "tomate", "nombre": "Tomate", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 18, "proteinaG": 0.9, "carbohidratoG": 3.9, "grasaG": 0.2, "fibraG": 1.2, "sodioMg": 5 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 1 kg", "gramos": 1000, "precioEstimadoCents": 220 }] },
-    { "id": "tomate_triturado", "nombre": "Tomate triturado", "estado": "conserva", "categoria": "conservas", "perecedero": false, "fuente": "BEDCA", "panel": { "kcal": 32, "proteinaG": 1.3, "carbohidratoG": 6.0, "grasaG": 0.3, "fibraG": 1.4, "sodioMg": 190 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 400 g", "gramos": 400, "precioEstimadoCents": 90 }] },
-    { "id": "cebolla", "nombre": "Cebolla", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 40, "proteinaG": 1.1, "carbohidratoG": 9.3, "grasaG": 0.1, "fibraG": 1.7, "sodioMg": 4 }, "alergenos": [], "formatosCompra": [{ "descripcion": "malla de 1 kg", "gramos": 1000, "precioEstimadoCents": 130 }] },
-    { "id": "pimiento_rojo", "nombre": "Pimiento rojo", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 31, "proteinaG": 1.0, "carbohidratoG": 6.0, "grasaG": 0.3, "fibraG": 2.1, "sodioMg": 4 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 500 g", "gramos": 500, "precioEstimadoCents": 200 }] },
-    { "id": "calabacin", "nombre": "Calabacín", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 17, "proteinaG": 1.2, "carbohidratoG": 3.1, "grasaG": 0.3, "fibraG": 1.0, "sodioMg": 8 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 750 g", "gramos": 750, "precioEstimadoCents": 150 }] },
-    { "id": "berenjena", "nombre": "Berenjena", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 25, "proteinaG": 1.0, "carbohidratoG": 6.0, "grasaG": 0.2, "fibraG": 3.0, "sodioMg": 2 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 500 g", "gramos": 500, "precioEstimadoCents": 160 }] },
-    { "id": "zanahoria", "nombre": "Zanahoria", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 41, "proteinaG": 0.9, "carbohidratoG": 10.0, "grasaG": 0.2, "fibraG": 2.8, "sodioMg": 69 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bolsa de 1 kg", "gramos": 1000, "precioEstimadoCents": 120 }] },
-    { "id": "champinones", "nombre": "Champiñones", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 22, "proteinaG": 3.1, "carbohidratoG": 3.3, "grasaG": 0.3, "fibraG": 1.0, "sodioMg": 5 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 250 g", "gramos": 250, "precioEstimadoCents": 150 }] },
-    { "id": "ajo", "nombre": "Ajo", "estado": "crudo", "categoria": "verduleria", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 149, "proteinaG": 6.4, "carbohidratoG": 33.0, "grasaG": 0.5, "fibraG": 2.1, "sodioMg": 17 }, "alergenos": [], "formatosCompra": [{ "descripcion": "malla de 3 cabezas, 150 g", "gramos": 150, "precioEstimadoCents": 120 }] },
-    { "id": "lechuga", "nombre": "Lechuga", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 15, "proteinaG": 1.4, "carbohidratoG": 2.9, "grasaG": 0.2, "fibraG": 1.3, "sodioMg": 28 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bolsa de 200 g", "gramos": 200, "precioEstimadoCents": 130 }] },
-    { "id": "pepino", "nombre": "Pepino", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 15, "proteinaG": 0.7, "carbohidratoG": 3.6, "grasaG": 0.1, "fibraG": 0.5, "sodioMg": 2 }, "alergenos": [], "formatosCompra": [{ "descripcion": "pieza de 400 g", "gramos": 400, "precioEstimadoCents": 90 }] },
-    { "id": "judias_verdes", "nombre": "Judías verdes", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 31, "proteinaG": 1.8, "carbohidratoG": 7.0, "grasaG": 0.2, "fibraG": 3.4, "sodioMg": 6 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bolsa congelada de 750 g", "gramos": 750, "precioEstimadoCents": 200 }] },
-    { "id": "guisantes", "nombre": "Guisantes", "estado": "crudo", "categoria": "verduleria", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 81, "proteinaG": 5.4, "carbohidratoG": 14.0, "grasaG": 0.4, "fibraG": 5.0, "sodioMg": 5 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bolsa congelada de 750 g", "gramos": 750, "precioEstimadoCents": 190 }] },
-    { "id": "coliflor", "nombre": "Coliflor", "estado": "crudo", "categoria": "verduleria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 25, "proteinaG": 1.9, "carbohidratoG": 5.0, "grasaG": 0.3, "fibraG": 2.0, "sodioMg": 30 }, "alergenos": [], "formatosCompra": [{ "descripcion": "pieza de 800 g", "gramos": 800, "precioEstimadoCents": 190 }] },
-
-    { "id": "platano", "nombre": "Plátano", "estado": "crudo", "categoria": "fruteria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 89, "proteinaG": 1.1, "carbohidratoG": 23.0, "grasaG": 0.3, "fibraG": 2.6, "sodioMg": 1 }, "alergenos": [], "formatosCompra": [{ "descripcion": "manojo de 1 kg", "gramos": 1000, "precioEstimadoCents": 180 }] },
-    { "id": "manzana", "nombre": "Manzana", "estado": "crudo", "categoria": "fruteria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 52, "proteinaG": 0.3, "carbohidratoG": 14.0, "grasaG": 0.2, "fibraG": 2.4, "sodioMg": 1 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bolsa de 1 kg", "gramos": 1000, "precioEstimadoCents": 210 }] },
-    { "id": "fresas", "nombre": "Fresas", "estado": "crudo", "categoria": "fruteria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 32, "proteinaG": 0.7, "carbohidratoG": 7.7, "grasaG": 0.3, "fibraG": 2.0, "sodioMg": 1 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bandeja de 400 g", "gramos": 400, "precioEstimadoCents": 250 }] },
-    { "id": "arandanos", "nombre": "Arándanos", "estado": "crudo", "categoria": "fruteria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 57, "proteinaG": 0.7, "carbohidratoG": 14.0, "grasaG": 0.3, "fibraG": 2.4, "sodioMg": 1 }, "alergenos": [], "formatosCompra": [{ "descripcion": "tarrina de 250 g", "gramos": 250, "precioEstimadoCents": 280 }] },
-    { "id": "aguacate", "nombre": "Aguacate", "estado": "crudo", "categoria": "fruteria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 160, "proteinaG": 2.0, "carbohidratoG": 8.5, "grasaG": 15.0, "fibraG": 6.7, "sodioMg": 7 }, "alergenos": [], "formatosCompra": [{ "descripcion": "unidad de 200 g", "gramos": 200, "precioEstimadoCents": 150 }] },
-    { "id": "limon", "nombre": "Limón", "estado": "crudo", "categoria": "fruteria", "perecedero": true, "fuente": "USDA FDC", "panel": { "kcal": 29, "proteinaG": 1.1, "carbohidratoG": 9.0, "grasaG": 0.3, "fibraG": 2.8, "sodioMg": 2 }, "alergenos": [], "formatosCompra": [{ "descripcion": "malla de 500 g", "gramos": 500, "precioEstimadoCents": 150 }] },
-
-    { "id": "aceite_oliva", "nombre": "Aceite de oliva virgen extra", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "BEDCA", "panel": { "kcal": 884, "proteinaG": 0, "carbohidratoG": 0, "grasaG": 100.0, "fibraG": 0, "sodioMg": 2 }, "alergenos": [], "formatosCompra": [{ "descripcion": "botella de 1 L", "gramos": 916, "precioEstimadoCents": 850 }] },
-    { "id": "almendras", "nombre": "Almendras", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 579, "proteinaG": 21.0, "carbohidratoG": 22.0, "grasaG": 50.0, "fibraG": 12.5, "sodioMg": 1 }, "alergenos": ["frutos_de_cascara"], "formatosCompra": [{ "descripcion": "bolsa de 200 g", "gramos": 200, "precioEstimadoCents": 320 }] },
-    { "id": "nueces", "nombre": "Nueces", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 654, "proteinaG": 15.0, "carbohidratoG": 14.0, "grasaG": 65.0, "fibraG": 6.7, "sodioMg": 2 }, "alergenos": ["frutos_de_cascara"], "formatosCompra": [{ "descripcion": "bolsa de 200 g", "gramos": 200, "precioEstimadoCents": 350 }] },
-    { "id": "crema_cacahuete", "nombre": "Crema de cacahuete", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 588, "proteinaG": 25.0, "carbohidratoG": 20.0, "grasaG": 50.0, "fibraG": 6.0, "sodioMg": 17 }, "alergenos": ["cacahuetes"], "formatosCompra": [{ "descripcion": "bote de 350 g", "gramos": 350, "precioEstimadoCents": 400 }] },
-    { "id": "aceitunas", "nombre": "Aceitunas verdes", "estado": "conserva", "categoria": "conservas", "perecedero": false, "fuente": "BEDCA", "panel": { "kcal": 145, "proteinaG": 1.0, "carbohidratoG": 3.8, "grasaG": 15.0, "fibraG": 3.2, "sodioMg": 1550 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 350 g escurrido", "gramos": 350, "precioEstimadoCents": 180 }] },
-    { "id": "semillas_chia", "nombre": "Semillas de chía", "estado": "crudo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 486, "proteinaG": 17.0, "carbohidratoG": 42.0, "grasaG": 31.0, "fibraG": 34.0, "sodioMg": 16 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bolsa de 250 g", "gramos": 250, "precioEstimadoCents": 300 }] },
-
-    { "id": "sal", "nombre": "Sal", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "BEDCA", "panel": { "kcal": 0, "proteinaG": 0, "carbohidratoG": 0, "grasaG": 0, "fibraG": 0, "sodioMg": 38700 }, "alergenos": [], "formatosCompra": [{ "descripcion": "paquete de 1 kg", "gramos": 1000, "precioEstimadoCents": 50 }] },
-    { "id": "pimienta_negra", "nombre": "Pimienta negra molida", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 251, "proteinaG": 10.4, "carbohidratoG": 64.0, "grasaG": 3.3, "fibraG": 25.0, "sodioMg": 20 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 50 g", "gramos": 50, "precioEstimadoCents": 150 }] },
-    { "id": "pimenton", "nombre": "Pimentón dulce", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 282, "proteinaG": 14.1, "carbohidratoG": 54.0, "grasaG": 13.0, "fibraG": 35.0, "sodioMg": 68 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 75 g", "gramos": 75, "precioEstimadoCents": 160 }] },
-    { "id": "comino", "nombre": "Comino molido", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 375, "proteinaG": 17.8, "carbohidratoG": 44.0, "grasaG": 22.0, "fibraG": 11.0, "sodioMg": 168 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 50 g", "gramos": 50, "precioEstimadoCents": 150 }] },
-    { "id": "oregano", "nombre": "Orégano seco", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 265, "proteinaG": 9.0, "carbohidratoG": 69.0, "grasaG": 4.3, "fibraG": 42.0, "sodioMg": 25 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 30 g", "gramos": 30, "precioEstimadoCents": 130 }] },
-    { "id": "vinagre", "nombre": "Vinagre de vino", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 19, "proteinaG": 0, "carbohidratoG": 0.3, "grasaG": 0, "fibraG": 0, "sodioMg": 8 }, "alergenos": ["sulfitos"], "formatosCompra": [{ "descripcion": "botella de 750 ml", "gramos": 750, "precioEstimadoCents": 110 }] },
-    { "id": "miel", "nombre": "Miel", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 304, "proteinaG": 0.3, "carbohidratoG": 82.0, "grasaG": 0, "fibraG": 0.2, "sodioMg": 4 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 500 g", "gramos": 500, "precioEstimadoCents": 450 }] },
-    { "id": "bebida_avena", "nombre": "Bebida de avena", "estado": "liquido", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 45, "proteinaG": 0.8, "carbohidratoG": 7.0, "grasaG": 1.5, "fibraG": 0.8, "sodioMg": 50 }, "alergenos": ["gluten"], "formatosCompra": [{ "descripcion": "brik de 1 L", "gramos": 1030, "precioEstimadoCents": 130 }] },
-    { "id": "levadura_nutricional", "nombre": "Levadura nutricional", "estado": "listo", "categoria": "despensa", "perecedero": false, "fuente": "USDA FDC", "panel": { "kcal": 325, "proteinaG": 45.0, "carbohidratoG": 36.0, "grasaG": 5.0, "fibraG": 21.0, "sodioMg": 30 }, "alergenos": [], "formatosCompra": [{ "descripcion": "bote de 125 g", "gramos": 125, "precioEstimadoCents": 400 }] }
+    {
+      "id": "pechuga_pollo",
+      "nombre": "Pechuga de pollo",
+      "estado": "crudo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 120,
+        "proteinaG": 22.5,
+        "carbohidratoG": 0,
+        "grasaG": 2.6,
+        "fibraG": 0,
+        "sodioMg": 60
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 450
+        }
+      ]
+    },
+    {
+      "id": "muslo_pollo",
+      "nombre": "Contramuslo de pollo sin piel",
+      "estado": "crudo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 121,
+        "proteinaG": 19.4,
+        "carbohidratoG": 0,
+        "grasaG": 4.4,
+        "fibraG": 0,
+        "sodioMg": 85
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 380
+        }
+      ]
+    },
+    {
+      "id": "ternera_magra",
+      "nombre": "Ternera magra (redondo)",
+      "estado": "crudo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 131,
+        "proteinaG": 21.5,
+        "carbohidratoG": 0,
+        "grasaG": 4.6,
+        "fibraG": 0,
+        "sodioMg": 55
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 720
+        }
+      ]
+    },
+    {
+      "id": "lomo_cerdo",
+      "nombre": "Lomo de cerdo",
+      "estado": "crudo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 143,
+        "proteinaG": 21.5,
+        "carbohidratoG": 0,
+        "grasaG": 6.0,
+        "fibraG": 0,
+        "sodioMg": 55
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 500
+        }
+      ]
+    },
+    {
+      "id": "salmon",
+      "nombre": "Salmón",
+      "estado": "crudo",
+      "categoria": "pescaderia",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 208,
+        "proteinaG": 20.0,
+        "carbohidratoG": 0,
+        "grasaG": 13.0,
+        "fibraG": 0,
+        "sodioMg": 60
+      },
+      "alergenos": [
+        "pescado"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "2 lomos, 300 g",
+          "gramos": 300,
+          "precioEstimadoCents": 750
+        }
+      ]
+    },
+    {
+      "id": "merluza",
+      "nombre": "Merluza",
+      "estado": "crudo",
+      "categoria": "pescaderia",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 86,
+        "proteinaG": 17.0,
+        "carbohidratoG": 0,
+        "grasaG": 1.8,
+        "fibraG": 0,
+        "sodioMg": 100
+      },
+      "alergenos": [
+        "pescado"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 640
+        }
+      ]
+    },
+    {
+      "id": "bacalao",
+      "nombre": "Bacalao fresco",
+      "estado": "crudo",
+      "categoria": "pescaderia",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 82,
+        "proteinaG": 18.0,
+        "carbohidratoG": 0,
+        "grasaG": 0.7,
+        "fibraG": 0,
+        "sodioMg": 54
+      },
+      "alergenos": [
+        "pescado"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 700
+        }
+      ]
+    },
+    {
+      "id": "atun_natural",
+      "nombre": "Atún claro al natural",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": false,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 116,
+        "proteinaG": 26.0,
+        "carbohidratoG": 0,
+        "grasaG": 1.0,
+        "fibraG": 0,
+        "sodioMg": 320
+      },
+      "alergenos": [
+        "pescado"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "pack de 3 latas, 156 g escurrido",
+          "gramos": 156,
+          "precioEstimadoCents": 280
+        }
+      ]
+    },
+    {
+      "id": "gambas",
+      "nombre": "Camarones pelados",
+      "estado": "crudo",
+      "categoria": "pescaderia",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 85,
+        "proteinaG": 20.0,
+        "carbohidratoG": 0,
+        "grasaG": 0.5,
+        "fibraG": 0,
+        "sodioMg": 260
+      },
+      "alergenos": [
+        "crustaceos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa congelada de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 650
+        }
+      ]
+    },
+    {
+      "id": "huevo",
+      "nombre": "Huevo",
+      "estado": "crudo",
+      "categoria": "huevos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 143,
+        "proteinaG": 12.6,
+        "carbohidratoG": 0.7,
+        "grasaG": 9.5,
+        "fibraG": 0,
+        "sodioMg": 142
+      },
+      "alergenos": [
+        "huevos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "docena (unos 60 g por huevo)",
+          "gramos": 720,
+          "precioEstimadoCents": 290
+        }
+      ]
+    },
+    {
+      "id": "clara_huevo",
+      "nombre": "Clara de huevo",
+      "estado": "crudo",
+      "categoria": "huevos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 52,
+        "proteinaG": 10.9,
+        "carbohidratoG": 0.7,
+        "grasaG": 0.2,
+        "fibraG": 0,
+        "sodioMg": 166
+      },
+      "alergenos": [
+        "huevos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "brik de 500 ml",
+          "gramos": 500,
+          "precioEstimadoCents": 250
+        }
+      ]
+    },
+    {
+      "id": "leche_semi",
+      "nombre": "Leche semidesnatada",
+      "estado": "liquido",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 46,
+        "proteinaG": 3.2,
+        "carbohidratoG": 4.8,
+        "grasaG": 1.6,
+        "fibraG": 0,
+        "sodioMg": 44
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "brik de 1 L",
+          "gramos": 1030,
+          "precioEstimadoCents": 95
+        }
+      ]
+    },
+    {
+      "id": "yogur_natural",
+      "nombre": "Yogur natural",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 61,
+        "proteinaG": 3.5,
+        "carbohidratoG": 4.7,
+        "grasaG": 3.3,
+        "fibraG": 0,
+        "sodioMg": 46
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "pack de 4, 125 g cada uno",
+          "gramos": 500,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "yogur_griego",
+      "nombre": "Yogur griego natural",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 97,
+        "proteinaG": 9.0,
+        "carbohidratoG": 3.6,
+        "grasaG": 5.0,
+        "fibraG": 0,
+        "sodioMg": 35
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "tarrina de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "queso_batido_0",
+      "nombre": "Queso cottage sin grasa",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 47,
+        "proteinaG": 8.0,
+        "carbohidratoG": 4.0,
+        "grasaG": 0.2,
+        "fibraG": 0,
+        "sodioMg": 50
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "tarrina de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "requeson",
+      "nombre": "Requesón",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 96,
+        "proteinaG": 11.0,
+        "carbohidratoG": 3.0,
+        "grasaG": 4.3,
+        "fibraG": 0,
+        "sodioMg": 330
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "tarrina de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 200
+        }
+      ]
+    },
+    {
+      "id": "queso_curado",
+      "nombre": "Queso curado",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 390,
+        "proteinaG": 25.0,
+        "carbohidratoG": 1.4,
+        "grasaG": 32.0,
+        "fibraG": 0,
+        "sodioMg": 700
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "cuña de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 400
+        }
+      ]
+    },
+    {
+      "id": "mozzarella",
+      "nombre": "Mozzarella fresca",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 250,
+        "proteinaG": 18.0,
+        "carbohidratoG": 3.0,
+        "grasaG": 19.0,
+        "fibraG": 0,
+        "sodioMg": 480
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bola de 125 g",
+          "gramos": 125,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "lentejas_cocidas",
+      "nombre": "Lentejas cocidas",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 116,
+        "proteinaG": 9.0,
+        "carbohidratoG": 16.0,
+        "grasaG": 0.4,
+        "fibraG": 7.9,
+        "sodioMg": 240
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 400 g escurrido",
+          "gramos": 400,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "garbanzos_cocidos",
+      "nombre": "Garbanzos cocidos",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 139,
+        "proteinaG": 8.9,
+        "carbohidratoG": 21.0,
+        "grasaG": 2.6,
+        "fibraG": 7.6,
+        "sodioMg": 240
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 400 g escurrido",
+          "gramos": 400,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "alubias_cocidas",
+      "nombre": "Frijoles blancos cocidos",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 105,
+        "proteinaG": 7.0,
+        "carbohidratoG": 17.0,
+        "grasaG": 0.5,
+        "fibraG": 6.0,
+        "sodioMg": 240
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 400 g escurrido",
+          "gramos": 400,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "lentejas_secas",
+      "nombre": "Lentejas secas",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 336,
+        "proteinaG": 24.0,
+        "carbohidratoG": 52.0,
+        "grasaG": 1.9,
+        "fibraG": 11.0,
+        "sodioMg": 6
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "tofu_firme",
+      "nombre": "Tofu firme",
+      "estado": "listo",
+      "categoria": "refrigerados",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 144,
+        "proteinaG": 15.0,
+        "carbohidratoG": 3.5,
+        "grasaG": 8.0,
+        "fibraG": 2.0,
+        "sodioMg": 14
+      },
+      "alergenos": [
+        "soja"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bloque de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "tempeh",
+      "nombre": "Tempeh",
+      "estado": "listo",
+      "categoria": "refrigerados",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 192,
+        "proteinaG": 20.0,
+        "carbohidratoG": 7.6,
+        "grasaG": 11.0,
+        "fibraG": 0,
+        "sodioMg": 9
+      },
+      "alergenos": [
+        "soja"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bloque de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 300
+        }
+      ]
+    },
+    {
+      "id": "soja_texturizada",
+      "nombre": "Soya texturizada fina",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 340,
+        "proteinaG": 50.0,
+        "carbohidratoG": 30.0,
+        "grasaG": 1.5,
+        "fibraG": 17.0,
+        "sodioMg": 20
+      },
+      "alergenos": [
+        "soja"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 320
+        }
+      ]
+    },
+    {
+      "id": "arroz_blanco",
+      "nombre": "Arroz blanco",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 360,
+        "proteinaG": 7.0,
+        "carbohidratoG": 79.0,
+        "grasaG": 0.6,
+        "fibraG": 1.0,
+        "sodioMg": 5
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 130
+        }
+      ]
+    },
+    {
+      "id": "arroz_integral",
+      "nombre": "Arroz integral",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 362,
+        "proteinaG": 7.5,
+        "carbohidratoG": 76.0,
+        "grasaG": 2.7,
+        "fibraG": 3.5,
+        "sodioMg": 5
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "pasta_seca",
+      "nombre": "Pasta",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 371,
+        "proteinaG": 13.0,
+        "carbohidratoG": 74.0,
+        "grasaG": 1.5,
+        "fibraG": 3.0,
+        "sodioMg": 6
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 100
+        }
+      ]
+    },
+    {
+      "id": "pasta_integral",
+      "nombre": "Pasta integral",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 348,
+        "proteinaG": 14.0,
+        "carbohidratoG": 67.0,
+        "grasaG": 2.5,
+        "fibraG": 8.0,
+        "sodioMg": 8
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "pan_integral",
+      "nombre": "Pan integral",
+      "estado": "listo",
+      "categoria": "panaderia",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 247,
+        "proteinaG": 9.0,
+        "carbohidratoG": 41.0,
+        "grasaG": 3.5,
+        "fibraG": 6.0,
+        "sodioMg": 450
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "barra de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 160
+        }
+      ]
+    },
+    {
+      "id": "avena_copos",
+      "nombre": "Copos de avena",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 389,
+        "proteinaG": 16.9,
+        "carbohidratoG": 66.0,
+        "grasaG": 6.9,
+        "fibraG": 10.6,
+        "sodioMg": 2
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 140
+        }
+      ]
+    },
+    {
+      "id": "patata",
+      "nombre": "Papa",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 77,
+        "proteinaG": 2.0,
+        "carbohidratoG": 17.0,
+        "grasaG": 0.1,
+        "fibraG": 2.2,
+        "sodioMg": 6
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "malla de 2 kg",
+          "gramos": 2000,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "boniato",
+      "nombre": "Camote",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 86,
+        "proteinaG": 1.6,
+        "carbohidratoG": 20.0,
+        "grasaG": 0.1,
+        "fibraG": 3.0,
+        "sodioMg": 55
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 250
+        }
+      ]
+    },
+    {
+      "id": "quinoa",
+      "nombre": "Quinoa",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 368,
+        "proteinaG": 14.0,
+        "carbohidratoG": 64.0,
+        "grasaG": 6.0,
+        "fibraG": 7.0,
+        "sodioMg": 5
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 350
+        }
+      ]
+    },
+    {
+      "id": "cuscus",
+      "nombre": "Cuscús",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 376,
+        "proteinaG": 12.8,
+        "carbohidratoG": 77.0,
+        "grasaG": 0.6,
+        "fibraG": 5.0,
+        "sodioMg": 10
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 160
+        }
+      ]
+    },
+    {
+      "id": "tortilla_trigo",
+      "nombre": "Tortilla de trigo integral",
+      "estado": "listo",
+      "categoria": "panaderia",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 300,
+        "proteinaG": 9.0,
+        "carbohidratoG": 50.0,
+        "grasaG": 7.0,
+        "fibraG": 5.0,
+        "sodioMg": 570
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 8 unidades, 320 g",
+          "gramos": 320,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "brocoli",
+      "nombre": "Brócoli",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 34,
+        "proteinaG": 2.8,
+        "carbohidratoG": 7.0,
+        "grasaG": 0.4,
+        "fibraG": 2.6,
+        "sodioMg": 33
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "pieza de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "espinacas",
+      "nombre": "Espinacas",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 23,
+        "proteinaG": 2.9,
+        "carbohidratoG": 3.6,
+        "grasaG": 0.4,
+        "fibraG": 2.2,
+        "sodioMg": 79
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 300 g",
+          "gramos": 300,
+          "precioEstimadoCents": 170
+        }
+      ]
+    },
+    {
+      "id": "tomate",
+      "nombre": "Tomate",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 18,
+        "proteinaG": 0.9,
+        "carbohidratoG": 3.9,
+        "grasaG": 0.2,
+        "fibraG": 1.2,
+        "sodioMg": 5
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "tomate_triturado",
+      "nombre": "Tomate triturado",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": false,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 32,
+        "proteinaG": 1.3,
+        "carbohidratoG": 6.0,
+        "grasaG": 0.3,
+        "fibraG": 1.4,
+        "sodioMg": 190
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 90
+        }
+      ]
+    },
+    {
+      "id": "cebolla",
+      "nombre": "Cebolla",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 40,
+        "proteinaG": 1.1,
+        "carbohidratoG": 9.3,
+        "grasaG": 0.1,
+        "fibraG": 1.7,
+        "sodioMg": 4
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "malla de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 130
+        }
+      ]
+    },
+    {
+      "id": "pimiento_rojo",
+      "nombre": "Pimiento rojo",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 31,
+        "proteinaG": 1.0,
+        "carbohidratoG": 6.0,
+        "grasaG": 0.3,
+        "fibraG": 2.1,
+        "sodioMg": 4
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 200
+        }
+      ]
+    },
+    {
+      "id": "calabacin",
+      "nombre": "Calabacita",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 17,
+        "proteinaG": 1.2,
+        "carbohidratoG": 3.1,
+        "grasaG": 0.3,
+        "fibraG": 1.0,
+        "sodioMg": 8
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 750 g",
+          "gramos": 750,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "berenjena",
+      "nombre": "Berenjena",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 25,
+        "proteinaG": 1.0,
+        "carbohidratoG": 6.0,
+        "grasaG": 0.2,
+        "fibraG": 3.0,
+        "sodioMg": 2
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 160
+        }
+      ]
+    },
+    {
+      "id": "zanahoria",
+      "nombre": "Zanahoria",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 41,
+        "proteinaG": 0.9,
+        "carbohidratoG": 10.0,
+        "grasaG": 0.2,
+        "fibraG": 2.8,
+        "sodioMg": 69
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 120
+        }
+      ]
+    },
+    {
+      "id": "champinones",
+      "nombre": "Champiñones",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 22,
+        "proteinaG": 3.1,
+        "carbohidratoG": 3.3,
+        "grasaG": 0.3,
+        "fibraG": 1.0,
+        "sodioMg": 5
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "ajo",
+      "nombre": "Ajo",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 149,
+        "proteinaG": 6.4,
+        "carbohidratoG": 33.0,
+        "grasaG": 0.5,
+        "fibraG": 2.1,
+        "sodioMg": 17
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "malla de 3 cabezas, 150 g",
+          "gramos": 150,
+          "precioEstimadoCents": 120
+        }
+      ]
+    },
+    {
+      "id": "lechuga",
+      "nombre": "Lechuga",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 15,
+        "proteinaG": 1.4,
+        "carbohidratoG": 2.9,
+        "grasaG": 0.2,
+        "fibraG": 1.3,
+        "sodioMg": 28
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 130
+        }
+      ]
+    },
+    {
+      "id": "pepino",
+      "nombre": "Pepino",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 15,
+        "proteinaG": 0.7,
+        "carbohidratoG": 3.6,
+        "grasaG": 0.1,
+        "fibraG": 0.5,
+        "sodioMg": 2
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "pieza de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 90
+        }
+      ]
+    },
+    {
+      "id": "judias_verdes",
+      "nombre": "Ejotes",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 31,
+        "proteinaG": 1.8,
+        "carbohidratoG": 7.0,
+        "grasaG": 0.2,
+        "fibraG": 3.4,
+        "sodioMg": 6
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa congelada de 750 g",
+          "gramos": 750,
+          "precioEstimadoCents": 200
+        }
+      ]
+    },
+    {
+      "id": "guisantes",
+      "nombre": "Chícharos",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 81,
+        "proteinaG": 5.4,
+        "carbohidratoG": 14.0,
+        "grasaG": 0.4,
+        "fibraG": 5.0,
+        "sodioMg": 5
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa congelada de 750 g",
+          "gramos": 750,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "coliflor",
+      "nombre": "Coliflor",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 25,
+        "proteinaG": 1.9,
+        "carbohidratoG": 5.0,
+        "grasaG": 0.3,
+        "fibraG": 2.0,
+        "sodioMg": 30
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "pieza de 800 g",
+          "gramos": 800,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "platano",
+      "nombre": "Plátano",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 89,
+        "proteinaG": 1.1,
+        "carbohidratoG": 23.0,
+        "grasaG": 0.3,
+        "fibraG": 2.6,
+        "sodioMg": 1
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "manojo de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "manzana",
+      "nombre": "Manzana",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 52,
+        "proteinaG": 0.3,
+        "carbohidratoG": 14.0,
+        "grasaG": 0.2,
+        "fibraG": 2.4,
+        "sodioMg": 1
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 210
+        }
+      ]
+    },
+    {
+      "id": "fresas",
+      "nombre": "Fresas",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 32,
+        "proteinaG": 0.7,
+        "carbohidratoG": 7.7,
+        "grasaG": 0.3,
+        "fibraG": 2.0,
+        "sodioMg": 1
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 250
+        }
+      ]
+    },
+    {
+      "id": "arandanos",
+      "nombre": "Arándanos",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 57,
+        "proteinaG": 0.7,
+        "carbohidratoG": 14.0,
+        "grasaG": 0.3,
+        "fibraG": 2.4,
+        "sodioMg": 1
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "tarrina de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 280
+        }
+      ]
+    },
+    {
+      "id": "aguacate",
+      "nombre": "Aguacate",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 160,
+        "proteinaG": 2.0,
+        "carbohidratoG": 8.5,
+        "grasaG": 15.0,
+        "fibraG": 6.7,
+        "sodioMg": 7
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "unidad de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "limon",
+      "nombre": "Limón",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 29,
+        "proteinaG": 1.1,
+        "carbohidratoG": 9.0,
+        "grasaG": 0.3,
+        "fibraG": 2.8,
+        "sodioMg": 2
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "malla de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "aceite_oliva",
+      "nombre": "Aceite de oliva virgen extra",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 884,
+        "proteinaG": 0,
+        "carbohidratoG": 0,
+        "grasaG": 100.0,
+        "fibraG": 0,
+        "sodioMg": 2
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 1 L",
+          "gramos": 916,
+          "precioEstimadoCents": 850
+        }
+      ]
+    },
+    {
+      "id": "almendras",
+      "nombre": "Almendras",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 579,
+        "proteinaG": 21.0,
+        "carbohidratoG": 22.0,
+        "grasaG": 50.0,
+        "fibraG": 12.5,
+        "sodioMg": 1
+      },
+      "alergenos": [
+        "frutos_de_cascara"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 320
+        }
+      ]
+    },
+    {
+      "id": "nueces",
+      "nombre": "Nueces",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 654,
+        "proteinaG": 15.0,
+        "carbohidratoG": 14.0,
+        "grasaG": 65.0,
+        "fibraG": 6.7,
+        "sodioMg": 2
+      },
+      "alergenos": [
+        "frutos_de_cascara"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 350
+        }
+      ]
+    },
+    {
+      "id": "crema_cacahuete",
+      "nombre": "Crema de cacahuate",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 588,
+        "proteinaG": 25.0,
+        "carbohidratoG": 20.0,
+        "grasaG": 50.0,
+        "fibraG": 6.0,
+        "sodioMg": 17
+      },
+      "alergenos": [
+        "cacahuetes"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 350 g",
+          "gramos": 350,
+          "precioEstimadoCents": 400
+        }
+      ]
+    },
+    {
+      "id": "aceitunas",
+      "nombre": "Aceitunas verdes",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": false,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 145,
+        "proteinaG": 1.0,
+        "carbohidratoG": 3.8,
+        "grasaG": 15.0,
+        "fibraG": 3.2,
+        "sodioMg": 1550
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 350 g escurrido",
+          "gramos": 350,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "semillas_chia",
+      "nombre": "Semillas de chía",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 486,
+        "proteinaG": 17.0,
+        "carbohidratoG": 42.0,
+        "grasaG": 31.0,
+        "fibraG": 34.0,
+        "sodioMg": 16
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 300
+        }
+      ]
+    },
+    {
+      "id": "sal",
+      "nombre": "Sal",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 0,
+        "proteinaG": 0,
+        "carbohidratoG": 0,
+        "grasaG": 0,
+        "fibraG": 0,
+        "sodioMg": 38700
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 1 kg",
+          "gramos": 1000,
+          "precioEstimadoCents": 50
+        }
+      ]
+    },
+    {
+      "id": "pimienta_negra",
+      "nombre": "Pimienta negra molida",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 251,
+        "proteinaG": 10.4,
+        "carbohidratoG": 64.0,
+        "grasaG": 3.3,
+        "fibraG": 25.0,
+        "sodioMg": 20
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 50 g",
+          "gramos": 50,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "pimenton",
+      "nombre": "Pimentón dulce",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 282,
+        "proteinaG": 14.1,
+        "carbohidratoG": 54.0,
+        "grasaG": 13.0,
+        "fibraG": 35.0,
+        "sodioMg": 68
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 75 g",
+          "gramos": 75,
+          "precioEstimadoCents": 160
+        }
+      ]
+    },
+    {
+      "id": "comino",
+      "nombre": "Comino molido",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 375,
+        "proteinaG": 17.8,
+        "carbohidratoG": 44.0,
+        "grasaG": 22.0,
+        "fibraG": 11.0,
+        "sodioMg": 168
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 50 g",
+          "gramos": 50,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "oregano",
+      "nombre": "Orégano seco",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 265,
+        "proteinaG": 9.0,
+        "carbohidratoG": 69.0,
+        "grasaG": 4.3,
+        "fibraG": 42.0,
+        "sodioMg": 25
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 30 g",
+          "gramos": 30,
+          "precioEstimadoCents": 130
+        }
+      ]
+    },
+    {
+      "id": "vinagre",
+      "nombre": "Vinagre de vino",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 19,
+        "proteinaG": 0,
+        "carbohidratoG": 0.3,
+        "grasaG": 0,
+        "fibraG": 0,
+        "sodioMg": 8
+      },
+      "alergenos": [
+        "sulfitos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 750 ml",
+          "gramos": 750,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "miel",
+      "nombre": "Miel",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 304,
+        "proteinaG": 0.3,
+        "carbohidratoG": 82.0,
+        "grasaG": 0,
+        "fibraG": 0.2,
+        "sodioMg": 4
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 450
+        }
+      ]
+    },
+    {
+      "id": "bebida_avena",
+      "nombre": "Bebida de avena",
+      "estado": "liquido",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 45,
+        "proteinaG": 0.8,
+        "carbohidratoG": 7.0,
+        "grasaG": 1.5,
+        "fibraG": 0.8,
+        "sodioMg": 50
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "brik de 1 L",
+          "gramos": 1030,
+          "precioEstimadoCents": 130
+        }
+      ]
+    },
+    {
+      "id": "levadura_nutricional",
+      "nombre": "Levadura nutricional",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 325,
+        "proteinaG": 45.0,
+        "carbohidratoG": 36.0,
+        "grasaG": 5.0,
+        "fibraG": 21.0,
+        "sodioMg": 30
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 125 g",
+          "gramos": 125,
+          "precioEstimadoCents": 400
+        }
+      ]
+    },
+    {
+      "id": "queso_parmesano",
+      "nombre": "Queso parmesano rallado",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 431,
+        "proteinaG": 38.5,
+        "carbohidratoG": 4.1,
+        "grasaG": 29.0,
+        "fibraG": 0.0,
+        "sodioMg": 1529
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 80 g",
+          "gramos": 80,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "queso_cheddar",
+      "nombre": "Queso cheddar",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 403,
+        "proteinaG": 24.9,
+        "carbohidratoG": 1.3,
+        "grasaG": 33.1,
+        "fibraG": 0.0,
+        "sodioMg": 621
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "cuña de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 350
+        }
+      ]
+    },
+    {
+      "id": "queso_feta",
+      "nombre": "Queso feta",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 264,
+        "proteinaG": 14.2,
+        "carbohidratoG": 4.1,
+        "grasaG": 21.3,
+        "fibraG": 0.0,
+        "sodioMg": 917
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "tarrina de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 320
+        }
+      ]
+    },
+    {
+      "id": "queso_suizo",
+      "nombre": "Queso suizo (emmental)",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 380,
+        "proteinaG": 27.0,
+        "carbohidratoG": 5.4,
+        "grasaG": 28.0,
+        "fibraG": 0.0,
+        "sodioMg": 192
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 150 g",
+          "gramos": 150,
+          "precioEstimadoCents": 280
+        }
+      ]
+    },
+    {
+      "id": "mantequilla",
+      "nombre": "Mantequilla sin sal",
+      "estado": "listo",
+      "categoria": "lacteos",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 717,
+        "proteinaG": 0.9,
+        "carbohidratoG": 0.1,
+        "grasaG": 81.1,
+        "fibraG": 0.0,
+        "sodioMg": 11
+      },
+      "alergenos": [
+        "lacteos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "pastilla de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 230
+        }
+      ]
+    },
+    {
+      "id": "granola",
+      "nombre": "Granola",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 471,
+        "proteinaG": 10.0,
+        "carbohidratoG": 64.0,
+        "grasaG": 20.0,
+        "fibraG": 7.0,
+        "sodioMg": 130
+      },
+      "alergenos": [
+        "gluten",
+        "frutos_de_cascara"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 375 g",
+          "gramos": 375,
+          "precioEstimadoCents": 310
+        }
+      ]
+    },
+    {
+      "id": "bacon",
+      "nombre": "Tocino",
+      "estado": "crudo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 458,
+        "proteinaG": 12.0,
+        "carbohidratoG": 1.4,
+        "grasaG": 45.0,
+        "fibraG": 0.0,
+        "sodioMg": 1717
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 150 g",
+          "gramos": 150,
+          "precioEstimadoCents": 260
+        }
+      ]
+    },
+    {
+      "id": "jamon_cocido",
+      "nombre": "Jamón cocido",
+      "estado": "listo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "BEDCA",
+      "panel": {
+        "kcal": 107,
+        "proteinaG": 18.4,
+        "carbohidratoG": 1.0,
+        "grasaG": 3.4,
+        "fibraG": 0.0,
+        "sodioMg": 1050
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "sobre de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "pavo_fiambre",
+      "nombre": "Pechuga de pavo fiambre",
+      "estado": "listo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 104,
+        "proteinaG": 17.1,
+        "carbohidratoG": 3.4,
+        "grasaG": 1.7,
+        "fibraG": 0.0,
+        "sodioMg": 1050
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "sobre de 150 g",
+          "gramos": 150,
+          "precioEstimadoCents": 210
+        }
+      ]
+    },
+    {
+      "id": "salchicha_pavo",
+      "nombre": "Salchicha de pavo fresca",
+      "estado": "crudo",
+      "categoria": "carniceria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 164,
+        "proteinaG": 14.8,
+        "carbohidratoG": 1.0,
+        "grasaG": 11.1,
+        "fibraG": 0.0,
+        "sodioMg": 720
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 300 g",
+          "gramos": 300,
+          "precioEstimadoCents": 320
+        }
+      ]
+    },
+    {
+      "id": "esparragos",
+      "nombre": "Espárragos verdes",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 20,
+        "proteinaG": 2.2,
+        "carbohidratoG": 3.9,
+        "grasaG": 0.1,
+        "fibraG": 2.1,
+        "sodioMg": 2
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "manojo de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "coles_bruselas",
+      "nombre": "Coles de Bruselas",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 43,
+        "proteinaG": 3.4,
+        "carbohidratoG": 9.0,
+        "grasaG": 0.3,
+        "fibraG": 3.8,
+        "sodioMg": 25
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bandeja de 400 g",
+          "gramos": 400,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "rucula",
+      "nombre": "Arúgula",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 25,
+        "proteinaG": 2.6,
+        "carbohidratoG": 3.7,
+        "grasaG": 0.7,
+        "fibraG": 1.6,
+        "sodioMg": 27
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 100 g",
+          "gramos": 100,
+          "precioEstimadoCents": 140
+        }
+      ]
+    },
+    {
+      "id": "col_lombarda",
+      "nombre": "Col morada",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 31,
+        "proteinaG": 1.4,
+        "carbohidratoG": 7.4,
+        "grasaG": 0.2,
+        "fibraG": 2.1,
+        "sodioMg": 27
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "unidad de 800 g",
+          "gramos": 800,
+          "precioEstimadoCents": 130
+        }
+      ]
+    },
+    {
+      "id": "kale",
+      "nombre": "Kale (col rizada)",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 49,
+        "proteinaG": 4.3,
+        "carbohidratoG": 8.8,
+        "grasaG": 0.9,
+        "fibraG": 3.6,
+        "sodioMg": 38
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "pimiento_verde",
+      "nombre": "Pimiento verde",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 20,
+        "proteinaG": 0.9,
+        "carbohidratoG": 4.6,
+        "grasaG": 0.2,
+        "fibraG": 1.7,
+        "sodioMg": 3
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "unidad ~120 g",
+          "gramos": 120,
+          "precioEstimadoCents": 60
+        }
+      ]
+    },
+    {
+      "id": "cebolleta",
+      "nombre": "Cebollita de cambray",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 32,
+        "proteinaG": 1.8,
+        "carbohidratoG": 7.3,
+        "grasaG": 0.2,
+        "fibraG": 2.6,
+        "sodioMg": 16
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "manojo de 100 g",
+          "gramos": 100,
+          "precioEstimadoCents": 90
+        }
+      ]
+    },
+    {
+      "id": "jengibre",
+      "nombre": "Jengibre fresco",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 80,
+        "proteinaG": 1.8,
+        "carbohidratoG": 17.8,
+        "grasaG": 0.8,
+        "fibraG": 2.0,
+        "sodioMg": 13
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "raíz de 100 g",
+          "gramos": 100,
+          "precioEstimadoCents": 70
+        }
+      ]
+    },
+    {
+      "id": "melon",
+      "nombre": "Melón cantaloupe",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 34,
+        "proteinaG": 0.8,
+        "carbohidratoG": 8.2,
+        "grasaG": 0.2,
+        "fibraG": 0.9,
+        "sodioMg": 16
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "unidad ~1,2 kg",
+          "gramos": 1200,
+          "precioEstimadoCents": 250
+        }
+      ]
+    },
+    {
+      "id": "sandia",
+      "nombre": "Sandía",
+      "estado": "crudo",
+      "categoria": "fruteria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 30,
+        "proteinaG": 0.6,
+        "carbohidratoG": 7.6,
+        "grasaG": 0.2,
+        "fibraG": 0.4,
+        "sodioMg": 1
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "cuarto ~1,5 kg",
+          "gramos": 1500,
+          "precioEstimadoCents": 200
+        }
+      ]
+    },
+    {
+      "id": "pina_conserva",
+      "nombre": "Piña en su jugo, escurrida",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 56,
+        "proteinaG": 0.4,
+        "carbohidratoG": 14.5,
+        "grasaG": 0.1,
+        "fibraG": 0.5,
+        "sodioMg": 1
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "lata de 432 g escurrida",
+          "gramos": 432,
+          "precioEstimadoCents": 160
+        }
+      ]
+    },
+    {
+      "id": "zumo_naranja",
+      "nombre": "Jugo de naranja",
+      "estado": "liquido",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 45,
+        "proteinaG": 0.7,
+        "carbohidratoG": 10.4,
+        "grasaG": 0.2,
+        "fibraG": 0.2,
+        "sodioMg": 1
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "brik de 1 L",
+          "gramos": 1000,
+          "precioEstimadoCents": 150
+        }
+      ]
+    },
+    {
+      "id": "pasas",
+      "nombre": "Pasas",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 299,
+        "proteinaG": 3.1,
+        "carbohidratoG": 79.2,
+        "grasaG": 0.5,
+        "fibraG": 3.7,
+        "sodioMg": 11
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "aderezo_cesar",
+      "nombre": "Aderezo César",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 467,
+        "proteinaG": 2.2,
+        "carbohidratoG": 6.6,
+        "grasaG": 48.7,
+        "fibraG": 0.0,
+        "sodioMg": 1078
+      },
+      "alergenos": [
+        "huevos",
+        "lacteos",
+        "pescado"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 250 ml",
+          "gramos": 250,
+          "precioEstimadoCents": 240
+        }
+      ]
+    },
+    {
+      "id": "aderezo_italiano",
+      "nombre": "Aderezo italiano",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 292,
+        "proteinaG": 0.3,
+        "carbohidratoG": 9.8,
+        "grasaG": 28.0,
+        "fibraG": 0.0,
+        "sodioMg": 1350
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 250 ml",
+          "gramos": 250,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "salsa_barbacoa",
+      "nombre": "Salsa barbacoa",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 172,
+        "proteinaG": 0.9,
+        "carbohidratoG": 40.0,
+        "grasaG": 0.6,
+        "fibraG": 0.6,
+        "sodioMg": 900
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 300 g",
+          "gramos": 300,
+          "precioEstimadoCents": 210
+        }
+      ]
+    },
+    {
+      "id": "salsa_teriyaki",
+      "nombre": "Salsa teriyaki",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 89,
+        "proteinaG": 5.9,
+        "carbohidratoG": 15.5,
+        "grasaG": 0.0,
+        "fibraG": 0.3,
+        "sodioMg": 3186
+      },
+      "alergenos": [
+        "soja",
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 250 ml",
+          "gramos": 250,
+          "precioEstimadoCents": 230
+        }
+      ]
+    },
+    {
+      "id": "salsa_soja",
+      "nombre": "Salsa de soya (tamari)",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 60,
+        "proteinaG": 10.5,
+        "carbohidratoG": 5.6,
+        "grasaG": 0.1,
+        "fibraG": 0.8,
+        "sodioMg": 5493
+      },
+      "alergenos": [
+        "soja"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 250 ml",
+          "gramos": 250,
+          "precioEstimadoCents": 260
+        }
+      ]
+    },
+    {
+      "id": "mayonesa",
+      "nombre": "Mayonesa",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 680,
+        "proteinaG": 1.0,
+        "carbohidratoG": 0.6,
+        "grasaG": 75.0,
+        "fibraG": 0.0,
+        "sodioMg": 635
+      },
+      "alergenos": [
+        "huevos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 450 ml",
+          "gramos": 400,
+          "precioEstimadoCents": 210
+        }
+      ]
+    },
+    {
+      "id": "mostaza_dijon",
+      "nombre": "Mostaza de Dijon",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 66,
+        "proteinaG": 4.4,
+        "carbohidratoG": 5.8,
+        "grasaG": 3.3,
+        "fibraG": 3.3,
+        "sodioMg": 1123
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "tarro de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "mermelada_albaricoque",
+      "nombre": "Mermelada de chabacano",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 250,
+        "proteinaG": 0.4,
+        "carbohidratoG": 62.0,
+        "grasaG": 0.1,
+        "fibraG": 0.5,
+        "sodioMg": 22
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "tarro de 340 g",
+          "gramos": 340,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "pesto",
+      "nombre": "Pesto de albahaca",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 454,
+        "proteinaG": 4.5,
+        "carbohidratoG": 5.0,
+        "grasaG": 46.0,
+        "fibraG": 1.6,
+        "sodioMg": 690
+      },
+      "alergenos": [
+        "lacteos",
+        "frutos_de_cascara"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "tarro de 190 g",
+          "gramos": 190,
+          "precioEstimadoCents": 260
+        }
+      ]
+    },
+    {
+      "id": "salsa_mexicana",
+      "nombre": "Salsa mexicana (pico de gallo enlatado)",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 29,
+        "proteinaG": 1.2,
+        "carbohidratoG": 6.0,
+        "grasaG": 0.2,
+        "fibraG": 1.5,
+        "sodioMg": 500
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "tarro de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "pan_rallado",
+      "nombre": "Pan rallado",
+      "estado": "listo",
+      "categoria": "panaderia",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 395,
+        "proteinaG": 13.0,
+        "carbohidratoG": 72.0,
+        "grasaG": 5.3,
+        "fibraG": 4.5,
+        "sodioMg": 732
+      },
+      "alergenos": [
+        "gluten"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "paquete de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 140
+        }
+      ]
+    },
+    {
+      "id": "ajo_polvo",
+      "nombre": "Ajo en polvo",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 331,
+        "proteinaG": 16.6,
+        "carbohidratoG": 72.7,
+        "grasaG": 0.7,
+        "fibraG": 9.0,
+        "sodioMg": 60
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 50 g",
+          "gramos": 50,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "cebolla_polvo",
+      "nombre": "Cebolla en polvo",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 341,
+        "proteinaG": 10.4,
+        "carbohidratoG": 79.1,
+        "grasaG": 1.0,
+        "fibraG": 15.2,
+        "sodioMg": 73
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 50 g",
+          "gramos": 50,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "canela",
+      "nombre": "Canela molida",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 247,
+        "proteinaG": 4.0,
+        "carbohidratoG": 81.0,
+        "grasaG": 1.2,
+        "fibraG": 53.0,
+        "sodioMg": 10
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 40 g",
+          "gramos": 40,
+          "precioEstimadoCents": 100
+        }
+      ]
+    },
+    {
+      "id": "extracto_vainilla",
+      "nombre": "Extracto de vainilla",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 288,
+        "proteinaG": 0.1,
+        "carbohidratoG": 12.7,
+        "grasaG": 0.1,
+        "fibraG": 0.0,
+        "sodioMg": 9
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "frasco de 60 ml",
+          "gramos": 60,
+          "precioEstimadoCents": 350
+        }
+      ]
+    },
+    {
+      "id": "romero",
+      "nombre": "Romero seco",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 331,
+        "proteinaG": 4.9,
+        "carbohidratoG": 64.1,
+        "grasaG": 15.2,
+        "fibraG": 42.6,
+        "sodioMg": 50
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 20 g",
+          "gramos": 20,
+          "precioEstimadoCents": 100
+        }
+      ]
+    },
+    {
+      "id": "estragon",
+      "nombre": "Estragón seco",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 295,
+        "proteinaG": 22.8,
+        "carbohidratoG": 50.2,
+        "grasaG": 7.2,
+        "fibraG": 7.4,
+        "sodioMg": 62
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 15 g",
+          "gramos": 15,
+          "precioEstimadoCents": 120
+        }
+      ]
+    },
+    {
+      "id": "cayena",
+      "nombre": "Pimienta de cayena",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 318,
+        "proteinaG": 12.0,
+        "carbohidratoG": 57.0,
+        "grasaG": 17.3,
+        "fibraG": 27.2,
+        "sodioMg": 30
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 40 g",
+          "gramos": 40,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "caldo_pollo",
+      "nombre": "Caldo de pollo (bajo en sodio)",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 7,
+        "proteinaG": 0.9,
+        "carbohidratoG": 0.8,
+        "grasaG": 0.2,
+        "fibraG": 0.0,
+        "sodioMg": 137
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "brik de 1 L",
+          "gramos": 1000,
+          "precioEstimadoCents": 130
+        }
+      ]
+    },
+    {
+      "id": "linaza_molida",
+      "nombre": "Linaza molida",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 534,
+        "proteinaG": 18.3,
+        "carbohidratoG": 28.9,
+        "grasaG": 42.2,
+        "fibraG": 27.3,
+        "sodioMg": 30
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 250 g",
+          "gramos": 250,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "pipas_girasol",
+      "nombre": "Semillas de girasol peladas",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 584,
+        "proteinaG": 20.8,
+        "carbohidratoG": 20.0,
+        "grasaG": 51.5,
+        "fibraG": 8.6,
+        "sodioMg": 9
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa de 200 g",
+          "gramos": 200,
+          "precioEstimadoCents": 180
+        }
+      ]
+    },
+    {
+      "id": "vinagre_balsamico",
+      "nombre": "Vinagre balsámico",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 88,
+        "proteinaG": 0.5,
+        "carbohidratoG": 17.0,
+        "grasaG": 0.0,
+        "fibraG": 0.0,
+        "sodioMg": 23
+      },
+      "alergenos": [
+        "sulfitos"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 250 ml",
+          "gramos": 250,
+          "precioEstimadoCents": 220
+        }
+      ]
+    },
+    {
+      "id": "aceite_sesamo",
+      "nombre": "Aceite de ajonjolí",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 884,
+        "proteinaG": 0.0,
+        "carbohidratoG": 0.0,
+        "grasaG": 100.0,
+        "fibraG": 0.0,
+        "sodioMg": 0
+      },
+      "alergenos": [
+        "sesamo"
+      ],
+      "formatosCompra": [
+        {
+          "descripcion": "botella de 150 ml",
+          "gramos": 150,
+          "precioEstimadoCents": 280
+        }
+      ]
+    },
+    {
+      "id": "apio",
+      "nombre": "Apio",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 16,
+        "proteinaG": 0.7,
+        "carbohidratoG": 3.0,
+        "grasaG": 0.2,
+        "fibraG": 1.6,
+        "sodioMg": 80
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "manojo de 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 110
+        }
+      ]
+    },
+    {
+      "id": "pepinillo",
+      "nombre": "Pepinillo encurtido",
+      "estado": "conserva",
+      "categoria": "conservas",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 11,
+        "proteinaG": 0.3,
+        "carbohidratoG": 2.3,
+        "grasaG": 0.2,
+        "fibraG": 1.2,
+        "sodioMg": 1208
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 350 g escurrido",
+          "gramos": 350,
+          "precioEstimadoCents": 190
+        }
+      ]
+    },
+    {
+      "id": "curry_polvo",
+      "nombre": "Curry en polvo",
+      "estado": "listo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 325,
+        "proteinaG": 14.3,
+        "carbohidratoG": 58.2,
+        "grasaG": 14.0,
+        "fibraG": 33.2,
+        "sodioMg": 52
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bote de 40 g",
+          "gramos": 40,
+          "precioEstimadoCents": 110
+        }
+      ]
+    }
   ]
 }

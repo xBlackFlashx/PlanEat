@@ -1,0 +1,123 @@
+// Esquema de la plataforma admin + suscripciones. El motor de generación de
+// planes (packages/motor, services/solver) no tiene ni necesita tablas: sigue
+// siendo puro y sin estado. Lo que vive aquí es SOLO lo nuevo: cuentas,
+// tier de suscripción, y un registro de cada generación para que el panel de
+// administración muestre estadísticas reales, no inventadas.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// Prisma 7: la URL de conexión ya no vive aquí. `prisma.config.ts` la lee
+// para Migrate; `src/lib/prisma.ts` la pasa al adaptador `@prisma/adapter-pg`
+// para el cliente en tiempo de ejecución.
+datasource db {
+  provider = "postgresql"
+}
+
+enum Tier {
+  FREE
+  PRO
+}
+
+/// Estado de la suscripción de pago, en el vocabulario de Stripe. "active" es
+/// el único que da acceso Pro real; los demás existen para que el webhook
+/// pueda registrar honestamente lo que Stripe le cuenta, sin forzarlo a "PRO"
+/// o "FREE" cuando la realidad es "está en periodo de gracia" o "canceló".
+enum EstadoSuscripcion {
+  activa
+  en_gracia
+  cancelada
+  impago
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  nombre       String?
+  esAdmin      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  suscripcion  Suscripcion?
+  generaciones GeneracionPlan[]
+  planesSemana PlanSemana[]
+
+  @@map("usuarios")
+}
+
+model Suscripcion {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tier   Tier              @default(FREE)
+  estado EstadoSuscripcion @default(cancelada)
+
+  stripeCustomerId     String? @unique
+  stripeSubscriptionId String? @unique
+  /// Fin del periodo ya pagado. Por debajo de "hoy" con estado != activa, el
+  /// tier efectivo cae a FREE aunque el campo `tier` siga en PRO — el corte
+  /// de acceso lee esto, no solo `tier` (ver lib/suscripcion.ts).
+  finPeriodoActual DateTime?
+
+  createdAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("suscripciones")
+}
+
+/// Un registro por cada plan generado, gratis o Pro. Es la única fuente de
+/// las estadísticas del admin — nunca se inventan cifras en la UI, se cuentan
+/// filas de esta tabla. `userId` es nulo para generaciones gratis anónimas
+/// (el generador del día sigue sin requerir cuenta).
+model GeneracionPlan {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  tier   Tier
+  dias   Int
+  slots  Int
+  dieta  String
+  ok     Boolean
+  restriccionCulpable String?
+  msTranscurridos     Int
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([tier])
+  @@map("generaciones_plan")
+}
+
+/// El plan semanal Pro que ya se generó, para poder volver a `/semana` sin
+/// regenerar (el motor es determinista con el mismo seed, pero guardarlo
+/// evita gastar cómputo y sostiene la lista de la compra tal y como se enseñó).
+model PlanSemana {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  semanaDelDia  DateTime
+  respuestaJson String
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, semanaDelDia])
+  @@map("planes_semana")
+}
+
+/// Parámetros editables desde /admin/parametros. Clave-valor deliberadamente:
+/// son ajustes de producto (textos, topes de exhibición), no configuración
+/// del solver — las constantes de negociación del motor (MIN_POOL,
+/// FRACCION_POOL_ATRIBUIBLE, etc.) siguen viviendo en el código porque
+/// cambiarlas sin volver a correr la batería de paridad Python↔TS es
+/// exactamente el tipo de error silencioso que ese código lleva evitando.
+model Parametro {
+  clave       String   @id
+  valor       String
+  descripcion String
+  updatedAt   DateTime @updatedAt
+
+  @@map("parametros")
+}

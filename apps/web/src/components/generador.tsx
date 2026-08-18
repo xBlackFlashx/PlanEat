@@ -25,18 +25,22 @@
  * · **Los campos vienen rellenos con valores medianos.** El usuario corrige, no
  *   rellena. Eso quita el pánico de la página en blanco y hace que el botón sea
  *   pulsable desde el primer instante.
- * · **La prosa es la interfaz.** Los campos van embebidos en una frase, no
- *   apilados en una columna de etiquetas. Las etiquetas existen, están
- *   asociadas y están ocultas visualmente: un lector de pantalla oye "Edad",
- *   no "campo de texto".
  * · **Se valida al perder el foco, nunca al teclear.** Corregir a alguien
  *   mientras escribe su peso es la peor manera de recibirle.
+ * · **El asistente por pasos es una mejora progresiva, no el formulario.**
+ *   Los cuatro pasos viven SIEMPRE en el DOM, dentro del mismo `<form>`: lo
+ *   único que cambia entre el modo sin JavaScript y el modo con JavaScript es
+ *   si se ocultan con `hidden` o no. `hidden` no saca un campo del envío —sólo
+ *   `disabled` lo haría—, así que el GET de reserva sigue llevando el
+ *   formulario completo aunque el asistente nunca haya llegado a montarse.
+ *   Sin eso, "más dinámico" se pagaría con el propio fallback que este
+ *   componente existe para proteger.
  */
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import type { Alergeno, ObjetivoNutricional } from "@planeat/shared";
 
-import { alimentosPorCategoria, NOMBRE_CATEGORIA } from "@/lib/alimentos";
+import { ALIMENTOS } from "@/lib/alimentos";
 import { kcal as formatearKcal } from "@/lib/formato";
 import { useGeneracion } from "@/lib/generar";
 import {
@@ -54,11 +58,11 @@ import {
   type DatosFormulario,
   type ErroresFormulario,
 } from "@/lib/perfil";
-import { rutaDe } from "@/lib/rutas";
 import type { ResultadoPlan } from "@/lib/tipos";
 
-import { DetallePlegable } from "./detalle-plegable";
+import { CampoAutocompletar } from "./campo-autocompletar";
 import { EstadoGeneracion } from "./estado-generacion";
+import { IconoFlecha } from "./iconos";
 import estilos from "./planeat.module.css";
 import { VistaPlan } from "./vista-plan";
 
@@ -67,7 +71,45 @@ const ALERGENOS_OPCIONES = Object.entries(NOMBRE_ALERGENO).map(([valor, etiqueta
   etiqueta,
 }));
 
+const ALIMENTOS_OPCIONES = ALIMENTOS.map((a) => ({ valor: a.id, etiqueta: a.nombre }));
+
+const COMIDAS_OPCIONES = [
+  { valor: "3", etiqueta: "3" },
+  { valor: "4", etiqueta: "4" },
+  { valor: "5", etiqueta: "5" },
+] as const;
+
+/**
+ * Falso en el servidor y en el primer pintado del cliente; verdadero a
+ * partir de ahí. Con `useSyncExternalStore` y no con `useState` + `useEffect`
+ * —el mismo motivo que `useMovimientoReducido` en `lib/memoria-plegado.ts`—:
+ * no hay nada externo a lo que suscribirse, sólo dos fotografías distintas
+ * (servidor vs. cliente), que es justo lo que ese tercer argumento resuelve
+ * sin disparar un `setState` dentro de un efecto.
+ */
+function useHidratado(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
 type Fase = "formulario" | "esperando" | "resultado";
+
+interface Paso {
+  id: string;
+  titulo: string;
+  /** Campos que este paso valida antes de dejar avanzar. */
+  campos: readonly CampoFormulario[];
+}
+
+const PASOS: readonly Paso[] = [
+  { id: "perfil", titulo: "Tu perfil", campos: ["edad", "altura", "peso"] },
+  { id: "movimiento", titulo: "Movimiento y objetivo", campos: [] },
+  { id: "dieta", titulo: "Cómo comes", campos: [] },
+  { id: "evitas", titulo: "Qué evitas", campos: [] },
+];
 
 export function Generador() {
   const idBase = useId();
@@ -78,8 +120,36 @@ export function Generador() {
   const [objetivo, setObjetivo] = useState<ObjetivoNutricional | null>(null);
   const { mostrarEsqueleto, progreso, generar } = useGeneracion();
 
+  // Modo asistente: falso hasta que React se hidrata. En el primer pintado
+  // —con o sin JavaScript— los cuatro pasos están todos visibles y apilados,
+  // que es el propio fallback (ver comentario de cabecera). Sólo después de
+  // montar se activan `hidden`, la barra de progreso y los botones Atrás/
+  // Siguiente. El salto de "cuatro tarjetas" a "una tarjeta" que eso produce
+  // dura un fotograma y es el precio de que el modo sin JavaScript exista de
+  // verdad, no una aproximación.
+  const hidratado = useHidratado();
+  const [paso, setPaso] = useState(0);
+  // De dónde "viene" la tarjeta que entra: la lee `.paso` en línea, en el
+  // `style` del contenedor, así que tiene que ser estado —no un ref, que no
+  // se puede leer durante el render— y cambia en el mismo evento que mueve
+  // `paso`, así que React los agrupa en un solo repintado.
+  const [direccion, setDireccion] = useState<"adelante" | "atras">("adelante");
+
   const formulario = useRef<HTMLFormElement>(null);
   const zonaResultado = useRef<HTMLDivElement>(null);
+  const pasoActivoRef = useRef<HTMLHeadingElement>(null);
+  const montado = useRef(false);
+
+  // El foco sigue al paso activo, igual que ya sigue al resultado más abajo
+  // —pero no en el primer render: robarle el foco a la página nada más
+  // cargar sería peor que no anunciar nada.
+  useEffect(() => {
+    if (!montado.current) {
+      montado.current = true;
+      return;
+    }
+    pasoActivoRef.current?.focus();
+  }, [paso]);
 
   const { objetivo: objetivoPrevisto, sueloAplicado } = calcularObjetivoDelDia(datos);
   const actividad = ACTIVIDADES.find((a) => a.valor === datos.actividad)!;
@@ -96,17 +166,46 @@ export function Generador() {
     setErrores((previos) => ({ ...previos, [campo]: nuevos[campo] }));
   };
 
+  const irA = (indice: number, sentido: "adelante" | "atras") => {
+    setDireccion(sentido);
+    setPaso(indice);
+  };
+
+  const irSiguiente = () => {
+    const campos = PASOS[paso]!.campos;
+    if (campos.length > 0) {
+      const encontrados = validar(datos);
+      const propios = Object.fromEntries(
+        campos.map((campo) => [campo, encontrados[campo]]),
+      ) as ErroresFormulario;
+      setErrores((previos) => ({ ...previos, ...propios }));
+      if (campos.some((campo) => propios[campo])) {
+        formulario.current
+          ?.querySelector<HTMLElement>(`[name="${campos.find((c) => propios[c])}"]`)
+          ?.focus();
+        return;
+      }
+    }
+    irA(paso + 1, "adelante");
+  };
+
   const enviar = async (evento: React.FormEvent<HTMLFormElement>) => {
     evento.preventDefault();
 
     const encontrados = validar(datos);
     setErrores(encontrados);
     if (hayErrores(encontrados)) {
-      // El foco va al primer campo inválido, en orden visual.
-      const primero = (Object.keys(encontrados) as CampoFormulario[])[0];
-      formulario.current
-        ?.querySelector<HTMLElement>(`[name="${primero}"]`)
-        ?.focus();
+      // El foco va al primer campo inválido, en orden visual — y si ese
+      // campo vive en un paso que no es el activo, el asistente salta ahí
+      // primero: sólo `edad`/`altura`/`peso` pueden fallar, y viven en el
+      // paso 0, así que basta con volver a él.
+      const primero = (Object.keys(encontrados) as CampoFormulario[])[0]!;
+      if (hidratado && paso !== 0) irA(0, "atras");
+      window.requestAnimationFrame(() => {
+        formulario.current
+          ?.querySelector<HTMLElement>(`[name="${primero}"]`)
+          ?.focus();
+      });
       return;
     }
 
@@ -125,198 +224,226 @@ export function Generador() {
   };
 
   const idDe = (campo: string) => `${idBase}-${campo}`;
-  const erroresVisibles = (Object.keys(errores) as CampoFormulario[]).filter(
-    (campo) => errores[campo],
-  );
+  const esUltimoPaso = paso === PASOS.length - 1;
+  const erroresDelPaso = PASOS[paso]!.campos.filter((campo) => errores[campo]);
 
   return (
     <div className="flex flex-col gap-8">
-      <form
-        ref={formulario}
-        method="get"
-        action={rutaDe("/plan")}
-        onSubmit={enviar}
-        className="rounded-[var(--radius-lg)] bg-surface p-5 sm:p-8"
-      >
-        {/* Tres grupos con micro-etiqueta y divisor, no tres párrafos sueltos:
-            la prosa sigue siendo el campo (§9.1.1), pero necesita bordes
-            visibles para leerse como tres preguntas y no como un bloque. */}
-        <div className="flex flex-col gap-6 sm:gap-7">
-          <div>
-            <p className="micro text-text-3">Tu perfil</p>
-            <p className="mt-2 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
-              Soy{" "}
-              <CampoElegir
-                id={idDe("sexo")}
-                name="sexo"
-                etiqueta="Sexo"
-                valor={datos.sexo}
-                opciones={SEXOS}
-                alCambiar={(valor) => cambiar("sexo", valor as DatosFormulario["sexo"])}
-              />{" "}
-              de{" "}
-              <CampoNumero
-                id={idDe("edad")}
-                name="edad"
-                etiqueta="Edad en años"
-                valor={datos.edad}
-                invalido={Boolean(errores.edad)}
-                alCambiar={(valor) => cambiar("edad", valor)}
-                alSalir={() => validarCampo("edad")}
-              />{" "}
-              años, mido{" "}
-              <CampoNumero
-                id={idDe("altura")}
-                name="altura"
-                etiqueta="Altura en centímetros"
-                valor={datos.altura}
-                invalido={Boolean(errores.altura)}
-                alCambiar={(valor) => cambiar("altura", valor)}
-                alSalir={() => validarCampo("altura")}
-              />{" "}
-              cm y peso{" "}
-              <CampoNumero
-                id={idDe("peso")}
-                name="peso"
-                etiqueta="Peso en kilogramos"
-                valor={datos.peso}
-                invalido={Boolean(errores.peso)}
-                alCambiar={(valor) => cambiar("peso", valor)}
-                alSalir={() => validarCampo("peso")}
-              />{" "}
-              kg.
-            </p>
-          </div>
-
-          <div className="border-t border-line pt-6 sm:pt-7">
-            <p className="micro text-text-3">Movimiento y objetivo</p>
-            <p className="mt-2 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
-              Me muevo{" "}
-              <CampoElegir
-                id={idDe("actividad")}
-                name="actividad"
-                etiqueta="Nivel de actividad"
-                valor={datos.actividad}
-                opciones={ACTIVIDADES}
-                alCambiar={(valor) =>
-                  cambiar("actividad", valor as DatosFormulario["actividad"])
-                }
-              />{" "}
-              y quiero{" "}
-              <CampoElegir
-                id={idDe("objetivo")}
-                name="objetivo"
-                etiqueta="Objetivo"
-                valor={datos.objetivo}
-                opciones={OBJETIVOS}
-                alCambiar={(valor) => cambiar("objetivo", valor as DatosFormulario["objetivo"])}
-              />
-              .
-            </p>
-
-            {/* Microcopy de calibración, justo donde está el sesgo: la gente
-                elige la semana que le gustaría tener, no la que tiene. */}
-            <p className="mt-3 text-sm leading-relaxed text-text-2">
-              <span className="font-medium text-text">{actividad.ayuda}.</span>{" "}
-              Elige tu semana típica, no la más ambiciosa.
-            </p>
-          </div>
-
-          <div className="border-t border-line pt-6 sm:pt-7">
-            <p className="micro text-text-3">Cómo comes</p>
-            <p className="mt-2 text-xl leading-[2.1] sm:text-2xl sm:leading-[2.2]">
-              Como{" "}
-              <CampoElegir
-                id={idDe("dieta")}
-                name="dieta"
-                etiqueta="Tipo de dieta"
-                valor={datos.dieta}
-                opciones={DIETAS}
-                alCambiar={(valor) => cambiar("dieta", valor as DatosFormulario["dieta"])}
-              />{" "}
-              en{" "}
-              <CampoElegir
-                id={idDe("comidas")}
-                name="comidas"
-                etiqueta="Comidas al día"
-                valor={String(datos.comidas)}
-                opciones={[
-                  { valor: "3", etiqueta: "3" },
-                  { valor: "4", etiqueta: "4" },
-                  { valor: "5", etiqueta: "5" },
-                ]}
-                alCambiar={(valor) => cambiar("comidas", Number(valor))}
-              />{" "}
-              comidas.
-            </p>
-          </div>
-
-          <div className="border-t border-line pt-6 sm:pt-7">
-            <p className="micro text-text-3">Qué evitas</p>
-            <p className="mt-2 text-sm text-text-2">
-              Filtra por seguridad alimentaria, no sustituye leer la
-              etiqueta del producto que compres.
-            </p>
-            <div className="mt-3">
-              <CampoChips
-                name="alergeno"
-                opciones={ALERGENOS_OPCIONES}
-                seleccionados={datos.alergenosExcluidos}
-                alCambiar={(nuevos) => cambiar("alergenosExcluidos", nuevos as Alergeno[])}
-              />
-            </div>
-
-            <div className="mt-4">
-              <DetallePlegable tipo="exclusiones" resumen="Más alimentos a excluir">
-                <div className="flex flex-col gap-4 pt-1">
-                  {[...alimentosPorCategoria().entries()].map(([categoria, alimentos]) => (
-                    <div key={categoria}>
-                      <p className="etiqueta text-text-3">
-                        {NOMBRE_CATEGORIA[categoria] ?? categoria}
-                      </p>
-                      <div className="mt-2">
-                        <CampoChips
-                          name="evitar"
-                          opciones={alimentos.map((a) => ({ valor: a.id, etiqueta: a.nombre }))}
-                          seleccionados={datos.ingredientesExcluidos}
-                          alCambiar={(nuevos) => cambiar("ingredientesExcluidos", nuevos)}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </DetallePlegable>
-            </div>
-          </div>
-        </div>
-
-        {/* Los errores aparecen bajo la frase completa, no bajo cada campo:
-            partirían la prosa. Siempre proponen la corrección. */}
-        {erroresVisibles.length > 0 && (
-          <div role="alert" className="mt-6 flex flex-col gap-1">
-            {erroresVisibles.map((campo) => (
-              <p key={campo} className="text-[15px] leading-snug text-danger">
-                {errores[campo]}
-              </p>
-            ))}
-          </div>
+      <form ref={formulario} method="get" action="/plan" onSubmit={enviar}>
+        {hidratado && (
+          <BarraProgreso
+            pasoActual={paso}
+            pasos={PASOS}
+            alIrA={(indice) => irA(indice, indice < paso ? "atras" : "adelante")}
+          />
         )}
 
-        <button
-          type="submit"
-          disabled={fase === "esperando"}
-          className={`${estilos.pulsable} mt-7 flex h-13 min-h-13 w-full items-center justify-center rounded-[var(--radius)] bg-brand px-6 text-[17px] font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-60`}
+        <div
+          className="rounded-[var(--radius-lg)] bg-surface p-5 shadow-[var(--shadow-pop)] sm:p-8"
+          style={{ ["--paso-desde" as string]: direccion === "adelante" ? "16px" : "-16px" }}
         >
-          {fase === "esperando" ? "Montando tu día…" : "Ver mi día"}
-        </button>
+          <div hidden={hidratado && paso !== 0} className={hidratado ? estilos.paso : undefined}>
+            <PasoCampo titulo="Tu perfil" activo={hidratado && paso === 0} refTitulo={pasoActivoRef}>
+              <div className="flex flex-col gap-5">
+                <CampoPildoras
+                  id={idDe("sexo")}
+                  etiqueta="Sexo"
+                  name="sexo"
+                  valor={datos.sexo}
+                  opciones={SEXOS}
+                  alCambiar={(valor) => cambiar("sexo", valor as DatosFormulario["sexo"])}
+                />
 
-        <p className="mt-3 text-center text-sm text-text-2">
-          Sin registro. Tarda unos segundos.
-        </p>
+                <div className="grid grid-cols-3 gap-3">
+                  <CampoNumeroTarjeta
+                    id={idDe("edad")}
+                    name="edad"
+                    etiqueta="Edad"
+                    sufijo="años"
+                    valor={datos.edad}
+                    error={errores.edad}
+                    alCambiar={(valor) => cambiar("edad", valor)}
+                    alSalir={() => validarCampo("edad")}
+                  />
+                  <CampoNumeroTarjeta
+                    id={idDe("altura")}
+                    name="altura"
+                    etiqueta="Altura"
+                    sufijo="cm"
+                    valor={datos.altura}
+                    error={errores.altura}
+                    alCambiar={(valor) => cambiar("altura", valor)}
+                    alSalir={() => validarCampo("altura")}
+                  />
+                  <CampoNumeroTarjeta
+                    id={idDe("peso")}
+                    name="peso"
+                    etiqueta="Peso"
+                    sufijo="kg"
+                    valor={datos.peso}
+                    error={errores.peso}
+                    alCambiar={(valor) => cambiar("peso", valor)}
+                    alSalir={() => validarCampo("peso")}
+                  />
+                </div>
+              </div>
+            </PasoCampo>
+          </div>
+
+          <div hidden={hidratado && paso !== 1} className={hidratado ? estilos.paso : undefined}>
+            <PasoCampo
+              titulo="Movimiento y objetivo"
+              activo={hidratado && paso === 1}
+              refTitulo={pasoActivoRef}
+              separador={!hidratado}
+            >
+              <div className="flex flex-col gap-6">
+                <div>
+                  <p className="etiqueta text-text-3">¿Cuánto te mueves?</p>
+                  <div className="mt-2">
+                    <CampoPildoras
+                      id={idDe("actividad")}
+                      etiqueta="Nivel de actividad"
+                      name="actividad"
+                      valor={datos.actividad}
+                      opciones={ACTIVIDADES}
+                      alCambiar={(valor) =>
+                        cambiar("actividad", valor as DatosFormulario["actividad"])
+                      }
+                    />
+                  </div>
+                  {/* Microcopy de calibración, justo donde está el sesgo: la
+                      gente elige la semana que le gustaría tener, no la que
+                      tiene. */}
+                  <p className="mt-3 text-sm leading-relaxed text-text-2">
+                    <span className="font-medium text-text">{actividad.ayuda}.</span>{" "}
+                    Elige tu semana típica, no la más ambiciosa.
+                  </p>
+                </div>
+
+                <div>
+                  <p className="etiqueta text-text-3">¿Qué quieres conseguir?</p>
+                  <div className="mt-2">
+                    <CampoPildoras
+                      id={idDe("objetivo")}
+                      etiqueta="Objetivo"
+                      name="objetivo"
+                      valor={datos.objetivo}
+                      opciones={OBJETIVOS}
+                      alCambiar={(valor) =>
+                        cambiar("objetivo", valor as DatosFormulario["objetivo"])
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </PasoCampo>
+          </div>
+
+          <div hidden={hidratado && paso !== 2} className={hidratado ? estilos.paso : undefined}>
+            <PasoCampo
+              titulo="Cómo comes"
+              activo={hidratado && paso === 2}
+              refTitulo={pasoActivoRef}
+              separador={!hidratado}
+            >
+              <div className="flex flex-col gap-6">
+                <div>
+                  <p className="etiqueta text-text-3">¿Qué tipo de dieta sigues?</p>
+                  <div className="mt-2">
+                    <CampoPildoras
+                      id={idDe("dieta")}
+                      etiqueta="Tipo de dieta"
+                      name="dieta"
+                      valor={datos.dieta}
+                      opciones={DIETAS}
+                      alCambiar={(valor) => cambiar("dieta", valor as DatosFormulario["dieta"])}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <p className="etiqueta text-text-3">¿En cuántas comidas repartes el día?</p>
+                  <div className="mt-2">
+                    <CampoPildoras
+                      id={idDe("comidas")}
+                      etiqueta="Comidas al día"
+                      name="comidas"
+                      valor={String(datos.comidas)}
+                      opciones={COMIDAS_OPCIONES}
+                      alCambiar={(valor) => cambiar("comidas", Number(valor))}
+                    />
+                  </div>
+                </div>
+              </div>
+            </PasoCampo>
+          </div>
+
+          <div hidden={hidratado && paso !== 3} className={hidratado ? estilos.paso : undefined}>
+            <PasoCampo
+              titulo="Qué evitas"
+              activo={hidratado && paso === 3}
+              refTitulo={pasoActivoRef}
+              separador={!hidratado}
+            >
+              <div>
+                <p className="text-sm text-text-2">
+                  Filtra por seguridad alimentaria, no sustituye leer la etiqueta
+                  del producto que compres.
+                </p>
+
+                <div className="mt-4">
+                  <label htmlFor={idDe("alergenos")} className="text-sm font-medium text-text-2">
+                    Alergias e intolerancias
+                  </label>
+                  <div className="mt-1.5" id={idDe("alergenos")}>
+                    <CampoAutocompletar
+                      name="alergeno"
+                      etiqueta="Buscar un alérgeno a excluir"
+                      placeholder="Escribe para buscar, por ejemplo «lácteos»…"
+                      opciones={ALERGENOS_OPCIONES}
+                      seleccionados={datos.alergenosExcluidos}
+                      alCambiar={(nuevos) => cambiar("alergenosExcluidos", nuevos as Alergeno[])}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <label htmlFor={idDe("evitar")} className="text-sm font-medium text-text-2">
+                    Otros alimentos que evitas
+                  </label>
+                  <div className="mt-1.5" id={idDe("evitar")}>
+                    <CampoAutocompletar
+                      name="evitar"
+                      etiqueta="Buscar un alimento a evitar"
+                      placeholder="Escribe para buscar, por ejemplo «camarón»…"
+                      opciones={ALIMENTOS_OPCIONES}
+                      seleccionados={datos.ingredientesExcluidos}
+                      alCambiar={(nuevos) => cambiar("ingredientesExcluidos", nuevos)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </PasoCampo>
+          </div>
+
+          {/* Los errores del paso activo, nunca los de un paso oculto: un
+              mensaje sobre un campo que no se ve no se puede corregir. */}
+          {erroresDelPaso.length > 0 && (
+            <div role="alert" className="mt-6 flex flex-col gap-1">
+              {erroresDelPaso.map((campo) => (
+                <p key={campo} className="text-[15px] leading-snug text-danger">
+                  {errores[campo]}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Lo que se va a pedir, antes de pedirlo. Nunca un número sin su
-            conclusión al lado. */}
-        <p className="mt-6 border-t border-line pt-4 text-sm leading-relaxed text-text-2">
+            conclusión al lado. Vive fuera de las tarjetas de paso: es la
+            única franja que no cambia al navegar el asistente. */}
+        <p className="mt-6 text-sm leading-relaxed text-text-2">
           Con esos datos tu día sale en{" "}
           <span className="font-semibold tabular-nums text-text" data-numeric>
             ≈ {formatearKcal(objetivoPrevisto.kcal)} kcal
@@ -331,6 +458,42 @@ export function Generador() {
             bajar más no es seguro sin supervisión médica.
           </p>
         )}
+
+        <div className="mt-6 flex items-center gap-3">
+          {hidratado && paso > 0 && (
+            <button
+              type="button"
+              onClick={() => irA(paso - 1, "atras")}
+              className={`${estilos.pulsable} flex h-13 min-h-13 shrink-0 items-center gap-2 rounded-[var(--radius)] border border-line-strong px-5 text-[17px] font-medium text-text hover:bg-surface-2`}
+            >
+              <IconoFlecha tam={18} className="rotate-180" />
+              Atrás
+            </button>
+          )}
+
+          {hidratado && !esUltimoPaso ? (
+            <button
+              type="button"
+              onClick={irSiguiente}
+              className={`${estilos.pulsable} flex h-13 min-h-13 flex-1 items-center justify-center gap-2 rounded-[var(--radius)] bg-brand px-6 text-[17px] font-semibold text-on-brand hover:bg-brand-hover`}
+            >
+              Siguiente
+              <IconoFlecha tam={18} />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={fase === "esperando"}
+              className={`${estilos.pulsable} flex h-13 min-h-13 flex-1 items-center justify-center rounded-[var(--radius)] bg-brand px-6 text-[17px] font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-60`}
+            >
+              {fase === "esperando" ? "Montando tu día…" : "Ver mi día"}
+            </button>
+          )}
+        </div>
+
+        <p className="mt-3 text-center text-sm text-text-2">
+          Sin registro. Tarda unos segundos.
+        </p>
       </form>
 
       {/* El resultado se monta aquí, en el sitio exacto donde va a aparecer.
@@ -354,37 +517,112 @@ export function Generador() {
 }
 
 // ---------------------------------------------------------------------------
+// Estructura del asistente
+// ---------------------------------------------------------------------------
+
+interface PropsBarraProgreso {
+  pasoActual: number;
+  pasos: readonly Paso[];
+  alIrA: (indice: number) => void;
+}
+
+/**
+ * Los pasos ya completados son pulsables —volver atrás no debería costar
+ * pulsar "Atrás" tantas veces como pasos se avanzaron—, pero nunca los
+ * futuros: no hay nada que revisar en un paso que no se ha rellenado
+ * todavía, y dejarlo pulsable invitaría a saltarse la validación del paso 0.
+ */
+function BarraProgreso({ pasoActual, pasos, alIrA }: PropsBarraProgreso) {
+  return (
+    <div className="mb-4">
+      <div className="flex items-center justify-between">
+        <p className="etiqueta text-text-3">
+          Paso {pasoActual + 1} de {pasos.length}
+        </p>
+        <p className="etiqueta text-text-3">{pasos[pasoActual]!.titulo}</p>
+      </div>
+      <div
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={pasos.length}
+        aria-valuenow={pasoActual + 1}
+        aria-valuetext={`Paso ${pasoActual + 1} de ${pasos.length}: ${pasos[pasoActual]!.titulo}`}
+        className="mt-2 flex h-1.5 gap-1.5"
+      >
+        {pasos.map((paso, indice) => (
+          <button
+            key={paso.id}
+            type="button"
+            disabled={indice > pasoActual}
+            onClick={() => alIrA(indice)}
+            aria-label={`Ir al paso ${indice + 1}: ${paso.titulo}`}
+            className={`${estilos.progresoRelleno} h-full flex-1 rounded-full ${
+              indice <= pasoActual ? "bg-brand" : "bg-surface-3"
+            } ${indice < pasoActual ? "cursor-pointer" : indice === pasoActual ? "" : "cursor-default"}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface PropsPasoCampo {
+  titulo: string;
+  activo: boolean;
+  refTitulo: React.RefObject<HTMLHeadingElement | null>;
+  /** Divisor superior: sólo hace falta cuando los cuatro pasos están
+      apilados (fallback sin JavaScript) — en el asistente sólo hay una
+      tarjeta visible y no hay nada de lo que separarse. */
+  separador?: boolean;
+  children: React.ReactNode;
+}
+
+function PasoCampo({ titulo, activo, refTitulo, separador = false, children }: PropsPasoCampo) {
+  return (
+    <div className={separador ? "border-t border-line pt-6 sm:pt-7" : undefined}>
+      <h3 ref={activo ? refTitulo : undefined} tabIndex={-1} className="t-2 outline-none">
+        {titulo}
+      </h3>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Campos
 // ---------------------------------------------------------------------------
 
-interface PropsCampoNumero {
+interface PropsCampoNumeroTarjeta {
   id: string;
   name: string;
   etiqueta: string;
+  sufijo: string;
   valor: number;
-  invalido: boolean;
+  error?: string;
   alCambiar: (valor: number) => void;
   alSalir: () => void;
 }
 
 /**
- * Campo numérico embebido en la frase. Sin caja: un subrayado que se refuerza
- * al enfocar. `inputMode="numeric"` saca el teclado numérico en móvil sin la
- * pesadilla de accesibilidad de `type="number"` (rueda del ratón, flechas
- * fantasma y validación del navegador en otro idioma).
+ * Campo numérico en formato tarjeta: etiqueta visible arriba, cifra grande
+ * centrada, sufijo debajo. Sustituye al campo embebido en la frase —ya no hay
+ * frase— pero conserva el subrayado que se refuerza al enfocar
+ * (`.campoEnLinea`) y el `inputMode="numeric"` que saca el teclado numérico en
+ * móvil sin la pesadilla de accesibilidad de `type="number"`.
  */
-function CampoNumero({
+function CampoNumeroTarjeta({
   id,
   name,
   etiqueta,
+  sufijo,
   valor,
-  invalido,
+  error,
   alCambiar,
   alSalir,
-}: PropsCampoNumero) {
+}: PropsCampoNumeroTarjeta) {
   return (
-    <>
-      <label htmlFor={id} className="sr-only">
+    <div>
+      <label htmlFor={id} className="etiqueta block text-center text-text-3">
         {etiqueta}
       </label>
       <input
@@ -394,134 +632,69 @@ function CampoNumero({
         inputMode="numeric"
         autoComplete="off"
         value={Number.isFinite(valor) ? String(valor) : ""}
-        aria-invalid={invalido || undefined}
+        aria-invalid={Boolean(error) || undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         onChange={(evento) => {
           const limpio = evento.target.value.replace(/[^\d]/g, "").slice(0, 3);
           alCambiar(limpio === "" ? Number.NaN : Number.parseInt(limpio, 10));
         }}
         onBlur={alSalir}
-        className={`${estilos.campoEnLinea} mx-0.5 inline-block h-11 w-[3.2ch] bg-transparent text-center font-semibold tabular-nums text-text ${
-          invalido ? "border-b-danger" : ""
+        className={`${estilos.campoEnLinea} mt-1 h-12 w-full bg-transparent text-center text-2xl font-semibold tabular-nums text-text ${
+          error ? "border-b-danger" : ""
         }`}
         data-numeric
       />
-    </>
+      <p className="mt-1 text-center text-sm text-text-3">{sufijo}</p>
+      {error && (
+        <p id={`${id}-error`} className="sr-only">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 
-interface PropsCampoElegir {
+interface PropsCampoPildoras {
   id: string;
-  name: string;
   etiqueta: string;
+  name: string;
   valor: string;
   opciones: readonly { valor: string; etiqueta: string }[];
   alCambiar: (valor: string) => void;
 }
 
 /**
- * Elección embebida en la frase. Es un `<select>` nativo a propósito: en móvil
- * abre la rueda del sistema, funciona con teclado y con lector de pantalla sin
- * una línea de código, y no hay ningún menú a medida que pueda quedarse a
- * medio implementar. La flecha se dibuja aparte porque `appearance: none`
- * quita la del sistema.
+ * Elección única como radios vestidos de píldora. Mismo patrón accesible que
+ * la selección múltiple de `CampoAutocompletar` —`input` real oculto, el foco
+ * se dibuja en la etiqueta—, pero de selección única: la marcada lleva el
+ * color de marca a fondo lleno, no el tinte suave, para que se lea como "la
+ * respuesta" y no como "un filtro activado".
+ *
+ * Reemplaza al `<select>` nativo de la versión en prosa: fuera de una frase,
+ * un grupo de píldoras se lee y se toca mejor que un desplegable, y no
+ * necesita el gemelo invisible que el `<select>` usaba para no arrastrar su
+ * ancho a la opción más larga.
  */
-function CampoElegir({ id, name, etiqueta, valor, opciones, alCambiar }: PropsCampoElegir) {
+function CampoPildoras({ id, etiqueta, name, valor, opciones, alCambiar }: PropsCampoPildoras) {
   return (
-    <span className="relative mx-0.5 inline-grid max-w-full items-center align-middle">
-      <label htmlFor={id} className="sr-only">
-        {etiqueta}
-      </label>
-      {/* Un `<select>` se dimensiona por su opción más larga, así que "de todo"
-          arrastraba el ancho de "bajo en carbohidratos" y dejaba un subrayado
-          suelto en mitad de la frase. Este gemelo invisible lleva el texto de la
-          opción elegida y es quien fija el ancho de la celda; el select se
-          estira encima. Efecto: el subrayado mide lo que mide la palabra.
-
-          `invisible` es `visibility: hidden`, no `display: none` ni `opacity: 0`,
-          y las tres cosas son distintas aquí: sin ocupar espacio no dimensiona
-          nada, y siendo transparente se seguiría viendo el texto duplicado
-          detrás del select. Faltaba, y el resultado era que cada campo de la
-          portada enseñaba su valor dos veces, ligeramente desplazado. */}
-      <span
-        aria-hidden="true"
-        className="invisible col-start-1 row-start-1 h-11 whitespace-pre pr-5 font-semibold leading-[2.75rem]"
-      >
-        {opciones.find((opcion) => opcion.valor === valor)?.etiqueta ?? ""}
-      </span>
-      <select
-        id={id}
-        name={name}
-        value={valor}
-        onChange={(evento) => alCambiar(evento.target.value)}
-        className={`${estilos.campoEnLinea} col-start-1 row-start-1 h-11 w-full max-w-full cursor-pointer appearance-none truncate bg-transparent pr-5 font-semibold text-text`}
-      >
-        {opciones.map((opcion) => (
-          <option key={opcion.valor} value={opcion.valor} className="bg-surface text-text">
-            {opcion.etiqueta}
-          </option>
-        ))}
-      </select>
-      <svg
-        aria-hidden="true"
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="pointer-events-none absolute right-0.5 text-text-3"
-      >
-        <path d="m6 9 6 6 6-6" />
-      </svg>
-    </span>
-  );
-}
-
-interface PropsCampoChips {
-  name: string;
-  opciones: readonly { valor: string; etiqueta: string }[];
-  seleccionados: readonly string[];
-  alCambiar: (valores: string[]) => void;
-}
-
-/**
- * Selección múltiple como casillas nativas, vestidas de píldora. Sigue
- * enviándose con el formulario (`name` repetido, como en `aParametros`), así
- * que la exclusión funciona también en el envío por GET sin JavaScript.
- * `has-[:focus-visible]` en vez de esconder el foco: el `<input>` está oculto
- * visualmente (`sr-only`), no del árbol de accesibilidad ni del tabulador, y
- * el anillo tiene que dibujarse en la píldora, no en el cuadrado invisible.
- */
-function CampoChips({ name, opciones, seleccionados, alCambiar }: PropsCampoChips) {
-  const alternar = (valor: string) => {
-    alCambiar(
-      seleccionados.includes(valor)
-        ? seleccionados.filter((v) => v !== valor)
-        : [...seleccionados, valor],
-    );
-  };
-
-  return (
-    <div className="flex flex-wrap gap-2">
+    <div id={id} role="radiogroup" aria-label={etiqueta} className="flex flex-wrap gap-2">
       {opciones.map((opcion) => {
-        const marcado = seleccionados.includes(opcion.valor);
+        const marcado = opcion.valor === valor;
         return (
           <label
             key={opcion.valor}
-            className={`flex min-h-11 cursor-pointer items-center rounded-[var(--radius)] border px-3.5 text-sm font-medium transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
+            className={`${estilos.pildora} ${estilos.pulsable} flex min-h-11 cursor-pointer items-center rounded-[var(--radius)] border px-4 text-[15px] font-medium has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
               marcado
-                ? "border-brand-line bg-brand-soft text-brand"
+                ? "border-brand bg-brand text-on-brand"
                 : "border-line bg-surface text-text-2 hover:border-line-strong"
             }`}
           >
             <input
-              type="checkbox"
+              type="radio"
               name={name}
               value={opcion.valor}
               checked={marcado}
-              onChange={() => alternar(opcion.valor)}
+              onChange={() => alCambiar(opcion.valor)}
               className="sr-only"
             />
             {opcion.etiqueta}

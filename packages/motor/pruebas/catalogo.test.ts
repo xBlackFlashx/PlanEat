@@ -94,9 +94,12 @@ test("las formas y los escalares son los que declara el catálogo compilado", ()
   assert.equal(cat.version, PY.version);
   assert.equal(cat.n, PY.n);
   assert.equal(cat.nAlimentos, PY.nAlimentos);
-  // W32 = ceil(66/32) = 3. En Python son 2 palabras de 64 bits: el mismo
-  // conjunto de alimentos con otro tamaño de palabra, no otro dato.
-  assert.equal(cat.w32, 3);
+  // W32 = ceil(nAlimentos/32). En Python son la mitad de palabras de 64 bits:
+  // el mismo conjunto de alimentos con otro tamaño de palabra, no otro dato.
+  // Se deriva de cat.nAlimentos y no se fija a mano: el número de alimentos
+  // del catálogo crece con el catálogo, y un valor fijo aquí se rompe cada
+  // vez que se añaden ingredientes sin que sea un fallo real.
+  assert.equal(cat.w32, Math.ceil(cat.nAlimentos / 32));
 
   assert.equal(cat.nutr.length, cat.n * NUTRIENTES.length);
   assert.equal(cat.conocido.length, cat.n * NUTRIENTES.length);
@@ -154,9 +157,9 @@ test("los bitsets de alimentos son los uint64 del Python en palabras de 32 bits"
       assert.equal(cat.ingrBits[i * cat.w32 + k], esperadas[k], `ingrBits[${i}][${k}]`);
       assert.equal(cat.ingrPerecBits[i * cat.w32 + k], perec[k], `ingrPerecBits[${i}][${k}]`);
     }
-    // Con 66 alimentos, la cuarta palabra del Python (bits 96-127) tiene que
-    // estar vacía; si no, w32 = 3 estaría perdiendo alimentos en silencio.
-    assert.equal(esperadas[3] ?? 0, 0, `la fila ${i} usa bits por encima de w32`);
+    // La palabra justo después de las que TS usa (índice cat.w32) tiene que
+    // estar vacía; si no, w32 estaría perdiendo alimentos en silencio.
+    assert.equal(esperadas[cat.w32] ?? 0, 0, `la fila ${i} usa bits por encima de w32`);
   }
 });
 

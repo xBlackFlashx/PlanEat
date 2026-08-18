@@ -8,8 +8,8 @@
  * alimentos" en vez de que cada componente repita el mismo `import` y el
  * mismo cast a `VistaRecetas`.
  *
- * Sólo cubre los 66 alimentos citados por alguna receta del catálogo, no los
- * 73 de `ingredientes.json`: excluir un alimento que ninguna receta usa no
+ * Sólo cubre los 109 alimentos citados por alguna receta del catálogo, no los
+ * 122 de `ingredientes.json`: excluir un alimento que ninguna receta usa no
  * cambiaría ningún plan, así que ofrecerlo en el selector sería una opción
  * que parece hacer algo y no hace nada.
  */

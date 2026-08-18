@@ -51,3 +51,11 @@ services/solver/data/paridad/
 
 # Vercel / despliegue
 .vercel
+
+# Prisma: cliente generado (se regenera con `npm run db:generar`) y las
+# skills que el propio `prisma init` instala para asistentes de IA.
+apps/web/src/generated/
+apps/web/.claude/
+apps/web/.windsurf/
+apps/web/.agents/
+apps/web/skills-lock.json

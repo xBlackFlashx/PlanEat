@@ -28,7 +28,7 @@ import numpy as np
 
 from app.catalogo import cargar_catalogo
 from app.schemas import RestriccionesGeneracion
-from app.solver import IDX_SLOT, TOP_K
+from app.solver import FRACCION_MINIMA_PRECIOS, IDX_SLOT, TOP_K
 from app.solver.scoring import (
     construir_pool,
     contexto_de,
@@ -76,13 +76,24 @@ ESCENARIOS = []
 
 def escenario(nombre, r, *, n_dias=7, tau=0.37, residuo, slot, excluidas=(),
               bits_semana=None, veto_semana=None, veto_slot=None,
-              sin_precio_desde=None):
+              sin_precio_desde=None, sin_precio_bajo_umbral=None):
     pool = construir_pool(CAT, r)
     sin_precio = []
-    if sin_precio_desde is not None:
-        # `coste_conocido` es 1 para las 36 recetas del catálogo semilla, así que
-        # la puerta FRACCION_MINIMA_PRECIOS no se puede disparar con datos reales:
-        # se fuerza aquí borrando el precio de las filas [sin_precio_desde, P).
+    if sin_precio_bajo_umbral is not None:
+        # `coste_conocido` es 1 para todo el catálogo semilla, así que la puerta
+        # FRACCION_MINIMA_PRECIOS no se puede disparar con datos reales: se
+        # fuerza aquí borrando el precio de las últimas filas del pool. El
+        # índice se calcula a partir de pool.p y no se fija a mano — un número
+        # fijo sólo cae justo en el umbral para el tamaño de catálogo con el
+        # que se escribió, y deja de ser el caso en cuanto el catálogo crece.
+        umbral = math.ceil(FRACCION_MINIMA_PRECIOS * pool.p)
+        desde = (umbral - 1) if sin_precio_bajo_umbral else umbral
+        desde = max(0, min(pool.p, desde))
+        cc = pool.coste_conocido.copy()
+        cc[desde:] = False
+        sin_precio = list(range(desde, pool.p))
+        pool = dataclasses.replace(pool, coste_conocido=cc)
+    elif sin_precio_desde is not None:
         cc = pool.coste_conocido.copy()
         cc[sin_precio_desde:] = False
         sin_precio = list(range(sin_precio_desde, pool.p))
@@ -185,14 +196,14 @@ escenario(
     restr(presupuestoSemanalCents=14000),
     residuo=RES_TIPICO,
     slot="comida",
-    sin_precio_desde=28,
+    sin_precio_bajo_umbral=True,
 )
 escenario(
     "presupuesto-con-precios-justo-en-el-umbral",
     restr(presupuestoSemanalCents=14000),
     residuo=RES_TIPICO,
     slot="comida",
-    sin_precio_desde=29,
+    sin_precio_bajo_umbral=False,
 )
 escenario(
     "presupuesto-cero",

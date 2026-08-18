@@ -154,12 +154,12 @@ test("la ablación cuantifica cada eje contra el mismo p0 que Python", () => {
     minutosMaxPorSlot: { desayuno: 10 },
   });
   const { p0, ganancia } = ablacion(mascarasRestriccion(CAT, r, S3), CAT.n);
-  assert.equal(p0, 1);
+  assert.equal(p0, 11);
   assert.deepEqual(Object.fromEntries(ganancia), {
-    dieta: 2,
-    "alergeno:gluten": 1,
-    "tiempo:desayuno": 4,
-    slots: 1,
+    dieta: 19,
+    "alergeno:gluten": 13,
+    "tiempo:desayuno": 30,
+    slots: 7,
   });
 });
 
@@ -201,11 +201,11 @@ test("la dieta culpable se nombra con su nombre legible y con el p0 de la ablaci
   assert.equal(f.restriccionCulpable, "dieta");
   assert.equal(
     f.mensaje,
-    "La dieta vegana deja 8 recetas para 5 comidas al día, y no me da para un plan variado.",
+    "La dieta vegana deja 73 recetas para 5 comidas al día, y no me da para un plan variado.",
   );
-  assert.equal(f.recetasCandidatas, 8);
+  assert.equal(f.recetasCandidatas, 73);
   assert.deepEqual(f.sugerencias, [
-    "Ampliar la dieta más allá de «vegana» (+28 recetas)",
+    "Ampliar la dieta más allá de «vegana» (+167 recetas)",
     "Planificar 4 comidas al día en vez de 5",
     "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
   ]);
@@ -229,10 +229,10 @@ test("un alérgeno puede ser el culpable y decirse por su nombre", () => {
     ],
   });
   const f = diagnosticarPool(CAT, r, S3, poolDe(r).p, {}, 3);
-  assert.equal(f.restriccionCulpable, "alergeno:pescado");
+  assert.equal(f.restriccionCulpable, "alergeno:gluten");
   assert.equal(
     f.mensaje,
-    "Excluir pescado deja 9 recetas. Mantenemos la exclusión: la seguridad va primero.",
+    "Excluir gluten deja 58 recetas. Mantenemos la exclusión: la seguridad va primero.",
   );
 });
 
@@ -240,10 +240,10 @@ test("el tope de tiempo culpable propone diez minutos más y cuánto abren", () 
   const r = restr({ minutosMaxPorSlot: { desayuno: 3, comida: 5, cena: 5 } });
   const f = diagnosticarPool(CAT, r, S3, poolDe(r).p, {}, 3);
   assert.equal(f.restriccionCulpable, "tiempo:desayuno");
-  assert.equal(f.mensaje, "Con 3 min para el desayuno sólo quedan 0 recetas.");
+  assert.equal(f.mensaje, "Con 3 min para el desayuno sólo quedan 5 recetas.");
   assert.deepEqual(f.sugerencias, [
-    "Subir el tiempo del desayuno de 3 a 13 min (+5 recetas)",
-    "Elegir otras comidas del día (+3 recetas)",
+    "Subir el tiempo del desayuno de 3 a 13 min (+24 recetas)",
+    "Elegir otras comidas del día (+20 recetas)",
     "Planificar 2 comidas al día en vez de 3",
   ]);
 });
@@ -256,11 +256,11 @@ test("un pool vacío por ingredientes excluidos se explica y se cuantifica", () 
   assert.equal(f.restriccionCulpable, "ingredientes_excluidos");
   assert.equal(
     f.mensaje,
-    "Tus 66 ingredientes excluidos dejan fuera 33 recetas y me quedo con 0.",
+    "Tus 121 ingredientes excluidos dejan fuera 211 recetas y me quedo con 0.",
   );
   assert.equal(f.recetasCandidatas, 0);
   assert.deepEqual(f.sugerencias, [
-    "Revisar tus 66 ingredientes excluidos (+33 recetas)",
+    "Revisar tus 121 ingredientes excluidos (+211 recetas)",
     "Planificar 2 comidas al día en vez de 3",
     "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
   ]);
@@ -273,8 +273,8 @@ test("con dos slots no se ofrece quitar una comida", () => {
   const r = restr({ dieta: "vegana", slots: dos });
   const f = diagnosticarPool(CAT, r, dos, poolDe(r).p, {}, 3);
   assert.deepEqual(f.sugerencias, [
-    "Ampliar la dieta más allá de «vegana» (+19 recetas)",
-    "Elegir otras comidas del día (+2 recetas)",
+    "Ampliar la dieta más allá de «vegana» (+111 recetas)",
+    "Elegir otras comidas del día (+20 recetas)",
     "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
   ]);
 });
@@ -321,11 +321,11 @@ test("un dict de slots flojos VACÍO no dispara la rama de slot_sin_candidatos",
 test("candidatosPorSlot cuenta con el tope de tiempo DE CADA slot", () => {
   const r = restr({ slots: S5 });
   assert.deepEqual(candidatosPorSlot(poolDe(r), r, S5), {
-    desayuno: 11,
-    almuerzo: 8,
-    comida: 21,
-    merienda: 9,
-    cena: 22,
+    desayuno: 55,
+    almuerzo: 48,
+    comida: 150,
+    merienda: 51,
+    cena: 118,
   });
 });
 
@@ -338,10 +338,10 @@ test("las cotas alcanzables coinciden con las de Python", () => {
   const r = restr({ slots: S5 });
   const c = cotasAlcanzables(poolDe(r), r, S5, cuotasDe(S5), 2000);
   const esperado = {
-    protMax: 256.8683139650385,
-    fibraMax: 81.79746015352322,
-    kcalMin: 699.4440460205078,
-    sodioMin: 698.3400521278381,
+    protMax: 382.55895552147314,
+    fibraMax: 102.58664089091712,
+    kcalMin: 296.60400390625,
+    sodioMin: 11.460000276565552,
   };
   for (const [clave, v] of Object.entries(esperado)) {
     const propio = c[clave as keyof typeof esperado];
@@ -404,12 +404,18 @@ test("macrosIncompatibles detecta los dos lados y escribe los números con fmt0"
 test("proteína contra energía: el número prometido sale del plan REAL, no de la cota", () => {
   // Es la regla de calidad del módulo: «si decimos que puedes llegar a 138 g,
   // es porque hay un plan con 138 g». Con `alcanzado` se promete 137 (floor de
-  // 137,6); sin él se cae a la cota teórica, 213.
+  // 137,6); sin él se cae a la cota teórica, 317.
+  //
+  // El mínimo (antes 280 g) subió a 350 g al ampliar el catálogo: recetas
+  // nuevas de alta densidad proteica empujaron `protMax` (la cota teórica de
+  // §6.2) por encima de 280, y el fallo dejaba de caer en la rama
+  // proteina_vs_kcal — comprobado contra el catálogo real. 350 g sigue por
+  // encima de esa cota tras la segunda ampliación (240 recetas).
   const r = restr({ slots: S3 });
   const pool = poolDe(r);
   const obj = objetivo({
     kcal: 1600,
-    proteinaG: { min: 280, max: 330 },
+    proteinaG: { min: 350, max: 400 },
     carbohidratoG: { min: 0, max: 100 },
     grasaG: { min: 0, max: 45 },
     fibraMinG: 0,
@@ -420,23 +426,22 @@ test("proteína contra energía: el número prometido sale del plan REAL, no de 
   assert.equal(conPlan.restriccionCulpable, "proteina_vs_kcal");
   assert.equal(
     conPlan.mensaje,
-    "No consigo llegar a 280 g de proteína con 1600 kcal y las 36 recetas que quedan " +
+    "No consigo llegar a 350 g de proteína con 1600 kcal y las 240 recetas que quedan " +
       "tras tus filtros. Lo más cerca que llego es 138 g.",
   );
   assert.deepEqual(conPlan.sugerencias, [
     "Bajar el mínimo de proteína a 137 g",
-    "Elegir otras comidas del día (+3 recetas)",
-    "Planificar 2 comidas al día en vez de 3",
+    "Subir a 1800 kcal al día",
+    "Elegir otras comidas del día (+29 recetas)",
   ]);
 
   const sinPlan = diagnosticarObjetivo(pool, CAT, r, S3, cuotasDe(S3), obj, null, pool.p);
-  assert.equal(sinPlan.sugerencias[0], "Bajar el mínimo de proteína a 213 g");
+  assert.equal(sinPlan.sugerencias[0], "Bajar el mínimo de proteína a 317 g");
 });
 
 test("subir kcal sólo se ofrece si no dispara el objetivo más de un 25 %", () => {
-  // 280 g con una densidad de 213/1600 exigirían ~2.100 kcal, un 31 % más: por
-  // encima de eso deja de ser un ajuste y pasa a ser otro objetivo, así que la
-  // sugerencia no aparece.
+  // 500 g con una densidad de 254/1600 exigirían ~3.150 kcal, casi el doble:
+  // muy por encima del 25 %, así que la sugerencia no aparece.
   const r = restr({ slots: S3 });
   const pool = poolDe(r);
   const f = diagnosticarObjetivo(
@@ -447,7 +452,7 @@ test("subir kcal sólo se ofrece si no dispara el objetivo más de un 25 %", () 
     cuotasDe(S3),
     objetivo({
       kcal: 1600,
-      proteinaG: { min: 280, max: 330 },
+      proteinaG: { min: 500, max: 550 },
       carbohidratoG: { min: 0, max: 100 },
       grasaG: { min: 0, max: 45 },
       fibraMinG: 0,
@@ -468,7 +473,7 @@ test("cinco comidas para muy pocas kcal culpan al reparto, no a la proteína", (
     S5,
     cuotasDe(S5),
     objetivo({
-      kcal: 400,
+      kcal: 200,
       proteinaG: { min: 20, max: 40 },
       carbohidratoG: { min: 30, max: 60 },
       grasaG: { min: 8, max: 20 },
@@ -478,9 +483,13 @@ test("cinco comidas para muy pocas kcal culpan al reparto, no a la proteína", (
     pool.p,
   );
   assert.equal(f.restriccionCulpable, "kcal_insuficientes_para_slots");
+  // El mínimo depende del catálogo (la combinación de 5 comidas más barata
+  // que admite el motor): 297 kcal con el catálogo ampliado a 240 recetas. El
+  // objetivo pedido (200) sólo tiene que quedar cómodamente por debajo, no
+  // tocar un valor exacto.
   assert.equal(
     f.mensaje,
-    "Con 5 comidas al día, lo mínimo que puedo servir son 699 kcal, y tú pides 400.",
+    "Con 5 comidas al día, lo mínimo que puedo servir son 297 kcal, y tú pides 200.",
   );
   // DIVERGENCIA D6: Python escribe aquí «el mínimo baja a 571 kcal», por debajo
   // del suelo de seguridad. Ver DIVERGENCIAS.md.
@@ -603,13 +612,13 @@ test("el genérico admite que no sabe por qué, pero dice hasta dónde ha llegad
   assert.equal(f.restriccionCulpable, "objetivo_inalcanzable_generico");
   assert.equal(
     f.mensaje,
-    "No encuentro una combinación que cuadre con tus objetivos y las 36 recetas " +
+    "No encuentro una combinación que cuadre con tus objetivos y las 240 recetas " +
       "disponibles. Lo más cerca que llego son 1234 kcal con 88 g de proteína.",
   );
   assert.deepEqual(f.sugerencias, [
     "Ampliar la tolerancia de calorías al 10 %",
     "Bajar el mínimo de proteína a 87 g",
-    "Elegir otras comidas del día (+3 recetas)",
+    "Elegir otras comidas del día (+29 recetas)",
   ]);
 });
 
@@ -637,9 +646,9 @@ test("sin plan alcanzado el genérico no promete ningún número", () => {
   );
   assert.equal(
     f.mensaje,
-    "No encuentro una combinación que cuadre con tus objetivos y las 36 recetas disponibles.",
+    "No encuentro una combinación que cuadre con tus objetivos y las 240 recetas disponibles.",
   );
-  assert.equal(f.sugerencias[0], "Elegir otras comidas del día (+11 recetas)");
+  assert.equal(f.sugerencias[0], "Elegir otras comidas del día (+76 recetas)");
   assert.equal(new Set(f.sugerencias).size, 3);
 });
 
@@ -733,12 +742,18 @@ function bateria(): Caso[] {
     const objetivos: Array<[string, ObjetivoNutricional]> = [
       ["normal", objetivo()],
       [
+        // kcal bajado de 400 a 250 al ampliar el catálogo: con más recetas
+        // disponibles, el kcalMin alcanzable para 5 comidas bajó lo bastante
+        // (~350) como para que 400 kcal dejara de ser «insuficiente para los
+        // slots» — comprobado contra el catálogo real. Los macros se
+        // reescalan junto con las kcal para no disparar antes la rama de
+        // macrosIncompatibles.
         "kcal_bajas",
         objetivo({
-          kcal: 400,
-          proteinaG: { min: 20, max: 40 },
-          carbohidratoG: { min: 30, max: 60 },
-          grasaG: { min: 8, max: 20 },
+          kcal: 250,
+          proteinaG: { min: 12, max: 30 },
+          carbohidratoG: { min: 18, max: 45 },
+          grasaG: { min: 5, max: 15 },
           fibraMinG: 0,
         }),
       ],

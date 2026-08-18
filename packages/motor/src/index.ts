@@ -61,6 +61,9 @@ export type {
 } from "./tipos.ts";
 export type {
   CatalogoSerializado,
+  IngredienteConGramos,
+  PorcionesRecetas,
+  RecetaConGramos,
   RecetaVista,
   VistaRecetas,
 } from "../herramientas/compilar-catalogo.ts";

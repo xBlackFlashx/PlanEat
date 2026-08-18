@@ -35,12 +35,18 @@ DIR_DATOS = RAIZ / "data"
 # --------------------------------------------------------------------------
 
 CARNE = {"pechuga_pollo", "muslo_pollo", "ternera_magra", "lomo_cerdo"}
+CARNE |= {"bacon", "jamon_cocido", "pavo_fiambre", "salchicha_pavo", "caldo_pollo"}
 PESCADO_Y_MARISCO = {"salmon", "merluza", "bacalao", "atun_natural", "gambas"}
+# `aderezo_cesar` lleva anchoa: es el mismo motivo por el que el aderezo César
+# de verdad nunca es vegetariano, no una aproximación.
+PESCADO_Y_MARISCO |= {"aderezo_cesar"}
 LACTEO = {
     "leche_semi", "yogur_natural", "yogur_griego", "queso_batido_0",
     "requeson", "queso_curado", "mozzarella",
+    "queso_parmesano", "queso_cheddar", "queso_feta", "queso_suizo",
+    "mantequilla", "pesto",
 }
-HUEVO = {"huevo", "clara_huevo"}
+HUEVO = {"huevo", "clara_huevo", "mayonesa"}
 OTRO_ANIMAL = {"miel"}  # no es vegano, sí vegetariano
 
 # Umbral de carbohidratos por ración para clasificar una receta como baja en

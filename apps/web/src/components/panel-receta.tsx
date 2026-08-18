@@ -11,24 +11,24 @@
  * de foco, el cierre con `Escape`, el fondo inerte y la devolución del foco al
  * elemento que lo abrió. Reimplementar eso a mano sale siempre peor.
  *
- * ## El problema de esta pantalla: aquí «la foto manda» y no hay fotos
+ * ## La foto, cuando la hay — y el mismo hueco cuando no
  *
  * `docs/diseno-producto.md` §3.5 pide abrir con una foto 3:2 y §2.6 fija la
- * densidad en «baja: la foto manda». Pero el catálogo tiene 36 recetas y
- * **ninguna trae imagen** (`imagenUrl` es opcional en
- * `services/solver/data/recetas.json` y está vacío en las 36), así que diseñar
- * la ficha alrededor de la foto sería diseñar una pantalla que no existe.
+ * densidad en «baja: la foto manda». Las 91 recetas del catálogo ya traen
+ * `imagenUrl` (`services/solver/data/imagenes.json`, vía
+ * `services/solver/scripts/buscar_imagenes.py`), así que en el caso normal la
+ * cabecera es la foto real del plato con su `aspect-ratio` declarado — la
+ * causa número uno de CLS en productos con foto (§2.5).
  *
- * La salida no es un placeholder gris con un icono de plato. Es preguntarse qué
- * hace la foto en una ficha de receta: decir de qué está hecho el plato antes
- * de que leas nada. **Eso el catálogo sí lo tiene** — la lista de ingredientes
- * resuelta a nombres legibles — y es lo que ocupa el sitio de la foto: título
- * en la voz serif y, debajo, los ingredientes reales como bloque de lectura.
- * Es información, no relleno; se sostiene sin imagen; y no miente sobre nada.
- *
- * El hueco de la foto sigue previsto y en su sitio exacto: `imagenDe()` la
- * busca en cada render y, en cuanto el catálogo compilado la traiga, se pinta
- * arriba del todo con su `aspect-ratio` declarado, sin tocar este componente.
+ * Pero el campo es `null` cuando falta (una receta nueva sin foto todavía, o
+ * un checkout que no ha corrido el script), y ese caso no puede quedar en un
+ * placeholder gris con un icono de plato. La salida: preguntarse qué hace la
+ * foto en una ficha de receta — decir de qué está hecho el plato antes de que
+ * leas nada — y notar que **eso el catálogo siempre lo tiene**, con o sin
+ * foto: la lista de ingredientes resuelta a nombres legibles. Sin imagen, es
+ * ella quien ocupa el sitio de la foto: título en la voz serif y, debajo, los
+ * ingredientes reales como bloque de lectura. Es información, no relleno; se
+ * sostiene sin imagen; y no miente sobre nada.
  *
  * ## Lo que la ficha decide enseñar
  *
@@ -54,40 +54,12 @@ import estilos from "./planeat.module.css";
 import { TablaNutricional } from "./tabla-nutricional";
 
 /**
- * La foto, el día que la haya.
- *
- * `RecetaResumen` es `RecetaVista`, y `RecetaVista` no declara `imagenUrl`
- * porque el compilador del catálogo no la emite todavía. Se lee por presencia y
- * no por tipo por dos razones: `lib/tipos.ts` es de otro agente y no me toca
- * editarlo, y así el día que el campo aparezca la ficha lo pinta sin que nadie
- * tenga que acordarse de volver aquí. Si el valor no es una cadena con
- * contenido, no hay foto y punto: media docena de píxeles rotos en la cabecera
- * es peor que no tener cabecera.
+ * La foto, el día que la haya. `imagenUrl` es `null` para una receta sin foto
+ * en `data/imagenes.json` (ver `services/solver/scripts/buscar_imagenes.py`):
+ * media docena de píxeles rotos en la cabecera es peor que no tener cabecera.
  */
 function imagenDe(receta: RecetaResumen): string | null {
-  if (!("imagenUrl" in receta)) return null;
-  const valor: unknown = receta.imagenUrl;
-  return typeof valor === "string" && valor.trim() !== "" ? valor : null;
-}
-
-/**
- * Precio de una ración, en rango y con resolución de diez céntimos.
- *
- * `rangoPrecio` de `lib/formato` redondea a euros enteros, y para el total de
- * un día (20–24 €) está bien. Para una ración de 1,30 € da **«0–1 €»**, y un
- * cero en un precio se lee como «gratis»: la cifra es cierta y el mensaje es
- * falso. Misma regla del §9.1.5 —nunca un precio exacto, porque sale del precio
- * de los ingredientes y no de una compra real—, otra resolución.
- *
- * Vive aquí y no en `lib/formato.ts` porque ese fichero es de otro agente. Es
- * candidata a mudarse allí en cuanto el árbol esté en una sola mano.
- */
-function precioDeRacion(cents: number): string {
-  const euros = cents / 100;
-  const decima = (valor: number) => (Math.round(valor * 10) / 10).toFixed(1).replace(".", ",");
-  const min = Math.floor(euros * 0.92 * 10) / 10;
-  const max = Math.ceil(euros * 1.08 * 10) / 10;
-  return `${decima(min)}–${decima(max)} €`;
+  return receta.imagenUrl;
 }
 
 interface PropsPanelReceta {
@@ -153,7 +125,6 @@ export function PanelReceta({
   )} kcal y ${gramos(panel.proteinaG)} g de proteína.`;
 
   const imagen = imagenDe(receta);
-  const coste = receta.costeCents;
 
   return (
     <dialog
@@ -214,17 +185,6 @@ export function PanelReceta({
               <span className="tabular-nums" data-numeric>
                 {racion(factorRacion)}
               </span>
-              {/* El precio nunca se da exacto (docs/spec.md §9.1.5): sale del
-                  precio de los ingredientes, no de una compra real. Cuando el
-                  catálogo no lo sabe, no aparece: no hay nada que decir. */}
-              {coste != null && (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <span className="tabular-nums" data-numeric>
-                    {precioDeRacion(coste * factorRacion)}
-                  </span>
-                </>
-              )}
             </p>
 
             {/* Aquí es donde iría la foto, y es lo que hace su trabajo: de qué

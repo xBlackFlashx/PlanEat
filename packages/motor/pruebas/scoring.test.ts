@@ -371,9 +371,10 @@ test("contextoDe apaga el coste con los dos motivos que la UI consume", () => {
 });
 
 test("el término de coste se apaga entero por debajo del 80 % de precios conocidos", () => {
-  // Con 36 recetas, 28 con precio son 77,8 % (< 0,80) y 29 son 80,6 % (≥ 0,80).
-  // El volcado de Python trae los dos casos, así que el umbral queda fijado por
-  // ambos lados y no sólo por uno.
+  // El volcado de Python calcula, para el tamaño de pool que le toque, el
+  // recuento de precios conocidos justo por debajo y justo por encima del
+  // 80 %. Trae los dos casos, así que el umbral queda fijado por ambos lados
+  // y no sólo por uno.
   const apagado = REF.escenarios.find((e) => e.nombre === "presupuesto-sin-precios");
   const encendido = REF.escenarios.find(
     (e) => e.nombre === "presupuesto-con-precios-justo-en-el-umbral",

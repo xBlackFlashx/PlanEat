@@ -4,14 +4,22 @@
    PlanEat — Sistema de diseño
    ----------------------------------------------------------------------------
    Decisiones y descartes en docs/decisiones-de-diseno.md. Escala tipográfica y
-   tabla de movimiento en docs/diseno-producto.md §2.2 y §5.1. Resumen:
+   tabla de movimiento en docs/diseno-producto.md §2.2 y §5.1. Rediseño
+   completo del sistema visual el 2026-08-17 — ver
+   design-system/planeat/MASTER.md y sus overrides de página. Resumen vigente:
 
-   · Acento de marca: berenjena profunda. Evita deliberadamente el verde-menta
-     clínico de las apps de salud y el coral de los competidores.
-   · Colores de macro: triada Okabe-Ito, validada para deuteranopia y
-     protanopia. Ninguno coincide con el acento de marca.
-   · "Éxito" NO usa verde: colisionaría con el color de grasa. Usa el acento
-     de marca con icono. El rojo queda reservado a error.
+   · Acento de marca: verde de confianza nutricional (match de dominio
+     "Calorie & Nutrition Counter", no un genérico "SaaS de confianza").
+     Reemplaza el índigo, que a su vez había reemplazado la berenjena
+     original — ningún acento de marca ha durado dos revisiones seguidas.
+   · Colores de macro: azul / ámbar / violeta. Reemplaza la triada Okabe-Ito;
+     NO tiene su misma validación de laboratorio contra daltonismo, es un
+     juicio de diseño (ver el token --fat más abajo para el porqué exacto).
+     Ninguno coincide con el acento de marca.
+   · "Éxito" SÍ puede ser el verde de marca ahora: el macro de grasa se movió
+     a violeta, así que la colisión que obligaba a evitar el verde en el
+     sistema anterior ya no existe. Sigue resolviéndose con el acento de
+     marca + icono, nunca sólo con color. El rojo queda reservado a error.
    · Todo color se declara aquí como token. Ningún componente usa un literal.
 
    Orden del fichero:
@@ -65,53 +73,70 @@
 }
 
 :root {
-  /* Superficies — gris frío de índigo, no gris puro. Sustituye al neutro
-     cálido (docs/decisiones-de-diseno.md, sección "Superficies" revisada):
-     un fondo cálido chocaba con un acento frío. Contrastes recalculados y
-     verificados en docs/decisiones-de-diseno.md §Acento de marca (revisión). */
-  --bg: light-dark(#f7f7fb, #0e0e16);
-  --surface: light-dark(#ffffff, #17171f);
-  --surface-2: light-dark(#eeeff6, #1e1f2b);
-  --surface-3: light-dark(#e2e4f0, #282a3a);
+  /* Superficies — gris neutro (slate), no el gris frío de índigo del sistema
+     anterior. Rediseño 2026-08-17 (ver design-system/planeat/MASTER.md): la
+     marca deja de ser índigo y pasa a un verde de confianza nutricional, así
+     que la superficie vuelve a un neutro sin ninguna afinidad de matiz —
+     evita que el fondo "tire" hacia el verde o compita con él. */
+  --bg: light-dark(#f8fafc, #0b1220);
+  --surface: light-dark(#ffffff, #131b2e);
+  --surface-2: light-dark(#f1f5f9, #1b2540);
+  --surface-3: light-dark(#e2e8f0, #253154);
 
-  /* Texto. `--text-3` da 5,02:1 sobre `--surface` y 4,70:1 (grande) sobre
-     `--bg` — verificado con la misma fórmula de contraste WCAG que
-     diseno-producto.md Anexo A.2, no reutilizado del sistema anterior. */
-  --text: light-dark(#14151f, #f1f1f7);
-  --text-2: light-dark(#4b4d5e, #c3c4d4);
-  --text-3: light-dark(#6c6e80, #9294a8);
+  /* Texto. Contraste verificado con la misma fórmula WCAG que el sistema
+     anterior (ver contrast.py del rediseño): `--text-3` da 5,19:1 sobre
+     `--bg` y 5,43:1 sobre `--surface` en claro; 7,30:1 sobre `--bg` en
+     oscuro. Margen deliberado por encima de 4,5:1 — el sistema anterior
+     dejó un caso a 4,47:1 (bajo AA) documentado en diseno-producto.md
+     Anexo A; este rediseño no repite ese margen cero. */
+  --text: light-dark(#0f172a, #f1f5f9);
+  --text-2: light-dark(#475569, #cbd5e1);
+  --text-3: light-dark(#5b6b82, #94a3b8);
 
   /* Líneas — decorativas. Nunca como único indicador de foco o estado. */
-  --line: light-dark(#e4e5ef, #282a3a);
-  --line-strong: light-dark(#cacddf, #3b3d52);
+  --line: light-dark(#e2e8f0, #253154);
+  --line-strong: light-dark(#cbd5e1, #35426b);
 
-  /* Marca — índigo. Sustituye a la berenjena (revisión documentada en
-     docs/decisiones-de-diseno.md). Sigue evitando verde-menta clínico y
-     coral, y además evita el verde/teal que algunas paletas "salud"
-     comparten con el macro de grasa: el índigo no coincide con ninguno de
-     los tres colores Okabe-Ito de macronutrientes. */
-  --brand: light-dark(#4338ca, #9d97f8);
-  --brand-hover: light-dark(#372fae, #b4affb);
-  --brand-soft: light-dark(#ecebfc, #211e3d);
-  --brand-line: light-dark(#d3d0f7, #3c3868);
-  --on-brand: light-dark(#ffffff, #1b1730);
+  /* Marca — verde. Reemplaza el índigo (rediseño completo, 2026-08-17):
+     match de dominio "Calorie & Nutrition Counter" vía ui-ux-pro-max en vez
+     de un genérico "SaaS confianza". #047857/on-white = 5,48:1 (el tono de
+     salida de la herramienta, #059669, sólo daba 3,77:1 — no pasa AA para
+     texto normal, así que se oscureció). Un solo token de marca para CTA,
+     enlaces y foco — como el sistema anterior — en vez de separar
+     primary/accent, para no forzar un segundo pase por cada className que
+     ya referencia `bg-brand`/`text-brand`. */
+  --brand: light-dark(#047857, #34d399);
+  --brand-hover: light-dark(#036049, #5ee6b2);
+  --brand-soft: light-dark(#e6f4ee, #10291f);
+  --brand-line: light-dark(#bbe5d3, #1e4436);
+  --on-brand: light-dark(#ffffff, #0b1220);
 
-  /* Macronutrientes — triada Okabe-Ito (segura para daltonismo). Sin
-     cambios de tono: cambiar un color validado contra deuteranopia y
-     protanopia sin motivo funcional invalidaría esa validación. Los tintes
-     "soft" se recalculan contra las nuevas superficies. */
-  --protein: light-dark(#0072b2, #56b4e9);
-  --protein-soft: light-dark(#e1eefa, #16232f);
-  --carb: light-dark(#e69f00, #f0b73e);
-  --carb-soft: light-dark(#fcf0da, #2e2513);
-  --fat: light-dark(#009e73, #3fc9a0);
-  --fat-soft: light-dark(#e6f5f0, #12291f);
+  /* Macronutrientes — azul/ámbar/violeta. Reemplaza la triada Okabe-Ito.
+     ADVERTENCIA HONESTA (paralela a la de diseno-producto.md, no una
+     promesa nueva): esta triada NO está validada en laboratorio contra
+     deuteranopia/protanopia como lo estaba Okabe-Ito; se eligió evitando el
+     eje rojo-verde (el más común en daltonismo) y evitando coincidir con
+     `--brand`, pero es un juicio de diseño, no una verificación. Si eso
+     importa más que la identidad visual nueva, revertir estos tres tokens
+     a Okabe-Ito (ver git history de este bloque) es seguro y no rompe nada
+     más: ningún componente referencia el hex, sólo el token. */
+  --protein: light-dark(#2563eb, #60a5fa);
+  --protein-soft: light-dark(#e3edfd, #14213d);
+  --carb: light-dark(#b45309, #fbbf24);
+  --carb-soft: light-dark(#fbefdd, #2e2410);
+  --fat: light-dark(#7c3aed, #a78bfa);
+  --fat-soft: light-dark(#efe8fc, #241b3d);
 
-  /* Estados semánticos. No hay token de "éxito": es intencionado. */
-  --danger: light-dark(#b3261e, #f2938c);
-  --danger-soft: light-dark(#fbebea, #2e1917);
-  --warning: light-dark(#8a6116, #e0b565);
-  --warning-soft: light-dark(#fbf3e2, #2b2114);
+  /* Estados semánticos. `--warning` reutiliza el hex de `--carb` a
+     propósito (mismo principio que el sistema anterior: no inventar un
+     color más de los que hacen falta). `--danger` se mantiene en la misma
+     familia de rojo que ya usaba el sistema anterior y que también
+     proponía la herramienta de forma independiente — sin motivo para
+     cambiar algo en lo que dos fuentes ya coinciden. */
+  --danger: light-dark(#dc2626, #f87171);
+  --danger-soft: light-dark(#fbeaea, #331616);
+  --warning: light-dark(#b45309, #fbbf24);
+  --warning-soft: light-dark(#fbefdd, #2e2410);
 
   /* Colores de la única sombra del sistema. La geometría es la misma en los dos
      temas y vive en `--shadow-pop`; lo que cambia es el color, así que sólo el
@@ -214,12 +239,13 @@
   /* El velo también como utilidad (`bg-scrim`): lo usa la hoja inferior. */
   --color-scrim: var(--scrim);
 
-  /* Tipografía. Reparto estricto de §2.2, revisado: Inter hace el trabajo
-     (toda la UI, todo el cuerpo, TODOS los números) y Space Grotesk pone la
-     voz en cuatro sitios y en ninguno más. Sustituyen a Geist e Instrument
-     Serif — docs/decisiones-de-diseno.md documenta el porqué y la
-     verificación de `tnum` y de cobertura del castellano sobre el fichero de
-     cada fuente. Los nombres de las variables los fija next/font en
+  /* Tipografía. Reparto estricto de §2.2: Inter hace el trabajo (toda la UI,
+     todo el cuerpo, TODOS los números) y Poppins pone la voz en cuatro
+     sitios y en ninguno más. Poppins sustituye a Space Grotesk en el
+     rediseño completo de 2026-08-17 (design-system/planeat/MASTER.md); Inter
+     se mantiene porque la verificación de `tnum` sobre el fichero de la
+     fuente (docs/decisiones-de-diseno.md) es una restricción técnica, no una
+     preferencia de marca. Los nombres de las variables los fija next/font en
      layout.tsx.
 
      Sigue sin cargarse una mono: nada en `src/` la necesita todavía. §2.2 la
@@ -284,16 +310,14 @@
    agente dentro del árbol— y queda como limpieza posterior.
    -------------------------------------------------------------------------- */
 
-/* Voz — Space Grotesk. Sustituye a Instrument Serif (revisión documentada en
-   docs/decisiones-de-diseno.md): se cambia de género —serif a grotesca de
-   display— en vez de buscar otro serif, porque los dos serif descartados
-   antes (Playfair Display, Calistoga) ya habían fallado por el mismo motivo
-   de tono, y una tercera candidata serif corría el mismo riesgo. Sigue
-   restringida a los mismos cuatro sitios: H1 de portada, título de ficha de
-   receta, titular de sobre-restricción y la cifra héroe de su veredicto.
-   Nunca en UI, nunca en un número de dato, nunca por debajo de 24 px, nunca
-   en negrita. La familia va dentro de la clase para que sea imposible pedir
-   el tamaño de la voz y quedarse con la fuente de trabajo. */
+/* Voz — Poppins. Sustituye a Space Grotesk en el rediseño completo de
+   2026-08-17 (que a su vez había sustituido a Instrument Serif — ver el
+   historial de este bloque para esa revisión). Sigue restringida a los
+   mismos cuatro sitios: H1 de portada, título de ficha de receta, titular de
+   sobre-restricción y la cifra héroe de su veredicto. Nunca en UI, nunca en
+   un número de dato, nunca por debajo de 24 px, nunca en negrita. La familia
+   va dentro de la clase para que sea imposible pedir el tamaño de la voz y
+   quedarse con la fuente de trabajo. */
 @utility voz-1 {
   font-family: var(--fuente-voz), ui-sans-serif, system-ui, sans-serif;
   font-size: clamp(2.125rem, 1.692rem + 1.85vw, 2.875rem); /* 34 → 46 px */
@@ -391,7 +415,7 @@
        tabular, y un `rounded-full` habría pasado de círculo a cuadrado;
      · el `outline-none` de la zona de resultado perdía contra el `outline` de
        `:focus-visible`, y al enviar el formulario con Enter aparecía un
-       rectángulo berenjena alrededor de todo el plan.
+       rectángulo del color de marca alrededor de todo el plan.
 
    Metidas en `base`, las utilidades vuelven a ganar y los dos defectos
    desaparecen. Además se quita el `border-radius` de la regla de foco, que

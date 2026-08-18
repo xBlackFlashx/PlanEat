@@ -99,13 +99,13 @@ export const NOMBRE_ALERGENO: Record<Alergeno, string> = {
   crustaceos: "crustáceos",
   huevos: "huevos",
   pescado: "pescado",
-  cacahuetes: "cacahuetes",
-  soja: "soja",
+  cacahuetes: "cacahuates",
+  soja: "soya",
   lacteos: "lácteos",
   frutos_de_cascara: "frutos de cáscara",
   apio: "apio",
   mostaza: "mostaza",
-  sesamo: "sésamo",
+  sesamo: "ajonjolí",
   sulfitos: "sulfitos",
   altramuces: "altramuces",
   moluscos: "moluscos",
@@ -399,6 +399,37 @@ export function construirSolicitud(
       comensales: 1,
       // Ordenada de más reciente a más antigua: el término de penalización de
       // repetición del solver depende de ese orden.
+      recetasRecientes: opciones.recetasRecientes ?? [],
+    },
+    ...(opciones.seed != null ? { seed: opciones.seed } : {}),
+  };
+}
+
+/** Días de una semana de plan Pro. */
+export const DIAS_SEMANA_PRO = 7;
+
+/**
+ * La misma solicitud que `construirSolicitud`, pero con `objetivos` repetido
+ * `DIAS_SEMANA_PRO` veces. El motor decide él solo cómo repartir la variedad
+ * entre días — es lo que hace el término de solape semanal (§2.2d) — así que
+ * aquí no hay más diferencia con el día suelto que la longitud del array: no
+ * se calculan siete objetivos distintos porque las kcal del día de un mismo
+ * perfil no cambian de un día para otro.
+ */
+export function construirSolicitudSemana(
+  datos: DatosFormulario,
+  opciones: OpcionesSolicitud = {},
+): SolicitudGeneracion {
+  const { objetivo } = calcularObjetivoDelDia(datos);
+  const objetivoAjustado = aplicarAjustes(objetivo, opciones.ajustes);
+  return {
+    objetivos: Array.from({ length: DIAS_SEMANA_PRO }, () => objetivoAjustado),
+    restricciones: {
+      dieta: opciones.ajustes?.dieta ?? datos.dieta,
+      alergenosExcluidos: datos.alergenosExcluidos,
+      ingredientesExcluidos: datos.ingredientesExcluidos,
+      slots: slotsDe(datos),
+      comensales: 1,
       recetasRecientes: opciones.recetasRecientes ?? [],
     },
     ...(opciones.seed != null ? { seed: opciones.seed } : {}),

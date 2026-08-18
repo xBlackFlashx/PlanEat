@@ -24,7 +24,6 @@ import {
   kcal as formatearKcal,
   minutos,
   racion as formatearRacionTexto,
-  rangoPrecio,
 } from "@/lib/formato";
 import { NOMBRE_SLOT, ORDEN_SLOTS } from "@/lib/perfil";
 import type { RecetaResumen } from "@/lib/tipos";
@@ -63,8 +62,6 @@ export function PlanDia({
   const comidas = [...dia.comidas].sort(
     (a, b) => ORDEN_SLOTS.indexOf(a.slot) - ORDEN_SLOTS.indexOf(b.slot),
   );
-
-  const coste = costeDelDia(comidas, recetas);
 
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-8">
@@ -138,22 +135,12 @@ export function PlanDia({
           ))}
         </ol>
 
-        {/* Pie del día: coste en rango, nunca exacto. */}
-        <footer className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-4">
-          <p className="text-sm text-text-2">
-            {coste == null ? (
-              "El coste de este día no se puede estimar: faltan precios en el catálogo."
-            ) : (
-              <>
-                <span className="tabular-nums font-semibold text-text" data-numeric>
-                  {rangoPrecio(coste)}
-                </span>{" "}
-                estimado en ingredientes
-              </>
-            )}
-          </p>
-
-          {alPedirOtroDia && (
+        {/* Pie del día: sólo la acción de regenerar, cuando existe. Los
+            precios se han quitado del todo (docs/decisiones-de-diseno.md):
+            varían demasiado por zona en México como para dar un rango
+            honesto con los datos que tiene el catálogo. */}
+        {alPedirOtroDia && (
+          <footer className="mt-6 flex flex-wrap items-center justify-end gap-4 border-t border-line pt-4">
             <button
               type="button"
               onClick={alPedirOtroDia}
@@ -163,8 +150,8 @@ export function PlanDia({
               <IconoCambiar tam={18} />
               {regenerando ? "Montando otro día…" : "Montar otro día"}
             </button>
-          )}
-        </footer>
+          </footer>
+        )}
       </div>
 
       <PanelReceta
@@ -267,15 +254,26 @@ function ItemComida({
     <li
       className={`${estilos.filaItem} flex items-center gap-3 border-b border-line py-3 last:border-0`}
     >
-      {/* Placeholder de foto: la inicial del plato. Nunca un icono de cámara
-          rota ni una foto de archivo genérica (§2.5). */}
-      <span
-        aria-hidden="true"
-        className="grid size-14 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-surface-2 text-lg font-semibold text-text-2 sm:size-16"
-        style={{ aspectRatio: "1 / 1" }}
-      >
-        {titulo.slice(0, 1).toUpperCase()}
-      </span>
+      {/* Foto real del plato cuando el catálogo la trae; si no, la inicial
+          del plato. Nunca un icono de cámara rota ni una foto de archivo
+          genérica (§2.5). */}
+      {receta?.imagenUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- ver panel-receta.tsx: sitio estático sin optimizador, next/image no aportaría nada.
+        <img
+          src={receta.imagenUrl}
+          alt=""
+          className="size-14 shrink-0 rounded-[var(--radius-sm)] object-cover sm:size-16"
+          style={{ aspectRatio: "1 / 1" }}
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="grid size-14 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-surface-2 text-lg font-semibold text-text-2 sm:size-16"
+          style={{ aspectRatio: "1 / 1" }}
+        >
+          {titulo.slice(0, 1).toUpperCase()}
+        </span>
+      )}
 
       <div className="min-w-0 flex-1">
         {/* El título se parte en dos líneas antes que recortarse. "Merluza al
@@ -343,25 +341,6 @@ function ItemComida({
 // ---------------------------------------------------------------------------
 // Utilidades locales
 // ---------------------------------------------------------------------------
-
-/**
- * Coste del día en céntimos, o `null` si falta el precio de alguna receta. Se
- * prefiere no decir nada a decir un número incompleto.
- */
-function costeDelDia(
-  comidas: ComidaPlan[],
-  recetas: Record<string, RecetaResumen>,
-): number | null {
-  let total = 0;
-  for (const comida of comidas) {
-    for (const item of comida.items) {
-      const receta = recetas[item.recetaId];
-      if (!receta || receta.costeCents == null) return null;
-      total += receta.costeCents * item.factorRacion;
-    }
-  }
-  return total > 0 ? Math.round(total) : null;
-}
 
 /**
  * La cabecera se compacta al hacer scroll. Sólo en móvil: en escritorio la

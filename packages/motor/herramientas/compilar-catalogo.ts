@@ -61,6 +61,7 @@ const DIGITOS_FLOAT32 = 9;
 
 const NOMBRE_SALIDA_MOTOR = "catalogo-compilado.json";
 const NOMBRE_SALIDA_VISTA = "recetas-vista.json";
+const NOMBRE_SALIDA_PORCIONES = "receta-ingredientes.json";
 
 // --------------------------------------------------------------------------
 // Contrato de salida
@@ -141,6 +142,14 @@ export interface RecetaVista {
   /** `null` cuando el precio no se sabe: la UI no inventa una cifra. */
   costeCents: number | null;
   revisadaPor: string | null;
+  /**
+   * Foto real del plato, de `data/imagenes.json` (ver
+   * `services/solver/scripts/buscar_imagenes.py`). `null` cuando la receta no
+   * tiene foto todavía — nunca un archivo genérico ni un icono roto (§2.5):
+   * la interfaz cae al placeholder de la inicial, que es justo lo que hacía
+   * antes de que este campo existiera.
+   */
+  imagenUrl: string | null;
 }
 
 /** Un alimento tal y como lo elige el usuario en un selector de exclusión. */
@@ -159,6 +168,36 @@ export interface VistaRecetas {
    * que el motor puede aplicar de verdad. */
   alimentos: AlimentoVista[];
   recetas: Record<string, RecetaVista>;
+}
+
+/** Un ingrediente con su gramaje, para la lista de la compra del plan Pro. */
+export interface IngredienteConGramos {
+  alimentoId: string;
+  nombre: string;
+  categoria: string;
+  /** Gramos para LA RECETA COMPLETA (`racionesBase` raciones), no por ración.
+   * Quien consuma esto reparte entre `racionesBase` y multiplica por el
+   * `factorRacion` de cada item del plan — igual que hace
+   * `construir_catalogo.py:150` con la nutrición. */
+  gramos: number;
+}
+
+export interface RecetaConGramos {
+  racionesBase: number;
+  ingredientes: IngredienteConGramos[];
+}
+
+/**
+ * Gramajes por receta, para la lista de la compra del plan Pro semanal.
+ *
+ * No sale de `catalogo.jsonl`: ese fichero sólo lleva los IDS de los
+ * ingredientes (bitset), porque es lo único que necesita el solver. Los
+ * gramos sólo existen en `recetas.json`, la fuente cruda — de ahí que esta
+ * función reciba ese fichero y no las filas ya compiladas.
+ */
+export interface PorcionesRecetas {
+  version: string;
+  recetas: Record<string, RecetaConGramos>;
 }
 
 // --------------------------------------------------------------------------
@@ -367,6 +406,23 @@ function leerInfoIngredientes(ingredientes: unknown): Map<string, { nombre: stri
 }
 
 /**
+ * URL de foto por receta, de `imagenes.json` — ver `leerInfoIngredientes` para
+ * el porqué de la lectura defensiva. El fichero es opcional a propósito: si
+ * no existe (un checkout que aún no ha corrido `buscar_imagenes.py`), todas
+ * las recetas caen al placeholder de la inicial en vez de romper el build.
+ */
+function leerImagenes(imagenes: unknown): Map<string, string> {
+  const info = new Map<string, string>();
+  if (imagenes === undefined || imagenes === null) return info;
+  const raiz = comoObjeto(imagenes, "imagenes.json");
+  for (const [id, valor] of Object.entries(raiz)) {
+    const entrada = comoObjeto(valor, `imagenes.json.${id}`);
+    info.set(id, comoTexto(entrada["url"], `imagenes.json.${id}.url`));
+  }
+  return info;
+}
+
+/**
  * Los alimentos citados por el `ingredientes` de alguna receta, alfabético por
  * id. Único punto de derivación: lo usan `compilar()` (para el vocabulario de
  * bits) y `vistaDeRecetas()` (para el selector de exclusión), y tienen que
@@ -568,9 +624,15 @@ export function compilar(jsonl: string, ingredientes: unknown): CatalogoSerializ
  * que este fichero la sustituye. `version` la ata al catálogo compilado con el
  * que se generó: si divergen, es que alguien recompiló sólo la mitad.
  */
-export function vistaDeRecetas(jsonl: string, ingredientes: unknown, version: string): VistaRecetas {
+export function vistaDeRecetas(
+  jsonl: string,
+  ingredientes: unknown,
+  version: string,
+  imagenes: unknown = undefined,
+): VistaRecetas {
   const filas = leerFilas(jsonl);
   const info = leerInfoIngredientes(ingredientes);
+  const fotos = leerImagenes(imagenes);
   const recetas: Record<string, RecetaVista> = {};
 
   const alimentos: AlimentoVista[] = alimentosCitados(filas).map((id) => ({
@@ -610,10 +672,56 @@ export function vistaDeRecetas(jsonl: string, ingredientes: unknown, version: st
       // coste inventado en una app de presupuesto es peor que no enseñar nada.
       costeCents: f.costeConocido ? f.costeCents : null,
       revisadaPor: f.revisadaPor,
+      imagenUrl: fotos.get(f.id) ?? null,
     };
   }
 
   return { version, total: filas.length, alimentos, recetas };
+}
+
+/**
+ * Lee `recetas.json` crudo (no `catalogo.jsonl`) porque es la única fuente
+ * que conserva los gramos por ingrediente — ver `PorcionesRecetas`.
+ *
+ * Valida lo mínimo (id, racionesBase, alimentoId, gramos): el resto del
+ * fichero ya lo valida `construir_catalogo.py` al generar `catalogo.jsonl`, y
+ * duplicar esa validación aquí sólo divergiría con el tiempo.
+ */
+export function porcionesDeReceta(
+  recetasJson: unknown,
+  ingredientes: unknown,
+  version: string,
+): PorcionesRecetas {
+  const info = leerInfoIngredientes(ingredientes);
+  const raiz = comoObjeto(recetasJson, "recetas.json");
+  const lista = comoLista(raiz["recetas"] ?? [], "recetas.json.recetas");
+
+  const recetas: Record<string, RecetaConGramos> = {};
+  for (let i = 0; i < lista.length; i++) {
+    const donde = `recetas.json.recetas[${i}]`;
+    const f = comoObjeto(lista[i], donde);
+    const id = comoTexto(f["id"], `${donde}.id`);
+    const racionesBase = f["racionesBase"] === undefined
+      ? 1
+      : comoNumero(f["racionesBase"], `${donde}.racionesBase`);
+    const ingredientesLista = comoLista(f["ingredientes"], `${donde}.ingredientes`);
+
+    recetas[id] = {
+      racionesBase,
+      ingredientes: ingredientesLista.map((item, j) => {
+        const io = comoObjeto(item, `${donde}.ingredientes[${j}]`);
+        const alimentoId = comoTexto(io["alimentoId"], `${donde}.ingredientes[${j}].alimentoId`);
+        return {
+          alimentoId,
+          nombre: info.get(alimentoId)?.nombre ?? alimentoId,
+          categoria: info.get(alimentoId)?.categoria ?? "otros",
+          gramos: comoNumero(io["gramos"], `${donde}.ingredientes[${j}].gramos`),
+        };
+      }),
+    };
+  }
+
+  return { version, recetas };
 }
 
 // --------------------------------------------------------------------------
@@ -643,6 +751,17 @@ function serializarVista(vista: VistaRecetas): string {
     `{\n"version": ${JSON.stringify(vista.version)},\n` +
     `"total": ${vista.total},\n` +
     `"alimentos": [\n${lineasAlimentos.join(",\n")}\n],\n` +
+    `"recetas": {\n${lineasRecetas.join(",\n")}\n}\n}\n`
+  );
+}
+
+/** Idem para las porciones: una receta por línea. */
+function serializarPorciones(porciones: PorcionesRecetas): string {
+  const lineasRecetas = Object.entries(porciones.recetas).map(
+    ([id, receta]) => ` ${JSON.stringify(id)}: ${JSON.stringify(receta)}`,
+  );
+  return (
+    `{\n"version": ${JSON.stringify(porciones.version)},\n` +
     `"recetas": {\n${lineasRecetas.join(",\n")}\n}\n}\n`
   );
 }
@@ -684,13 +803,26 @@ export function principal(argv: readonly string[]): number {
   const ingredientes: unknown = JSON.parse(
     readFileSync(resolve(DIR_DATOS_SOLVER, "ingredientes.json"), "utf8"),
   );
+  const recetasJson: unknown = JSON.parse(
+    readFileSync(resolve(DIR_DATOS_SOLVER, "recetas.json"), "utf8"),
+  );
+  // Opcional a propósito (ver `leerImagenes`): un checkout que aún no ha
+  // corrido `buscar_imagenes.py` compila igual, solo que sin fotos.
+  let imagenes: unknown = undefined;
+  try {
+    imagenes = JSON.parse(readFileSync(resolve(DIR_DATOS_SOLVER, "imagenes.json"), "utf8"));
+  } catch {
+    imagenes = undefined;
+  }
 
   const cat = compilar(jsonl, ingredientes);
-  const vista = vistaDeRecetas(jsonl, ingredientes, cat.version);
+  const vista = vistaDeRecetas(jsonl, ingredientes, cat.version, imagenes);
+  const porciones = porcionesDeReceta(recetasJson, ingredientes, cat.version);
 
   const salidas: [string, string][] = [
     [resolve(DIR_SALIDA, NOMBRE_SALIDA_MOTOR), serializarColumnar(cat)],
     [resolve(DIR_SALIDA, NOMBRE_SALIDA_VISTA), serializarVista(vista)],
+    [resolve(DIR_SALIDA, NOMBRE_SALIDA_PORCIONES), serializarPorciones(porciones)],
   ];
 
   let desfasados = 0;

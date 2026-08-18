@@ -356,3 +356,56 @@
     transform: none;
   }
 }
+
+/* --- Paso del asistente del generador ---------------------------------------
+   Entra con crossfade + un desplazamiento horizontal corto. La dirección
+   (avanzar = entra desde la derecha, retroceder = entra desde la izquierda)
+   la fija el componente escribiendo `--paso-desde` en línea; esta clase sólo
+   sabe animar hacia 0. Sale por opacidad —igual que `.aparicion`—, nunca por
+   desplazamiento: el paso que se va no compite en movimiento con el que
+   entra, que es justo la regla de asimetría del resto del sistema. */
+
+.paso {
+  animation: entradaPaso var(--dur-media) var(--ease-suave) backwards;
+}
+
+@keyframes entradaPaso {
+  from {
+    opacity: 0;
+    transform: translateX(var(--paso-desde, 16px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paso {
+    animation: none;
+  }
+}
+
+/* --- Barra de progreso del asistente ----------------------------------------
+   El relleno crece con `--dur-media`, no con `--dur-cuadre`: no está
+   reportando un cuadre de macros, sólo cuántos pasos quedan. */
+
+.progresoRelleno {
+  transition: width var(--dur-media) var(--ease-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progresoRelleno {
+    transition: none;
+  }
+}
+
+/* --- Píldora de elección única (radio) --------------------------------------
+   Mismo patrón accesible que las píldoras de exclusión (`input` real oculto
+   con `sr-only`, el foco se dibuja en la etiqueta vestida), pero de selección
+   única: la marcada lleva el color de marca a fondo lleno, no el tinte
+   suave —así se lee "la respuesta" y no "un filtro activado", que es la
+   diferencia real entre un radio y un checkbox. */
+
+.pildora {
+  transition:
+    background-color var(--dur-rapida) var(--ease),
+    border-color var(--dur-rapida) var(--ease),
+    color var(--dur-rapida) var(--ease);
+}

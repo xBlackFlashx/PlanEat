@@ -1,0 +1,64 @@
+{
+  "versionCatalogo": "c6949aca1558dab1",
+  "versionGeneradorPython": "1.0.0",
+  "nRecetas": 240,
+  "nAlimentos": 121,
+  "pasoRacion": 0.05,
+  "infBanda": 1e+30,
+  "umbralErrorOk": 0.04,
+  "umbralErrorAceptable": 0.12,
+  "semillaEscenarios": 20260815,
+  "funcionesPuras": {
+    "lineas": 2576,
+    "porFuncion": {
+      "temperatura": 11,
+      "minCandidatosSlot": 15,
+      "cuotasDe": 10,
+      "ordenDeSlots": 10,
+      "topesPorSlot": 4,
+      "bitsDe": 7,
+      "vectorMacro": 7,
+      "bandasDe": 70,
+      "desviaciones": 490,
+      "errorDe": 490,
+      "cuantizar": 6,
+      "rejilla": 7,
+      "culpabilidad": 216,
+      "pulirUna": 756,
+      "porcionadoDeEmergencia": 54,
+      "macrosIncompatibles": 5,
+      "mascarasRestriccion": 8,
+      "ablacion": 8,
+      "candidatosPorSlot": 8,
+      "cotasAlcanzables": 24,
+      "penalizacionRepeticion": 120,
+      "sigmaSugerido": 48,
+      "totalesDe": 48,
+      "nutrientesActivos": 144,
+      "vectorObjetivo": 10
+    }
+  },
+  "porciones": {
+    "total": 2152,
+    "reales": 2008,
+    "sinteticos": 144,
+    "porR": {
+      "1": 250,
+      "2": 769,
+      "3": 377,
+      "4": 356,
+      "5": 376,
+      "6": 24
+    },
+    "porBucket": {
+      "malo": 896,
+      "aceptable": 593,
+      "ok": 663
+    },
+    "conCotaActiva": 2096,
+    "conNutrienteInactivo": 1708,
+    "conSodioAcotado": 408,
+    "conSigmaFueraDeRejillaAnclada0": 95,
+    "emergencias": 0
+  }
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MacroBar } from "@/components/macro-bar";
+import { NavCuenta } from "@/components/nav-cuenta";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
@@ -39,22 +40,22 @@ const SUPERFICIES: Muestra[] = [
     token: "--surface",
     clase: "bg-surface",
     nombre: "Superficie",
-    claro: 1.06,
-    oscuro: 1.08,
+    claro: 1.05,
+    oscuro: 1.09,
   },
   {
     token: "--surface-2",
     clase: "bg-surface-2",
     nombre: "Superficie 2",
-    claro: 1.08,
-    oscuro: 1.18,
+    claro: 1.05,
+    oscuro: 1.24,
   },
   {
     token: "--surface-3",
     clase: "bg-surface-3",
     nombre: "Superficie 3",
-    claro: 1.2,
-    oscuro: 1.37,
+    claro: 1.18,
+    oscuro: 1.47,
   },
 ];
 
@@ -63,25 +64,25 @@ const MACROS: Muestra[] = [
     token: "--protein",
     clase: "bg-protein",
     nombre: "Proteína",
-    claro: 4.89,
-    oscuro: 7.9,
-    nota: "Válido como marca. Nunca como texto.",
+    claro: 4.94,
+    oscuro: 7.36,
+    nota: "Cumple AA (4,5:1) como texto en ambos temas. Se usa igual sólo como marca gráfica.",
   },
   {
     token: "--carb",
     clase: "bg-carb",
     nombre: "Carbohidratos",
-    claro: 2.12,
-    oscuro: 10.02,
-    nota: "En claro no llega a 3:1. Exige etiqueta directa; nunca como texto.",
+    claro: 4.8,
+    oscuro: 11.22,
+    nota: "Cumple AA en ambos temas — el sistema anterior no llegaba a 3:1 en claro. Aun así lleva etiqueta directa en la barra de macros, por claridad, no por falta de contraste.",
   },
   {
     token: "--fat",
     clase: "bg-fat",
     nombre: "Grasa",
-    claro: 3.23,
-    oscuro: 8.74,
-    nota: "Válido como marca. Nunca como texto en claro.",
+    claro: 5.45,
+    oscuro: 6.88,
+    nota: "Cumple AA en ambos temas.",
   },
 ];
 
@@ -90,25 +91,25 @@ const ESTADOS: Muestra[] = [
     token: "--brand",
     clase: "bg-brand",
     nombre: "Marca",
-    claro: 8.31,
-    oscuro: 8.52,
+    claro: 5.24,
+    oscuro: 9.74,
     nota: "Cómodo en ambos temas, también como texto.",
   },
   {
     token: "--danger",
     clase: "bg-danger",
     nombre: "Error",
-    claro: 6.16,
-    oscuro: 8.09,
+    claro: 4.62,
+    oscuro: 6.77,
     nota: "Cumple AA como texto en ambos temas.",
   },
   {
     token: "--warning",
     clase: "bg-warning",
     nombre: "Aviso",
-    claro: 5.21,
-    oscuro: 9.52,
-    nota: "Cumple AA como texto en ambos temas.",
+    claro: 4.8,
+    oscuro: 11.22,
+    nota: "Cumple AA como texto en ambos temas. Mismo hex que --carb, a propósito.",
   },
 ];
 
@@ -117,32 +118,32 @@ const TEXTOS: Muestra[] = [
     token: "--text",
     clase: "bg-text",
     nombre: "Texto",
-    claro: 16.49,
-    oscuro: 15.64,
-    nota: "El único que cumple AAA (7:1). Es el que llevan las cifras nutricionales.",
+    claro: 17.06,
+    oscuro: 17.09,
+    nota: "Cumple AAA (7:1). Es el que llevan las cifras nutricionales.",
   },
   {
     token: "--text-2",
     clase: "bg-text-2",
     nombre: "Texto 2",
-    claro: 9.06,
-    oscuro: 10.98,
+    claro: 7.24,
+    oscuro: 12.61,
     nota: "Cumple AAA. Es el secundario por defecto sobre el fondo de página.",
   },
   {
     token: "--text-3",
     clase: "bg-text-3",
     nombre: "Texto 3",
-    claro: 4.47,
-    oscuro: 6.09,
-    nota: "4,47:1 en claro: por debajo de AA. Sólo sobre --surface, o a partir de 18,66 px. Nunca en una cifra.",
+    claro: 5.19,
+    oscuro: 7.3,
+    nota: "5,19:1 en claro, 7,30:1 en oscuro: cumple AA sobre --bg en los dos temas (mejora sobre el sistema anterior, que se quedaba en 4,47:1 en claro). No llega a AAA en claro — las cifras siguen yendo en --text o --text-2, nunca aquí.",
   },
   {
     token: "--line",
     clase: "bg-line",
     nombre: "Línea",
-    claro: 1.26,
-    oscuro: 1.37,
+    claro: 1.18,
+    oscuro: 1.47,
     nota: "Decorativa. Nunca como único indicador de foco, selección o estado.",
   },
 ];
@@ -204,8 +205,8 @@ function Muestras({ items }: { items: Muestra[] }) {
 }
 
 const ESCALA = [
-  { clase: "voz-1", valor: "34 → 46 px · 1,05 · 400 Space Grotesk", texto: "Tu día, resuelto" },
-  { clase: "voz-2", valor: "26 → 32 px · 1,10 · 400 Space Grotesk", texto: "Lentejas con verduras" },
+  { clase: "voz-1", valor: "34 → 46 px · 1,05 · 400 Poppins", texto: "Tu día, resuelto" },
+  { clase: "voz-2", valor: "26 → 32 px · 1,10 · 400 Poppins", texto: "Lentejas con verduras" },
   { clase: "t-1", valor: "24 → 28 px · 1,20 · 600", texto: "Martes 12" },
   { clase: "t-2", valor: "19 → 21 px · 1,25 · 600", texto: "Comida" },
   { clase: "t-3", valor: "16 → 17 px · 1,30 · 600", texto: "Ensalada de garbanzos" },
@@ -242,7 +243,10 @@ export default function SistemaDeDiseno() {
           <Link href="/" className="t-3 tracking-tight">
             PlanEat
           </Link>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <NavCuenta />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -259,7 +263,7 @@ export default function SistemaDeDiseno() {
 
         <Seccion
           titulo="Tipografía"
-          nota="Dos fuentes con reparto estricto. Inter hace el trabajo: toda la interfaz, todo el cuerpo y todos los números. Space Grotesk pone la voz, y sólo en cuatro sitios: el titular de portada, el título de una ficha de receta, el titular de sobre-restricción y su cifra héroe. Nunca en interfaz, nunca en un número, nunca por debajo de 24 px, nunca en negrita. Las dos son OFL 1.1 y se sirven desde el propio dominio."
+          nota="Dos fuentes con reparto estricto. Inter hace el trabajo: toda la interfaz, todo el cuerpo y todos los números — se mantiene igual tras el rediseño porque trae la feature OpenType «tnum» de verdad, y eso es una restricción técnica, no de marca. Poppins pone la voz (sustituye a Space Grotesk), y sólo en cuatro sitios: el titular de portada, el título de una ficha de receta, el titular de sobre-restricción y su cifra héroe. Nunca en interfaz, nunca en un número, nunca por debajo de 24 px, nunca en negrita. Las dos son OFL 1.1 y se sirven desde el propio dominio."
         >
           <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
             {ESCALA.map((e) => (
@@ -311,7 +315,7 @@ export default function SistemaDeDiseno() {
                     Proteína
                   </th>
                   <th scope="col" className="etiqueta p-4 text-right text-text-3">
-                    Precio
+                    Grasa
                   </th>
                 </tr>
               </thead>
@@ -322,7 +326,7 @@ export default function SistemaDeDiseno() {
                   </th>
                   <td className="cifra p-4 text-right tabular-nums text-text">1.111 kcal</td>
                   <td className="cifra p-4 text-right tabular-nums text-text">111 g</td>
-                  <td className="cifra p-4 text-right tabular-nums text-text">11,11 €</td>
+                  <td className="cifra p-4 text-right tabular-nums text-text">39 g</td>
                 </tr>
                 <tr className="border-b border-line">
                   <th scope="row" className="p-4 text-left font-normal text-text-2">
@@ -330,7 +334,7 @@ export default function SistemaDeDiseno() {
                   </th>
                   <td className="cifra p-4 text-right tabular-nums text-text">1.847 kcal</td>
                   <td className="cifra p-4 text-right tabular-nums text-text">142 g</td>
-                  <td className="cifra p-4 text-right tabular-nums text-text">38,50 €</td>
+                  <td className="cifra p-4 text-right tabular-nums text-text">61 g</td>
                 </tr>
                 <tr className="border-b border-line">
                   <th scope="row" className="p-4 text-left font-normal text-text-2">
@@ -343,7 +347,7 @@ export default function SistemaDeDiseno() {
                     111 g
                   </td>
                   <td className="p-4 text-right font-semibold proportional-nums text-text-2">
-                    11,11 €
+                    39 g
                   </td>
                 </tr>
                 <tr>
@@ -357,7 +361,7 @@ export default function SistemaDeDiseno() {
                     142 g
                   </td>
                   <td className="p-4 text-right font-semibold proportional-nums text-text-2">
-                    38,50 €
+                    61 g
                   </td>
                 </tr>
               </tbody>
@@ -367,7 +371,7 @@ export default function SistemaDeDiseno() {
 
         <Seccion
           titulo="Superficies"
-          nota="Gris frío de índigo, no gris puro: un gris sin sesgo se lee como «no elegido», y un fondo cálido chocaba con un acento frío. Las tarjetas de comida se separan por fondo, no por sombra. El número es el contraste de cada superficie contra el fondo de página; son diferencias de superficie, no de texto, y por eso son pequeñas a propósito."
+          nota="Gris neutro (slate), sin sesgo de matiz: con la marca ahora en verde, un gris frío o cálido «tiraría» hacia o contra ese verde y competiría con él en vez de dejarlo respirar. Las tarjetas de comida se separan por fondo, no por sombra. El número es el contraste de cada superficie contra el fondo de página; son diferencias de superficie, no de texto, y por eso son pequeñas a propósito."
         >
           <Muestras items={SUPERFICIES} />
         </Seccion>
@@ -381,14 +385,14 @@ export default function SistemaDeDiseno() {
 
         <Seccion
           titulo="Macronutrientes"
-          nota="Triada Okabe-Ito, diseñada para ser distinguible en deuteranopia y protanopia. Son los mismos tres tonos en todo el producto, se aprenden una vez y no hay leyenda. Ninguno coincide con el acento de marca. Ojo con el contraste en tema claro: son colores de marca gráfica, no de texto, y por eso la barra de macros lleva etiquetas directas obligatorias — si alguien las quita, la paleta deja de cumplir."
+          nota="Azul / ámbar / violeta. Reemplaza la triada Okabe-Ito del sistema anterior (rediseño completo, 2026-08-17). Elegida evitando el eje rojo-verde —el más común en daltonismo— y evitando coincidir con el verde de marca, pero es un juicio de diseño, no una validación de laboratorio como lo era Okabe-Ito: por eso la barra de macros sigue llevando etiquetas directas obligatorias, ahora por prudencia y no sólo por contraste — si alguien las quita, la paleta pierde su única red de seguridad real."
         >
           <Muestras items={MACROS} />
         </Seccion>
 
         <Seccion
           titulo="Marca y estados"
-          nota="El acento de marca es índigo: evita a propósito el verde-menta clínico de las apps de salud, el coral de media categoría, y también el verde o el teal que otras paletas de «salud» comparten con el macro de grasa. No hay token de «éxito», y es intencionado: el verde ya significa grasa, y un confirmador verde junto a una barra de macros crea ambigüedad justo donde el usuario está aprendiendo el código de color. El éxito se resuelve con el acento de marca y un icono; el rojo queda reservado a error."
+          nota="La marca es verde (rediseño completo, 2026-08-17: reemplaza el índigo anterior). Es el match de dominio para un producto de nutrición — «Calorie & Nutrition Counter» en vez de un genérico «SaaS de confianza» — y esta vez SÍ hay un token de «éxito» de facto: el macro de grasa se movió a violeta, así que el verde ya no coincide con ningún macronutriente y la ambigüedad que forzaba a evitarlo en el sistema anterior desaparece. El éxito reutiliza --brand con icono, igual que antes; lo que cambia es que ahora puede ser literalmente verde sin colisionar. El rojo sigue reservado a error."
         >
           <Muestras items={ESTADOS} />
         </Seccion>

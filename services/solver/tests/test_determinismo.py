@@ -106,12 +106,16 @@ def test_mismo_seed_mismo_plan_con_todas_las_restricciones(cat):
 
 def test_el_fallo_tambien_es_determinista(cat):
     """El diagnóstico se lee en soporte: si cambia entre llamadas, no sirve."""
+    # El mínimo (antes 300 g) subió a 350 g al ampliar el catálogo: con más
+    # recetas de alta densidad proteica (claras de huevo, pechuga de pollo al
+    # vapor...) 300 g dejó de ser un objetivo probadamente imposible y el plan
+    # empezaba a salir OK — comprobado contra el catálogo real, no adivinado.
     peticion = SolicitudGeneracion(
         objetivos=[
             {
                 **OBJETIVO,
                 "kcal": 1600,
-                "proteinaG": {"min": 280, "max": 330},
+                "proteinaG": {"min": 350, "max": 400},
                 "carbohidratoG": {"min": 0, "max": 100},
                 "grasaG": {"min": 0, "max": 45},
                 "fibraMinG": 0,

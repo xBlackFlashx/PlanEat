@@ -20,8 +20,12 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { ALERGENOS, DIETAS, NUTRIENTES, SLOTS } from "../src/constantes.ts";
-import type { CatalogoSerializado, VistaRecetas } from "../herramientas/compilar-catalogo.ts";
-import { compilar, vistaDeRecetas } from "../herramientas/compilar-catalogo.ts";
+import type {
+  CatalogoSerializado,
+  PorcionesRecetas,
+  VistaRecetas,
+} from "../herramientas/compilar-catalogo.ts";
+import { compilar, porcionesDeReceta, vistaDeRecetas } from "../herramientas/compilar-catalogo.ts";
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const DIR_DATOS_SOLVER = resolve(AQUI, "../../../services/solver/data");
@@ -55,12 +59,15 @@ const JSONL = readFileSync(resolve(DIR_DATOS_SOLVER, "catalogo.jsonl"), "utf8");
 const INGREDIENTES: unknown = JSON.parse(
   readFileSync(resolve(DIR_DATOS_SOLVER, "ingredientes.json"), "utf8"),
 );
+const IMAGENES: unknown = JSON.parse(
+  readFileSync(resolve(DIR_DATOS_SOLVER, "imagenes.json"), "utf8"),
+);
 const REF = JSON.parse(
   readFileSync(resolve(AQUI, "datos/referencia-python-catalogo.json"), "utf8"),
 ) as ReferenciaPython;
 
 const CAT: CatalogoSerializado = compilar(JSONL, INGREDIENTES);
-const VISTA: VistaRecetas = vistaDeRecetas(JSONL, INGREDIENTES, CAT.version);
+const VISTA: VistaRecetas = vistaDeRecetas(JSONL, INGREDIENTES, CAT.version, IMAGENES);
 
 /**
  * Lo que el motor verá de verdad. El JSON lleva el número tal cual está en el
@@ -300,4 +307,47 @@ test("la vista del repositorio esta al dia", () => {
     readFileSync(resolve(DIR_SALIDA, "recetas-vista.json"), "utf8"),
   ) as VistaRecetas;
   assert.deepEqual(enDisco, VISTA);
+});
+
+// --------------------------------------------------------------------------
+// Porciones (lista de la compra del plan Pro)
+// --------------------------------------------------------------------------
+
+const RECETAS_JSON: unknown = JSON.parse(
+  readFileSync(resolve(DIR_DATOS_SOLVER, "recetas.json"), "utf8"),
+);
+const PORCIONES: PorcionesRecetas = porcionesDeReceta(RECETAS_JSON, INGREDIENTES, CAT.version);
+
+test("las porciones tienen una entrada por receta, con los mismos ids que el catalogo", () => {
+  assert.deepEqual(Object.keys(PORCIONES.recetas).sort(), [...CAT.ids].sort());
+  assert.equal(PORCIONES.version, CAT.version);
+});
+
+test("las porciones llevan los gramos crudos de recetas.json, sin dividir por racion", () => {
+  const receta = PORCIONES.recetas["avena_yogur_arandanos"];
+  assert.notEqual(receta, undefined);
+  assert.equal(receta?.racionesBase, 1);
+  assert.deepEqual(
+    receta?.ingredientes.map((i) => [i.alimentoId, i.gramos]).sort(),
+    [
+      ["arandanos", 70],
+      ["avena_copos", 50],
+      ["miel", 8],
+      ["yogur_griego", 150],
+    ].sort(),
+  );
+});
+
+test("las porciones resuelven nombre y categoria contra ingredientes.json", () => {
+  const receta = PORCIONES.recetas["avena_yogur_arandanos"];
+  const yogur = receta?.ingredientes.find((i) => i.alimentoId === "yogur_griego");
+  assert.equal(yogur?.nombre, "Yogur griego natural");
+  assert.equal(yogur?.categoria, "lacteos");
+});
+
+test("las porciones del repositorio estan al dia", () => {
+  const enDisco = JSON.parse(
+    readFileSync(resolve(DIR_SALIDA, "receta-ingredientes.json"), "utf8"),
+  ) as PorcionesRecetas;
+  assert.deepEqual(enDisco, PORCIONES);
 });

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DiaReal } from "@/components/dia-real";
 import { Generador } from "@/components/generador";
 import { MotoresConfianza } from "@/components/motores-confianza";
+import { NavCuenta } from "@/components/nav-cuenta";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 /**
@@ -19,9 +20,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 const PILARES = [
   {
-    titulo: "El coste, delante",
+    titulo: "Hecho para México",
     texto:
-      "Cada día trae su coste estimado en ingredientes, siempre como rango. La comida tiene precio y esconderlo hasta el supermercado no ayuda a nadie.",
+      "Ingredientes y recetas pensados para lo que se compra aquí, con los nombres que se usan aquí. No es una traducción de un catálogo de otro país.",
   },
   {
     titulo: "La lista, corta",
@@ -31,7 +32,7 @@ const PILARES = [
   {
     titulo: "Lo que ya tienes, primero",
     texto:
-      "Lo que hay en casa entra en el plan antes que lo que hay que comprar. Es la diferencia entre planificar y volver a llenar la nevera.",
+      "Lo que hay en casa entra en el plan antes que lo que hay que comprar. Es la diferencia entre planificar y volver a llenar el refrigerador.",
   },
 ];
 
@@ -54,6 +55,7 @@ export default function Portada() {
             >
               Generar mi día
             </a>
+            <NavCuenta />
             <ThemeToggle />
           </div>
         </div>
@@ -95,11 +97,15 @@ export default function Portada() {
 
         <section className="mx-auto mt-16 w-full max-w-[1120px] border-t border-line pt-10 sm:mt-24">
           <div className="rounded-[var(--radius-lg)] bg-brand-soft p-6 text-center sm:p-10">
-            <h2 className="t-1">Sin cuenta, sin tarjeta, sin plan de precios</h2>
+            <h2 className="t-1">El día suelto, sin cuenta ni tarjeta</h2>
             <p className="mx-auto mt-3 max-w-xl text-pretty leading-relaxed text-text-2">
-              PlanEat es gratis porque no hay nada que vender: no hay
-              suscripción, no hay niveles, no hay letra pequeña que descubrir
-              después de registrarte.
+              Genera un día completo cuantas veces quieras, sin registrarte y
+              sin letra pequeña. Si además quieres la semana entera resuelta
+              con su lista de la compra, eso sí es Pro — compáralo en{" "}
+              <Link href="/precios" className="font-medium text-text underline-offset-4 hover:underline">
+                Precios
+              </Link>
+              .
             </p>
             <a
               href="#generador"
