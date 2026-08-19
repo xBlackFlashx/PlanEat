@@ -128,6 +128,259 @@ export const ALERGENOS = [
   "sulfitos",
   "altramuces",
   "moluscos",
+  "paprika",
+  "vainilla",
+  "sal",
+  "miel",
+  "mayonesa",
+  "vinagre",
+  "pesto",
+  "mermelada",
+  "tofu",
+  "tempeh",
+  "salsa",
+  "azafran",
+  "clavo",
+  "anis",
+  "cardamomo",
+  "nuez_moscada",
+  "azucar",
+  "catsup",
+  "mole",
+  "hummus",
+  "guacamole",
+  "cajeta",
+  "chocolate",
+  "cacao",
+  "gelatina",
+  "seitan",
+  "proteina",
+  "cafe",
+  "te",
+  "huevo",
+  "pollo",
+  "pavo",
+  "res",
+  "cerdo",
+  "cordero",
+  "conejo",
+  "pato",
+  "codorniz",
+  "ternera",
+  "bistec",
+  "filete",
+  "costilla",
+  "chuleta",
+  "jamon",
+  "tocino",
+  "salchicha",
+  "chorizo",
+  "cecina",
+  "carne",
+  "higado",
+  "atun",
+  "salmon",
+  "sardina",
+  "trucha",
+  "tilapia",
+  "bacalao",
+  "merluza",
+  "robalo",
+  "huachinango",
+  "mojarra",
+  "camaron",
+  "langosta",
+  "cangrejo",
+  "pulpo",
+  "calamar",
+  "ostion",
+  "almeja",
+  "mejillon",
+  "cacahuate",
+  "almendra",
+  "nuez",
+  "pistache",
+  "avellana",
+  "macadamia",
+  "castana",
+  "nuezpecana",
+  "pinon",
+  "chia",
+  "linaza",
+  "ajonjoli",
+  "girasol",
+  "pepita",
+  "canamo",
+  "amaranto",
+  "manzana",
+  "platano",
+  "naranja",
+  "mandarina",
+  "limon",
+  "lima",
+  "toronja",
+  "uva",
+  "fresa",
+  "frambuesa",
+  "zarzamora",
+  "arandano",
+  "cereza",
+  "durazno",
+  "nectarina",
+  "ciruela",
+  "pera",
+  "mango",
+  "papaya",
+  "pina",
+  "sandia",
+  "melon",
+  "kiwi",
+  "guayaba",
+  "granada",
+  "higo",
+  "datil",
+  "coco",
+  "maracuya",
+  "lichi",
+  "carambola",
+  "pitahaya",
+  "tuna",
+  "mamey",
+  "zapote",
+  "guanabana",
+  "chirimoya",
+  "tejocote",
+  "tamarindo",
+  "membrillo",
+  "persimon",
+  "grosella",
+  "acerola",
+  "rambutan",
+  "lechuga",
+  "espinaca",
+  "acelga",
+  "col",
+  "kale",
+  "arugula",
+  "berro",
+  "brocoli",
+  "coliflor",
+  "zanahoria",
+  "jitomate",
+  "tomate",
+  "pepino",
+  "calabaza",
+  "calabacita",
+  "chayote",
+  "berenjena",
+  "pimiento",
+  "chile",
+  "jalapeno",
+  "serrano",
+  "poblano",
+  "habanero",
+  "cebolla",
+  "ajo",
+  "nopal",
+  "rabano",
+  "betabel",
+  "esparrago",
+  "alcachofa",
+  "poro",
+  "jicama",
+  "ejote",
+  "elote",
+  "champinon",
+  "hongo",
+  "coles",
+  "endivia",
+  "escarola",
+  "quelite",
+  "verdolaga",
+  "huauzontle",
+  "frijol",
+  "lenteja",
+  "garbanzo",
+  "chicharo",
+  "haba",
+  "soya",
+  "alubia",
+  "edamame",
+  "arroz",
+  "avena",
+  "trigo",
+  "maiz",
+  "cebada",
+  "centeno",
+  "quinoa",
+  "mijo",
+  "sorgo",
+  "espelta",
+  "bulgur",
+  "cuscus",
+  "farro",
+  "papa",
+  "camote",
+  "yuca",
+  "name",
+  "malanga",
+  "tapioca",
+  "leche",
+  "queso",
+  "yogur",
+  "crema",
+  "mantequilla",
+  "requeson",
+  "jocoque",
+  "kefir",
+  "cuajada",
+  "ricotta",
+  "mozzarella",
+  "manchego",
+  "cheddar",
+  "parmesano",
+  "gouda",
+  "cottage",
+  "panela",
+  "pan",
+  "tortilla",
+  "tostada",
+  "bolillo",
+  "telera",
+  "baguette",
+  "bagel",
+  "croissant",
+  "galleta",
+  "granola",
+  "cereal",
+  "pasta",
+  "espagueti",
+  "macarron",
+  "fideo",
+  "lasana",
+  "aguacate",
+  "aceituna",
+  "oliva",
+  "aceite",
+  "manteca",
+  "tahini",
+  "cilantro",
+  "perejil",
+  "albahaca",
+  "oregano",
+  "romero",
+  "tomillo",
+  "menta",
+  "hierbabuena",
+  "eneldo",
+  "laurel",
+  "salvia",
+  "estragon",
+  "curcuma",
+  "jengibre",
+  "canela",
+  "pimienta",
+  "comino",
 ] as const satisfies readonly Alergeno[];
 export const N_ALERGENOS = ALERGENOS.length;
 export const IDX_ALERGENO: Readonly<Record<Alergeno, number>> = indicesDe(ALERGENOS);
@@ -177,21 +430,59 @@ export const PESO_SLOT: Readonly<Record<SlotComida, number>> = {
   cena: 0.28,
 };
 
-// Pesos de los siete términos del score. §2.2
+// Pesos de los ocho términos del score. §2.2
+//
+// W_SOL bajó de 3,2 a 2,4 y aparece W_NUEVO en esta misma ronda: la tercera
+// vez que se pidió una despensa más compartida (histórico: 1,2 -> 2,0 -> 3,2
+// en las dos rondas anteriores, sólo peso). Subir sólo W_SOL ya no daba nada
+// -medido en Python de 3,2 a 6,0 con scripts/medir_w_sol.py: la media de
+// ingredientes/semana se queda clavada en ~41 en todo el rango y sólo se
+// hunde la tasa de "Cuadra"- porque `sol` premia la FRACCIÓN de la receta ya
+// cubierta, no el número de ingredientes nuevos que añade: una receta de 2
+// ingredientes con 0 en la despensa (sol=0) puntúa igual de mal que una de 10
+// con 0 en la despensa (sol=0), aunque la segunda pese 5 veces más en la
+// lista de la compra. W_NUEVO corrige eso puntuando el conteo ABSOLUTO de
+// ingredientes nuevos. Medido en Python con scripts/medir_w_nuevo.py (barrido
+// conjunto, pareado, 40 semillas x 3 perfiles): (W_SOL=2,4, W_NUEVO=3,0) fue
+// el único punto que redujo la media de ingredientes/semana de forma
+// reproducible (-4,0 ingredientes, -9,7 %) SIN costar tasa de "Cuadra" -de
+// hecho la sube +4,5 pp-. Puntos con W_NUEVO más alto (4-10) no bajaban más
+// la media (suelo estructural del catálogo semilla alrededor de 35-38) y sí
+// hundían "Cuadra". Bajar más la media exigía tocar la etapa D
+// (semanal.py/`ensamblar.ts`, LAMBDA_INGREDIENTES) y el límite de repetición
+// semanal — exactamente lo que hace la CUARTA ronda, ver el comentario junto
+// a LAMBDA_INGREDIENTES/MAX_USOS_RECETA_SEMANA más abajo. Ver
+// services/solver/app/solver/__init__.py para la cita completa.
 export const W_FIT = 4.0;
 export const W_ESC = 2.0;
 export const W_DESP = 1.5;
-export const W_SOL = 1.2;
+export const W_SOL = 2.4;
+/**
+ * Penaliza el número ABSOLUTO de ingredientes nuevos (no comprometidos aún
+ * esta semana) que introduce la receta candidata, normalizado por el mayor
+ * `nIngr` del POOL —no por el de la propia receta, que es lo que ya hace
+ * `W_SOL`: normalizar igual habría hecho de este término un múltiplo escalar
+ * de `sol` en vez de uno que mide algo distinto. `scoring.py:358-370` (h).
+ */
+export const W_NUEVO = 3.0;
 /**
  * Afinidad: término muerto pero presente. DISENO.md §2.2 escribe la fórmula con
  * `0,8·φ_afin` y declara un rango S ∈ [−3,5 ; 9,5]; el CÓDIGO fija 0,0 porque
  * las preferencias de alimento son v1 y no existen en el contrato, y §2.2(g) lo
  * confirma («peso efectivo 0 en MVP»). Se porta el código.
  *
- * El rango real del score es por tanto [−3,5 ; 8,7]: máximo 4,0+2,0+1,5+1,2 con
- * todos los φ en [0,1], mínimo −1,5·cost − 2,0·rep. Queda escrito aquí porque
- * el número que circula por la documentación (9,5) es el equivocado y quien
- * depure una normalización del score va a comparar contra él.
+ * El rango real del score es por tanto [−6,5 ; 9,9]: máximo 4,0+2,0+1,5+2,4 con
+ * todos los φ en [0,1] y `nuevos` en su mínimo (0); mínimo −1,5·cost − 2,0·rep
+ * − 3,0·nuevos con los tres en su máximo (1). NO coincide con el 9,5 que
+ * DISENO.md declara (por su `0,8·φ_afin` nunca portado, y porque DISENO.md no
+ * conoce W_NUEVO en absoluto): ese 9,5 ya era el equivocado con W_SOL=2,0
+ * (máximo real 9,5 por coincidencia) y quedó obsoleto en dos rondas más — de
+ * 1,2 a 2,0 el máximo real era 8,7; de 2,0 a 3,2 subió a 10,7. Esta ronda baja
+ * W_SOL a 2,4 (máximo 9,9, entre los dos anteriores) y añade W_NUEVO, que NO
+ * toca el máximo (se anula con `nuevos = 0`, el óptimo) pero sí hunde el
+ * mínimo de −3,5 a −6,5, porque es el primer término con signo negativo desde
+ * W_REP. Si cualquier peso vuelve a cambiar, recalcula este comentario en vez
+ * de confiar en el número de DISENO.md.
  */
 export const W_AFIN = 0.0;
 export const W_COST = 1.5;
@@ -290,15 +581,40 @@ export const FACTOR_TEMPERATURA_REINTENTO = 0.25;
 
 export const K_CANDIDATOS_DIA = 6; // §5
 /**
- * λ = 0,006: quitar 10 ingredientes de la lista de la compra vale lo mismo que
- * empeorar un día en 6 puntos de desviación nutricional. Deja la nutrición
- * dominante pero con capacidad real de mover la solución cuando hay empate. §5.1
+ * CUARTA ronda de "menos ingredientes" (histórico completo: W_SOL
+ * 1,2->2,0->3,2->2,4 + W_NUEVO, ver el comentario junto a W_FIT más arriba).
+ * Con eso la media bajó a ~37-38 ingredientes/semana y se estancó -es el
+ * scoring POR SLOT, que decide qué receta gana dentro de un día, y no ve
+ * nada de la etapa D-. El usuario pidió bajar a 15-25, casi la mitad: eso
+ * exige tocar la etapa D, que sí ve la semana completa.
+ *
+ * `scripts/medir_lambda_ingredientes.py` (Python; barrido 0,006->0,5,
+ * pareado, 40 semillas x 3 perfiles) muestra que subir sólo λ satura: la
+ * media cae de 37,6 a un SUELO de ~27,3 en lam=0,08-0,12 y no baja más ni en
+ * lam=0,5. `scripts/medir_k_candidatos.py` descarta que el suelo venga de
+ * tener pocos candidatos por día para elegir: K_CANDIDATOS_DIA de 6 a 20 no
+ * mueve la media. El suelo es estructural: con MAX_USOS_RECETA_SEMANA=2
+ * hacen falta al menos ceil(21/2)=11 recetas distintas para cubrir 3 comidas
+ * x 7 días, y con ~4,5 ingredientes/receta de media eso empuja el mínimo
+ * teórico muy por encima de 25 aunque la superposición entre esas 11 recetas
+ * sea perfecta.
+ *
+ * `scripts/medir_max_usos.py` + `scripts/confirmar_final.py` (barrido
+ * conjunto, 40 semillas x 3 perfiles) prueban MAX_USOS_RECETA_SEMANA en
+ * {2,3,4,5}: subir a 4 baja el mínimo estructural a ceil(21/4)=6 recetas y,
+ * con λ=0,12, deja media=19,85 ingredientes/semana (antes 37,6) con el
+ * 94,2 % de las semanas cayendo dentro de [15,25]. `%cuadra` SUBE de 57,3 %
+ * a 81,1 % en vez de bajar: al relajar la restricción dura de repetición, el
+ * porcionado (etapa B) tiene más margen para ajustar `factorRacion` receta a
+ * receta en vez de que la variedad obligatoria fuerce mezclas que encajan
+ * peor. λ=0,10 empataba con 0,12 en media/mínimo/%-en-rango; se eligió 0,12
+ * por el %cuadra ligeramente mejor.
  */
-export const LAMBDA_INGREDIENTES = 0.006;
+export const LAMBDA_INGREDIENTES = 0.12;
 export const MU_PRESUPUESTO = 0.3; // §5.1
 export const NU_REPETICION = 0.05; // §5.1
 /** Restricción DURA, no penalización: la impone `repararDuras`, no el recocido. §5.1 */
-export const MAX_USOS_RECETA_SEMANA = 2;
+export const MAX_USOS_RECETA_SEMANA = 4;
 export const SA_T0 = 0.05; // §5.3
 export const SA_ALFA = 0.994; // §5.3
 export const SA_ITERACIONES = 400; // §5.3
@@ -318,17 +634,23 @@ export const MIN_POOL = 40; // §6.0
 /** Elegir + 2 reparaciones. §6.0 */
 export const MIN_CANDIDATOS_SLOT_DIA = 3;
 /**
- * ceil(7/2) + 4. Sale de la restricción dura de repetición: con
- * MAX_USOS_RECETA_SEMANA usos y D días hacen falta ceil(D/2) recetas distintas
- * por slot, más 4 de holgura para que el recocido tenga algo que intercambiar.
+ * ceil(7/MAX_USOS_RECETA_SEMANA) + 4. Sale de la restricción dura de
+ * repetición: con MAX_USOS_RECETA_SEMANA usos y D días hacen falta
+ * ceil(D/MAX_USOS_RECETA_SEMANA) recetas distintas por slot, más 4 de
+ * holgura para que el recocido tenga algo que intercambiar.
  *
- * Ojo al portar `_min_candidatos_slot`: esta constante y esa holgura de 4 son
- * REDUNDANTES entre sí, porque el código recalcula `holgura = 8 − ceil(7/2)`
- * a partir de este mismo 8. Es decir, cambiar este número cambia dos cosas a la
- * vez (el techo y la holgura) y no de forma independiente. Se porta tal cual
- * para no alterar el umbral, pero conviene saberlo antes de tocarlo. §6.0
+ * Ojo al portar `minCandidatosSlot`: esta constante y esa holgura de 4 son
+ * REDUNDANTES entre sí, porque el código recalcula
+ * `holgura = MIN_CANDIDATOS_SLOT_SEMANA − ceil(7/MAX_USOS_RECETA_SEMANA)` a
+ * partir de este mismo número. Es decir, cambiar este número cambia dos
+ * cosas a la vez (el techo y la holgura) y no de forma independiente.
+ *
+ * Cuarta ronda de "menos ingredientes": bajó de 8 (ceil(7/2)+4, con el
+ * MAX_USOS_RECETA_SEMANA=2 de entonces) a 6 (ceil(7/4)+4) al subir
+ * MAX_USOS_RECETA_SEMANA a 4 — dejarlo en 8 le habría dado a la holgura el
+ * doble del margen que pide el diseño (6 en vez de 4). §6.0
  */
-export const MIN_CANDIDATOS_SLOT_SEMANA = 8;
+export const MIN_CANDIDATOS_SLOT_SEMANA = 6;
 /**
  * Por debajo de esta fracción del catálogo, la poda es atribuible a los filtros
  * del usuario (puerta 2). Por encima, el corto es el catálogo (puerta 3). §6.0
@@ -379,7 +701,7 @@ export const RUTA_DESEMPATE = 2;
  * El sufijo `-ts` no es decorativo: hace imposible confundir la versión del
  * motor del navegador con la del servicio Python si algún día conviven.
  */
-export const VERSION_GENERADOR = "2.0.0-ts";
+export const VERSION_GENERADOR = "2.5.0-ts";
 
 /**
  * Corte de seguridad de la generación. En el backend lo aplicaba el cliente HTTP

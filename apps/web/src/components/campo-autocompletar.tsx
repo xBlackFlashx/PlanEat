@@ -46,6 +46,11 @@ function normalizar(texto: string): string {
     .trim();
 }
 
+/** Con catálogos de cien y pico alimentos, dos letras dejan una lista larga
+ * que no ayuda más que la caja vacía. Tres es el punto en que "toma" ya
+ * descarta casi todo menos "Tomate"/"Tomate triturado". */
+const MINIMO_CARACTERES = 3;
+
 export function CampoAutocompletar({
   name,
   etiqueta,
@@ -63,7 +68,7 @@ export function CampoAutocompletar({
 
   const buscado = normalizar(texto);
   const sugerencias =
-    buscado === ""
+    buscado.length < MINIMO_CARACTERES
       ? []
       : opciones
           .filter((o) => !seleccionados.includes(o.valor) && normalizar(o.etiqueta).includes(buscado))
@@ -178,7 +183,11 @@ export function CampoAutocompletar({
           role="listbox"
           className="absolute z-10 mt-1.5 w-full overflow-hidden rounded-[var(--radius)] border border-line bg-surface shadow-[var(--shadow-pop)]"
         >
-          {sugerencias.length === 0 ? (
+          {buscado.length < MINIMO_CARACTERES ? (
+            <li className="px-3.5 py-2.5 text-sm text-text-2">
+              Escribe al menos {MINIMO_CARACTERES} letras para buscar.
+            </li>
+          ) : sugerencias.length === 0 ? (
             <li className="px-3.5 py-2.5 text-sm text-text-2">Sin coincidencias.</li>
           ) : (
             sugerencias.map((opcion, indice) => (

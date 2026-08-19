@@ -44,7 +44,7 @@ interface ReferenciaPython {
   escalaMin: number[];
   escalaMax: number[];
   mDieta: number[];
-  mAlergeno: number[];
+  mAlergenoPalabras: number[][];
   mSlot: number[];
   minutos: number[];
   nIngredientes: number[];
@@ -65,9 +65,18 @@ const IMAGENES: unknown = JSON.parse(
 const REF = JSON.parse(
   readFileSync(resolve(AQUI, "datos/referencia-python-catalogo.json"), "utf8"),
 ) as ReferenciaPython;
+const RECETAS_JSON: unknown = JSON.parse(
+  readFileSync(resolve(DIR_DATOS_SOLVER, "recetas.json"), "utf8"),
+);
 
 const CAT: CatalogoSerializado = compilar(JSONL, INGREDIENTES);
-const VISTA: VistaRecetas = vistaDeRecetas(JSONL, INGREDIENTES, CAT.version, IMAGENES);
+const VISTA: VistaRecetas = vistaDeRecetas(
+  JSONL,
+  INGREDIENTES,
+  RECETAS_JSON,
+  CAT.version,
+  IMAGENES,
+);
 
 /**
  * Lo que el motor verá de verdad. El JSON lleva el número tal cual está en el
@@ -155,8 +164,25 @@ test("las escalas, los minutos y el coste coinciden con los del catalogo de Pyth
 
 test("las mascaras colapsadas reproducen las columnas booleanas de Python", () => {
   assert.deepEqual(CAT.mDieta, REF.mDieta);
-  assert.deepEqual(CAT.mAlergeno, REF.mAlergeno);
   assert.deepEqual(CAT.mSlot, REF.mSlot);
+});
+
+test("mAlergeno reproduce las columnas booleanas de Python en palabras de 32 bits", () => {
+  // A diferencia de mDieta/mSlot, mAlergeno ya no es un entero por fila
+  // (ALERGENOS.length puede pasar de 32 — 2026-08-19: ya van 25): mismo
+  // esquema multi-palabra que ingrBits, con ancho fijo W_ALERGENO en vez de
+  // w32 (que depende del catálogo).
+  const wAlergeno = Math.max(1, Math.ceil(ALERGENOS.length / 32));
+  for (let i = 0; i < CAT.n; i++) {
+    const esperado = en(REF.mAlergenoPalabras, i);
+    for (let w = 0; w < wAlergeno; w++) {
+      const propio = en(CAT.mAlergeno, i * wAlergeno + w);
+      assert.equal(propio, esperado[w] ?? 0, `mAlergeno[${i}][${w}]`);
+    }
+    // Ninguna palabra más allá de wAlergeno del lado de Python: si la hubiera,
+    // wAlergeno estaría perdiendo alérgenos en silencio.
+    assert.equal(esperado[wAlergeno] ?? 0, 0, `la fila ${i} usa bits por encima de W_ALERGENO`);
+  }
 });
 
 test("los bitsets de 32 bits reproducen los uint64 de Python", () => {
@@ -181,6 +207,7 @@ test("ninguna palabra del bitset sale negativa al JSON", () => {
   // dejaría de ser comparable con el volcado de Python y de ser legible.
   for (const w of CAT.ingrBits) assert.ok(w >= 0 && w <= 0xffffffff, `palabra fuera de rango: ${w}`);
   for (const w of CAT.ingrPerecBits) assert.ok(w >= 0 && w <= 0xffffffff);
+  for (const w of CAT.mAlergeno) assert.ok(w >= 0 && w <= 0xffffffff, `palabra de mAlergeno fuera de rango: ${w}`);
 });
 
 test("el bloque vocabulario son las cuatro tuplas de constantes.ts", () => {
@@ -214,12 +241,12 @@ test("todos los arrays columnares tienen la longitud que impone n", () => {
   assert.equal(CAT.vMacro.length, CAT.n * 3);
   assert.equal(CAT.ingrBits.length, CAT.n * CAT.w32);
   assert.equal(CAT.ingrPerecBits.length, CAT.n * CAT.w32);
+  assert.equal(CAT.mAlergeno.length, CAT.n * Math.max(1, Math.ceil(ALERGENOS.length / 32)));
   for (const columna of [
     CAT.tieneMacro,
     CAT.escalaMin,
     CAT.escalaMax,
     CAT.mDieta,
-    CAT.mAlergeno,
     CAT.mSlot,
     CAT.minutos,
     CAT.nIngredientes,
@@ -265,16 +292,33 @@ test("la vista tiene una entrada por receta, con los mismos ids que el catalogo"
   assert.equal(VISTA.version, CAT.version);
 });
 
-test("la vista resuelve los ingredientes a nombres legibles", () => {
+test("la vista resuelve los ingredientes a nombres legibles con su cantidad", () => {
   const receta = VISTA.recetas["avena_yogur_arandanos"];
   assert.notEqual(receta, undefined);
   assert.deepEqual(receta?.ingredientes, [
-    "Arándanos",
-    "Copos de avena",
-    "Miel",
-    "Yogur griego natural",
+    { nombre: "Arándanos", cantidad: "un puñado · 70 g" },
+    { nombre: "Copos de avena", cantidad: "5 cdas · 50 g" },
+    { nombre: "Miel", cantidad: "1 cdta · 8 g" },
+    { nombre: "Yogur griego natural", cantidad: "150 g" },
   ]);
   assert.equal(receta?.titulo, "Avena con yogur griego y arándanos");
+});
+
+test("la vista trae los pasos de elaboración de recetas.json", () => {
+  const receta = VISTA.recetas["avena_yogur_arandanos"];
+  assert.deepEqual(receta?.pasos, [
+    "Mezcla la avena con el yogur en un bol.",
+    "Deja reposar 5 minutos para que la avena ablande.",
+    "Añade los arándanos por encima y riega con la miel.",
+  ]);
+});
+
+test("ninguna receta de la vista se queda sin pasos", () => {
+  // 240/240 recetas traen `pasos` en recetas.json: si alguna aparece vacía es
+  // que el lookup por id se rompió, no que al catálogo le falte el dato.
+  for (const receta of Object.values(VISTA.recetas)) {
+    assert.ok(receta.pasos.length > 0, `${receta.id} no tiene pasos`);
+  }
 });
 
 test("la vista no enseña coste cuando el precio no se conoce", () => {
@@ -286,7 +330,12 @@ test("la vista no enseña coste cuando el precio no se conoce", () => {
   const primera = JSON.parse(en(JSONL.split("\n"), 0)) as Record<string, unknown>;
   primera["costeConocido"] = false;
   primera["costeCents"] = 999;
-  const vista = vistaDeRecetas(`${JSON.stringify(primera)}\n`, INGREDIENTES, "x");
+  const vista = vistaDeRecetas(
+    `${JSON.stringify(primera)}\n`,
+    INGREDIENTES,
+    RECETAS_JSON,
+    "x",
+  );
   assert.equal(vista.recetas[String(primera["id"])]?.costeCents, null);
 });
 
@@ -313,9 +362,6 @@ test("la vista del repositorio esta al dia", () => {
 // Porciones (lista de la compra del plan Pro)
 // --------------------------------------------------------------------------
 
-const RECETAS_JSON: unknown = JSON.parse(
-  readFileSync(resolve(DIR_DATOS_SOLVER, "recetas.json"), "utf8"),
-);
 const PORCIONES: PorcionesRecetas = porcionesDeReceta(RECETAS_JSON, INGREDIENTES, CAT.version);
 
 test("las porciones tienen una entrada por receta, con los mismos ids que el catalogo", () => {

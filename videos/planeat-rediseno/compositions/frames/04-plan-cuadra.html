@@ -1,0 +1,113 @@
+<template>
+  <div id="root" data-composition-id="04-plan-cuadra" data-duration="7.4" data-width="1920" data-height="1080">
+    <style>
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      /* full-bleed backdrop — dedicated clip layer, never painted on #root itself */
+      #pc04-bg {
+        position: absolute;
+        inset: 0;
+        background: #f4faf8; /* faint green-tinted wash off frame.md's primary (#047857) */
+      }
+
+      /* outer wrapper: SCALE only (camera zoom), origin locked to canvas center */
+      #pc04-outer {
+        position: absolute;
+        inset: 0;
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      /* inner wrapper: TRANSLATE only (counter-shift toward the target) */
+      #pc04-inner {
+        position: absolute;
+        inset: 0;
+        will-change: transform;
+      }
+
+      /* the captured page surface, sized/positioned to sit inside the 83% keep-out band */
+      #pc04-frame {
+        position: absolute;
+        left: 324px;
+        top: 46px;
+        width: 1272px;
+        height: 804px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1.5px solid rgba(4, 120, 87, 0.2);
+        background: #ffffff;
+      }
+
+      #pc04-frame img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+      }
+    </style>
+
+    <div id="pc04-bg" class="clip" data-start="0" data-duration="7.4" data-track-index="0"></div>
+
+    <div id="pc04-outer" class="clip" data-start="0" data-duration="7.4" data-track-index="1">
+      <div id="pc04-inner">
+        <div id="pc04-frame">
+          <img src="assets/plan-full-page.png" alt="" />
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        // Static captured screenshot — the verdict card's on-page position is fixed and was
+        // measured directly from assets/plan-full-page.png (native 1920x1213), then baked
+        // against this frame's Scene-1 resting placement (#pc04-frame: 1272x804 at 324,46,
+        // i.e. a uniform 0.6626 scale of the native asset). No live DOM measurement is needed
+        // or possible here (it's a raster <img>, not laid-out text).
+        //
+        // Target = "✓ Cuadra" badge + description + macro bar + Proteina/Carbohidratos/Grasa
+        // legend, native rect ~ (1155,185)-(1500,395) -> native center (1327, 290).
+        // Canvas-space center at rest = left(324) + 1327*0.6626, top(46) + 290*0.6626
+        //   = (1203, 238) -> offset from canvas center (960, 540) = (243, -302)
+        var TARGET_OFFSET_X = 243;
+        var TARGET_OFFSET_Y = -302;
+        var ZOOM_SCALE = 3.2; // headroom-safe: target lands at ~38% canvas width, well under 88% cap
+
+        var counterX = -TARGET_OFFSET_X;
+        var counterY = -TARGET_OFFSET_Y;
+
+        var tl = gsap.timeline({ paused: true });
+
+        // Scene 1 (0.0-2.2s): full layout arrives, both columns readable, camera at rest.
+        tl.fromTo(
+          "#pc04-outer",
+          { opacity: 0, scale: 0.92 },
+          { opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" },
+          0,
+        );
+        // hold at rest (no tween) from 0.45s to 2.2s — low motion, full layout legible.
+
+        // Scene 2 (2.2-5.5s): zoom-to-target — scale + counter-translate share position,
+        // duration, and ease so the verdict card doesn't drift mid-zoom. Lands framed by 4.0s,
+        // leaving 1.5s of settled dwell inside Scene 2's own window before Scene 3 begins.
+        tl.to("#pc04-outer", { scale: ZOOM_SCALE, duration: 1.8, ease: "power3.inOut" }, 2.2);
+        tl.to(
+          "#pc04-inner",
+          { x: counterX, y: counterY, duration: 1.8, ease: "power3.inOut" },
+          2.2,
+        );
+
+        // Scene 3 (5.5-7.0s): hard hold — no further tweens, verdict + macro bar stay dead
+        // still through the climax landing. This is the deliberate stillness beat, not a gap.
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["04-plan-cuadra"] = tl;
+      })();
+    </script>
+  </div>
+</template>

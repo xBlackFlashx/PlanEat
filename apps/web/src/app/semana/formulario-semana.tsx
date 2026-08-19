@@ -14,10 +14,12 @@
 import { useState } from "react";
 
 import { CampoAutocompletar } from "@/components/campo-autocompletar";
+import estilos from "@/components/planeat.module.css";
 import { PlanDia } from "@/components/plan-dia";
 import { SinServicio } from "@/components/sin-servicio";
 import { SobreRestriccion } from "@/components/sobre-restriccion";
-import { ALIMENTOS, NOMBRE_CATEGORIA } from "@/lib/alimentos";
+import { ALIMENTOS, NOMBRE_CATEGORIA, alimentosPorCategoria } from "@/lib/alimentos";
+import { CATEGORIAS_ALERGENO } from "@/lib/categorias-alergeno";
 import { gramos } from "@/lib/formato";
 import type { ItemListaCompra } from "@/lib/lista-compra";
 import {
@@ -49,6 +51,72 @@ const ALERGENOS_OPCIONES = Object.entries(NOMBRE_ALERGENO).map(([valor, etiqueta
 }));
 
 const ALIMENTOS_OPCIONES = ALIMENTOS.map((a) => ({ valor: a.id, etiqueta: a.nombre }));
+
+/** Alimentos agrupados por la categoría real del catálogo (`alimento.categoria`,
+ * la misma que agrupa `ListaCompra` más abajo), con el nombre legible de
+ * `NOMBRE_CATEGORIA`. Nada de una taxonomía nueva: si el catálogo suma una
+ * categoría, aparece sola en cuanto algún alimento la use. */
+const CATEGORIAS_ALIMENTO: Record<string, readonly string[]> = Object.fromEntries(
+  Array.from(alimentosPorCategoria(), ([categoria, alimentos]) => [
+    NOMBRE_CATEGORIA[categoria] ?? categoria,
+    alimentos.map((a) => a.id),
+  ]),
+);
+
+interface PropsFilaCategorias<T extends string> {
+  etiqueta: string;
+  categorias: Record<string, readonly T[]>;
+  seleccionados: readonly string[];
+  alCambiar: (valores: T[]) => void;
+}
+
+/**
+ * Chips de categoría encima de un `CampoAutocompletar`: pulsar una añade de
+ * golpe TODOS sus miembros que aún falten (unión, sin duplicar los ya
+ * elegidos); volver a pulsarla —cuando ya están los miembros completos— los
+ * quita todos. No sustituye la búsqueda libre, que sigue debajo para casos
+ * sueltos que no encajan en ninguna categoría.
+ *
+ * "Activa" significa "todos los miembros de la categoría están
+ * seleccionados", no "alguno lo está": a medias no se lee como un filtro
+ * aplicado, y `aria-pressed` tiene que decir la verdad de ese estado binario.
+ */
+function FilaCategorias<T extends string>({
+  etiqueta,
+  categorias,
+  seleccionados,
+  alCambiar,
+}: PropsFilaCategorias<T>) {
+  return (
+    <div className="mb-2 flex flex-wrap gap-2" role="group" aria-label={`Categorías rápidas de ${etiqueta}`}>
+      {Object.entries(categorias).map(([nombre, miembros]) => {
+        const activa = miembros.every((m) => seleccionados.includes(m));
+        return (
+          <button
+            key={nombre}
+            type="button"
+            aria-pressed={activa}
+            onClick={() => {
+              if (activa) {
+                alCambiar(seleccionados.filter((v) => !miembros.includes(v as T)) as T[]);
+              } else {
+                const faltantes = miembros.filter((m) => !seleccionados.includes(m));
+                alCambiar([...seleccionados, ...faltantes] as T[]);
+              }
+            }}
+            className={`${estilos.pulsable} flex min-h-9 items-center rounded-[var(--radius)] border px-3 text-sm font-medium hover:-translate-y-0.5 ${
+              activa
+                ? "border-brand bg-brand text-on-brand"
+                : "border-line bg-surface text-text-2 hover:border-line-strong"
+            }`}
+          >
+            {nombre}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export function FormularioSemana() {
   const [datos, setDatos] = useState<DatosFormulario>(FORMULARIO_POR_DEFECTO);
@@ -232,6 +300,12 @@ export function FormularioSemana() {
         <div className="mt-6">
           <label className="text-sm font-medium text-text-2">Alergias e intolerancias</label>
           <div className="mt-1.5">
+            <FilaCategorias
+              etiqueta="alérgenos"
+              categorias={CATEGORIAS_ALERGENO}
+              seleccionados={datos.alergenosExcluidos}
+              alCambiar={(nuevos) => setDatos((d) => ({ ...d, alergenosExcluidos: nuevos }))}
+            />
             <CampoAutocompletar
               name="alergeno"
               etiqueta="Buscar un alérgeno a excluir"
@@ -248,6 +322,12 @@ export function FormularioSemana() {
         <div className="mt-5">
           <label className="text-sm font-medium text-text-2">Otros alimentos que evitas</label>
           <div className="mt-1.5">
+            <FilaCategorias
+              etiqueta="alimentos"
+              categorias={CATEGORIAS_ALIMENTO}
+              seleccionados={datos.ingredientesExcluidos}
+              alCambiar={(nuevos) => setDatos((d) => ({ ...d, ingredientesExcluidos: nuevos }))}
+            />
             <CampoAutocompletar
               name="evitar"
               etiqueta="Buscar un alimento a evitar"
@@ -364,6 +444,15 @@ function motivoLegible(motivo: MotivoSinServicioMotor): MotivoSinServicio {
   return motivo === "tiempo_agotado" ? "tiempo_agotado" : "error_solver";
 }
 
+/** Piezas cuando el alimento las tiene ("≈ 3 piezas"), gramos si no ("350 g").
+ * El "≈" es a propósito: es una estimación de compra, no la cifra exacta —
+ * esa sigue siendo `gramos`, que el usuario puede ver contando piezas × peso
+ * medio si quiere el detalle. */
+function cantidadCompra(gramosTotales: number, piezas: ItemListaCompra["piezas"]): string {
+  if (!piezas) return `${gramos(gramosTotales)} g`;
+  return `≈ ${piezas.cantidad} ${piezas.unidad}${piezas.cantidad === 1 ? "" : "s"}`;
+}
+
 function ListaCompra({ items }: { items: ItemListaCompra[] }) {
   if (items.length === 0) return null;
 
@@ -381,6 +470,9 @@ function ListaCompra({ items }: { items: ItemListaCompra[] }) {
     <section className="rounded-[var(--radius-lg)] bg-surface p-6 sm:p-8">
       <h2 className="text-xl font-semibold tracking-tight">Lista de la compra</h2>
       <p className="mt-1 text-sm text-text-2">Para los 7 días, ya sumada.</p>
+      <p className="text-sm text-text-2">
+        {items.length} {items.length === 1 ? "ingrediente distinto" : "ingredientes distintos"}.
+      </p>
 
       <div className="mt-6 flex flex-col gap-6">
         {[...grupos.entries()].map(([categoria, itemsDelGrupo]) => (
@@ -392,19 +484,41 @@ function ListaCompra({ items }: { items: ItemListaCompra[] }) {
               {itemsDelGrupo.map((item) => (
                 <li
                   key={item.alimentoId}
-                  className="flex items-baseline justify-between gap-3 border-b border-line py-1.5 text-[15px] last:border-0"
+                  className="border-b border-line py-1.5 text-[15px] last:border-0"
                 >
-                  <span>
-                    {item.nombre}
-                    {item.enRecetas > 1 && (
-                      <span className="ml-2 text-sm text-text-2">
-                        (en {item.enRecetas} recetas)
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span>
+                        {item.nombre}
+                        {item.enRecetas > 1 && (
+                          <span className="ml-2 text-sm text-text-2">
+                            (en {item.enRecetas} recetas)
+                          </span>
+                        )}
                       </span>
+                      <span className="shrink-0 tabular-nums text-text-2" data-numeric>
+                        {cantidadCompra(item.gramos, item.piezas)}
+                      </span>
+                    </div>
+                    {item.desglose && (
+                      <ul className="flex flex-col gap-0.5 pl-3 text-sm text-text-2">
+                        {item.desglose.map((variante) => (
+                          <li
+                            key={variante.nombre}
+                            className="flex items-baseline justify-between gap-3"
+                          >
+                            <span>
+                              {variante.nombre}
+                              {variante.enRecetas > 1 && ` (en ${variante.enRecetas} recetas)`}
+                            </span>
+                            <span className="shrink-0 tabular-nums" data-numeric>
+                              {cantidadCompra(variante.gramos, variante.piezas)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  </span>
-                  <span className="shrink-0 tabular-nums text-text-2" data-numeric>
-                    {gramos(item.gramos)} g
-                  </span>
+                  </div>
                 </li>
               ))}
             </ul>

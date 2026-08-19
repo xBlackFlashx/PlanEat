@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 
 import { authConfig } from "@/lib/auth.config";
 import { prisma } from "@/lib/prisma";
+import { tierEfectivo } from "@/lib/suscripcion";
 
 /**
  * La configuración completa, con el proveedor Credentials — que sí toca
@@ -37,7 +38,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valido = await bcrypt.compare(password, user.passwordHash);
         if (!valido) return null;
 
-        return { id: user.id, email: user.email, name: user.nombre, esAdmin: user.esAdmin };
+        // Mismo cálculo que la puerta de `/api/generar-semana`: `tierEfectivo`
+        // ya sabe que `suscripcion.tier` a secas no basta (impago pendiente
+        // de webhook, periodo vencido…).
+        //
+        // Compromiso conocido, igual que ya existe hoy con `esAdmin`: la
+        // sesión es JWT, así que este tier se fija en el login y NO se
+        // refresca solo si el usuario pasa a Pro (o deja de serlo) a mitad de
+        // sesión — el webhook de Stripe actualiza la tabla `Suscripcion`, no
+        // el JWT ya emitido. Por eso las rutas que de verdad importan (como
+        // `/api/generar-semana`) no confían en `session.user.tier` y vuelven
+        // a consultar la base de datos.
+        const suscripcion = await prisma.suscripcion.findUnique({ where: { userId: user.id } });
+        const tier = tierEfectivo(suscripcion);
+
+        return { id: user.id, email: user.email, name: user.nombre, esAdmin: user.esAdmin, tier };
       },
     }),
   ],

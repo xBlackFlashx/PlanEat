@@ -1,0 +1,128 @@
+<template>
+<div id="root" data-composition-id="02-portada" data-duration="6.5" data-width="1920" data-height="1080">
+  <style>
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: sans-serif;
+    }
+
+    .p02-bg {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+    }
+
+    .p02-scene {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .p02-camera {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    .p02-surface {
+      position: absolute;
+      left: 285px;
+      top: 74px;
+      width: 1350px;
+      height: 760px;
+      overflow: hidden;
+      background: #ffffff;
+      border: 1.5px solid rgba(4, 120, 87, 0.2);
+      border-radius: 14px;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    .p02-shot {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3700px;
+      height: auto;
+      max-width: none;
+      will-change: transform;
+    }
+  </style>
+
+  <div class="p02-bg clip" data-start="0" data-duration="6.5" data-track-index="0"></div>
+
+  <div class="p02-scene">
+    <div class="p02-camera" id="p02-camera">
+      <div class="p02-surface clip" id="p02-surface" data-start="0" data-duration="6.5" data-track-index="1">
+        <img class="p02-shot" id="p02-shot" src="assets/home-full-page.png" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    (function () {
+      var root = document.querySelector('[data-composition-id="02-portada"]');
+      var camera = root.querySelector("#p02-camera");
+      var surface = root.querySelector("#p02-surface");
+      var shot = root.querySelector("#p02-shot");
+
+      var DURATION = 6;
+
+      var tl = gsap.timeline({ paused: true });
+
+      // Hero surface entrance — visible well before t=0.5s (fromTo, not CSS-hidden).
+      tl.fromTo(
+        surface,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" },
+        0,
+      );
+
+      // Shot: horizontal framing is constant (centers the headline/form column),
+      // vertical position pans downward across Scene 2 to reveal the rest of the
+      // generator form (the green-underlined fields).
+      tl.set(shot, { x: -1156, y: -150 }, 0);
+      tl.to(shot, { y: -650, duration: 3.2, ease: "power2.inOut" }, 2.0);
+
+      // Multi-phase camera: Phase 1 (~105%, initial) -> Phase 2 settle (~100%,
+      // long-tail decel within Scene 1) -> Phase 3 slow push (~104.5%) timed to
+      // exactly overlap the Scene 2 pan, so push + pan read as ONE camera move.
+      var phase = { scale: 1.05 };
+      tl.to(phase, { scale: 1.0, duration: 1.5, ease: "power2.out" }, 0.3);
+      tl.to(phase, { scale: 1.045, duration: 3.2, ease: "power3.inOut" }, 2.0);
+
+      // Continuous sine micro-drift overlaid on the phase scale — the single
+      // writer of camera.style.transform, spanning the whole composition.
+      var drift = { p: 0 };
+      var DRIFT_AMP_X = 4;
+      var DRIFT_AMP_Y = 2;
+      var DRIFT_FREQ_RATIO = 1.3;
+      var DRIFT_CYCLES = 1.5;
+      tl.to(
+        drift,
+        {
+          p: Math.PI * 2 * DRIFT_CYCLES,
+          duration: DURATION,
+          ease: "none",
+          onUpdate: function () {
+            var dx = Math.sin(drift.p) * DRIFT_AMP_X;
+            var dy = Math.sin(drift.p * DRIFT_FREQ_RATIO) * DRIFT_AMP_Y;
+            camera.style.transform =
+              "scale(" + phase.scale + ") translate(" + dx + "px, " + dy + "px)";
+          },
+        },
+        0,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["02-portada"] = tl;
+    })();
+  </script>
+</div>
+</template>

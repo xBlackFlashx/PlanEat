@@ -27,7 +27,7 @@ import { dirname, resolve } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { cargarCatalogo } from "../src/catalogo.ts";
+import { W_ALERGENO, cargarCatalogo } from "../src/catalogo.ts";
 import { IDX_ALERGENO, IDX_DIETA, SIN_LIMITE_MINUTOS, SLOTS } from "../src/constantes.ts";
 import { popcountAnd } from "../src/numerico.ts";
 import { bitsDe, construirPool, invalidarCachePool, topesPorSlot } from "../src/pool.ts";
@@ -391,10 +391,13 @@ test("ninguna receta del pool lleva un alérgeno excluido", () => {
   // resto de restricciones son preferencias que el score negocia.
   for (const alergeno of Object.keys(IDX_ALERGENO) as Alergeno[]) {
     const pool = construirPool(CAT, restr({ alergenosExcluidos: [alergeno] }));
-    const mascara = 1 << IDX_ALERGENO[alergeno];
+    const bit = IDX_ALERGENO[alergeno];
+    const palabra = bit / 32 | 0;
+    const bitEnPalabra = bit % 32;
     for (let i = 0; i < pool.p; i++) {
+      const fila = pool.idx[i] ?? -1;
       assert.equal(
-        (CAT.mAlergeno[pool.idx[i] ?? -1] ?? 0) & mascara,
+        (CAT.mAlergeno[fila * W_ALERGENO + palabra] ?? 0) & (1 << bitEnPalabra),
         0,
         `${pool.ids[i] ?? ""} lleva ${alergeno}`,
       );

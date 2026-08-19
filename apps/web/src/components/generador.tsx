@@ -38,9 +38,12 @@
  */
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import type { Alergeno, ObjetivoNutricional } from "@planeat/shared";
 
-import { ALIMENTOS } from "@/lib/alimentos";
+import { ALIMENTOS, NOMBRE_CATEGORIA, alimentosPorCategoria } from "@/lib/alimentos";
+import { CATEGORIAS_ALERGENO } from "@/lib/categorias-alergeno";
 import { kcal as formatearKcal } from "@/lib/formato";
 import { useGeneracion } from "@/lib/generar";
 import {
@@ -62,7 +65,7 @@ import type { ResultadoPlan } from "@/lib/tipos";
 
 import { CampoAutocompletar } from "./campo-autocompletar";
 import { EstadoGeneracion } from "./estado-generacion";
-import { IconoFlecha } from "./iconos";
+import { IconoCorona, IconoFlecha } from "./iconos";
 import estilos from "./planeat.module.css";
 import { VistaPlan } from "./vista-plan";
 
@@ -72,6 +75,17 @@ const ALERGENOS_OPCIONES = Object.entries(NOMBRE_ALERGENO).map(([valor, etiqueta
 }));
 
 const ALIMENTOS_OPCIONES = ALIMENTOS.map((a) => ({ valor: a.id, etiqueta: a.nombre }));
+
+/** Alimentos agrupados por la categoría real del catálogo (`alimento.categoria`,
+ * la misma que ya agrupa la lista de la compra), con el nombre legible de
+ * `NOMBRE_CATEGORIA`. Nada de una taxonomía nueva: si el catálogo suma una
+ * categoría, aparece sola en cuanto algún alimento la use. */
+const CATEGORIAS_ALIMENTO: Record<string, readonly string[]> = Object.fromEntries(
+  Array.from(alimentosPorCategoria(), ([categoria, alimentos]) => [
+    NOMBRE_CATEGORIA[categoria] ?? categoria,
+    alimentos.map((a) => a.id),
+  ]),
+);
 
 const COMIDAS_OPCIONES = [
   { valor: "3", etiqueta: "3" },
@@ -113,12 +127,30 @@ const PASOS: readonly Paso[] = [
 
 export function Generador() {
   const idBase = useId();
+  const router = useRouter();
+  const { data: sesion, status } = useSession();
   const [datos, setDatos] = useState<DatosFormulario>(FORMULARIO_POR_DEFECTO);
   const [errores, setErrores] = useState<ErroresFormulario>({});
   const [fase, setFase] = useState<Fase>("formulario");
   const [resultado, setResultado] = useState<ResultadoPlan | null>(null);
   const [objetivo, setObjetivo] = useState<ObjetivoNutricional | null>(null);
   const { mostrarEsqueleto, progreso, generar } = useGeneracion();
+
+  // Enrutador de intención, no un campo del formulario: "Un día" es el
+  // comportamiento de siempre (los cuatro pasos de abajo) y no toca ningún
+  // estado más. "Una semana" nunca activa este `<form>` —sólo sabe pedir un
+  // día (ver cabecera del fichero)— y en vez de eso navega. `esPro` trata la
+  // sesión en curso de cargar igual que "sin sesión": la puerta real vive en
+  // el servidor (`api/generar-semana/route.ts`), así que equivocarse aquí
+  // durante el instante de carga sólo cuesta un salto a `/precios` de más,
+  // nunca un plan de varios días generado sin permiso.
+  const [alcance, setAlcance] = useState<"dia" | "semana">("dia");
+  const esPro = status === "authenticated" && sesion?.user.tier === "PRO";
+
+  const elegirSemana = () => {
+    setAlcance("semana");
+    router.push(esPro ? "/semana" : "/precios");
+  };
 
   // Modo asistente: falso hasta que React se hidrata. En el primer pintado
   // —con o sin JavaScript— los cuatro pasos están todos visibles y apilados,
@@ -229,6 +261,79 @@ export function Generador() {
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Enriquecimiento visual local a este componente: gradientes de marca,
+          el "pop" de una píldora al elegirse y la entrada de cada paso.
+          Vive aquí —no en planeat.module.css— porque estas tres clases sólo
+          las usa este fichero (comprobado antes de tocar nada). Todo valor
+          sale de un token de globals.css, ninguno es literal, y la regla
+          global de `prefers-reduced-motion` de globals.css (selector
+          universal con `!important`) ya cubre animation/transition aquí sin
+          necesitar su propia copia — se repite igual con `animation: none`
+          por claridad, como hace el resto del sistema. */}
+      <style>{`
+        .pe-paso {
+          animation: pe-paso-entrada var(--dur-media) var(--ease-suave) backwards;
+        }
+        @keyframes pe-paso-entrada {
+          from {
+            opacity: 0;
+            transform: translateX(var(--paso-desde, 16px)) scale(0.97);
+          }
+        }
+
+        .pe-pildora {
+          transition:
+            background-color var(--dur-rapida) var(--ease-suave),
+            border-color var(--dur-rapida) var(--ease-suave),
+            color var(--dur-rapida) var(--ease-suave);
+        }
+        .pe-pildora:hover {
+          background-color: var(--brand-soft);
+          border-color: var(--brand-line);
+        }
+        .pe-pildora-marcada,
+        .pe-pildora-marcada:hover {
+          background: linear-gradient(135deg, var(--brand), var(--brand-hover));
+        }
+        .pe-pildora-marcada {
+          animation: pe-pop var(--dur-rapida) var(--ease-suave);
+        }
+        @keyframes pe-pop {
+          from {
+            transform: scale(0.92);
+          }
+        }
+
+        .pe-alcance {
+          transition:
+            background-color var(--dur-rapida) var(--ease-suave),
+            color var(--dur-rapida) var(--ease-suave);
+        }
+        .pe-alcance:not(.pe-alcance-marcada):hover {
+          background-color: var(--surface-3);
+          color: var(--text);
+        }
+        .pe-alcance-marcada,
+        .pe-alcance-marcada:hover {
+          background: linear-gradient(135deg, var(--brand), var(--brand-hover));
+        }
+        .pe-alcance-marcada {
+          animation: pe-pop var(--dur-rapida) var(--ease-suave);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .pe-paso,
+          .pe-pildora-marcada,
+          .pe-alcance-marcada {
+            animation: none;
+          }
+          .pe-pildora,
+          .pe-alcance {
+            transition: none;
+          }
+        }
+      `}</style>
+
       <form ref={formulario} method="get" action="/plan" onSubmit={enviar}>
         {hidratado && (
           <BarraProgreso
@@ -242,7 +347,9 @@ export function Generador() {
           className="rounded-[var(--radius-lg)] bg-surface p-5 shadow-[var(--shadow-pop)] sm:p-8"
           style={{ ["--paso-desde" as string]: direccion === "adelante" ? "16px" : "-16px" }}
         >
-          <div hidden={hidratado && paso !== 0} className={hidratado ? estilos.paso : undefined}>
+          <SelectorAlcance alcance={alcance} alElegirDia={() => setAlcance("dia")} alElegirSemana={elegirSemana} />
+
+          <div hidden={hidratado && paso !== 0} className={hidratado ? "pe-paso" : undefined}>
             <PasoCampo titulo="Tu perfil" activo={hidratado && paso === 0} refTitulo={pasoActivoRef}>
               <div className="flex flex-col gap-5">
                 <CampoPildoras
@@ -290,7 +397,7 @@ export function Generador() {
             </PasoCampo>
           </div>
 
-          <div hidden={hidratado && paso !== 1} className={hidratado ? estilos.paso : undefined}>
+          <div hidden={hidratado && paso !== 1} className={hidratado ? "pe-paso" : undefined}>
             <PasoCampo
               titulo="Movimiento y objetivo"
               activo={hidratado && paso === 1}
@@ -340,7 +447,7 @@ export function Generador() {
             </PasoCampo>
           </div>
 
-          <div hidden={hidratado && paso !== 2} className={hidratado ? estilos.paso : undefined}>
+          <div hidden={hidratado && paso !== 2} className={hidratado ? "pe-paso" : undefined}>
             <PasoCampo
               titulo="Cómo comes"
               activo={hidratado && paso === 2}
@@ -379,7 +486,7 @@ export function Generador() {
             </PasoCampo>
           </div>
 
-          <div hidden={hidratado && paso !== 3} className={hidratado ? estilos.paso : undefined}>
+          <div hidden={hidratado && paso !== 3} className={hidratado ? "pe-paso" : undefined}>
             <PasoCampo
               titulo="Qué evitas"
               activo={hidratado && paso === 3}
@@ -397,6 +504,12 @@ export function Generador() {
                     Alergias e intolerancias
                   </label>
                   <div className="mt-1.5" id={idDe("alergenos")}>
+                    <FilaCategorias
+                      etiqueta="alérgenos"
+                      categorias={CATEGORIAS_ALERGENO}
+                      seleccionados={datos.alergenosExcluidos}
+                      alCambiar={(nuevos) => cambiar("alergenosExcluidos", nuevos)}
+                    />
                     <CampoAutocompletar
                       name="alergeno"
                       etiqueta="Buscar un alérgeno a excluir"
@@ -413,6 +526,12 @@ export function Generador() {
                     Otros alimentos que evitas
                   </label>
                   <div className="mt-1.5" id={idDe("evitar")}>
+                    <FilaCategorias
+                      etiqueta="alimentos"
+                      categorias={CATEGORIAS_ALIMENTO}
+                      seleccionados={datos.ingredientesExcluidos}
+                      alCambiar={(nuevos) => cambiar("ingredientesExcluidos", nuevos)}
+                    />
                     <CampoAutocompletar
                       name="evitar"
                       etiqueta="Buscar un alimento a evitar"
@@ -464,7 +583,7 @@ export function Generador() {
             <button
               type="button"
               onClick={() => irA(paso - 1, "atras")}
-              className={`${estilos.pulsable} flex h-13 min-h-13 shrink-0 items-center gap-2 rounded-[var(--radius)] border border-line-strong px-5 text-[17px] font-medium text-text hover:bg-surface-2`}
+              className={`${estilos.pulsable} flex h-13 min-h-13 shrink-0 items-center gap-2 rounded-[var(--radius)] border border-line-strong px-5 text-[17px] font-medium text-text hover:-translate-y-0.5 hover:border-line-strong hover:bg-surface-2`}
             >
               <IconoFlecha tam={18} className="rotate-180" />
               Atrás
@@ -475,7 +594,7 @@ export function Generador() {
             <button
               type="button"
               onClick={irSiguiente}
-              className={`${estilos.pulsable} flex h-13 min-h-13 flex-1 items-center justify-center gap-2 rounded-[var(--radius)] bg-brand px-6 text-[17px] font-semibold text-on-brand hover:bg-brand-hover`}
+              className={`${estilos.pulsable} flex h-13 min-h-13 flex-1 items-center justify-center gap-2 rounded-[var(--radius)] bg-brand px-6 text-[17px] font-semibold text-on-brand hover:-translate-y-0.5 hover:bg-brand-hover`}
             >
               Siguiente
               <IconoFlecha tam={18} />
@@ -484,7 +603,7 @@ export function Generador() {
             <button
               type="submit"
               disabled={fase === "esperando"}
-              className={`${estilos.pulsable} flex h-13 min-h-13 flex-1 items-center justify-center rounded-[var(--radius)] bg-brand px-6 text-[17px] font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-60`}
+              className={`${estilos.pulsable} flex h-13 min-h-13 flex-1 items-center justify-center rounded-[var(--radius)] bg-brand px-6 text-[17px] font-semibold text-on-brand hover:-translate-y-0.5 hover:bg-brand-hover disabled:translate-y-0 disabled:opacity-60`}
             >
               {fase === "esperando" ? "Montando tu día…" : "Ver mi día"}
             </button>
@@ -561,6 +680,56 @@ function BarraProgreso({ pasoActual, pasos, alIrA }: PropsBarraProgreso) {
             } ${indice < pasoActual ? "cursor-pointer" : indice === pasoActual ? "" : "cursor-default"}`}
           />
         ))}
+      </div>
+    </div>
+  );
+}
+
+interface PropsSelectorAlcance {
+  alcance: "dia" | "semana";
+  alElegirDia: () => void;
+  alElegirSemana: () => void;
+}
+
+/**
+ * Enrutador de intención, no un paso del asistente ni un campo del
+ * formulario: decide QUÉ se va a pedir antes de preguntar cómo. "Un día" es
+ * el comportamiento de siempre —el asistente de cuatro pasos, sin tocar
+ * nada— y "Una semana" nunca lo activa (ver cabecera del fichero): sólo
+ * navega, a `/semana` con sesión Pro o a `/precios` en cualquier otro caso,
+ * ausencia de sesión incluida. La puerta real vive en el servidor.
+ */
+function SelectorAlcance({ alcance, alElegirDia, alElegirSemana }: PropsSelectorAlcance) {
+  return (
+    <div className="mb-6 flex justify-center">
+      <div
+        role="radiogroup"
+        aria-label="Cuánto quieres generar"
+        className="inline-flex gap-1 rounded-full border border-line bg-surface-2 p-1"
+      >
+        <button
+          type="button"
+          role="radio"
+          aria-checked={alcance === "dia"}
+          onClick={alElegirDia}
+          className={`pe-alcance ${estilos.pulsable} flex h-10 items-center rounded-full px-4 text-[15px] font-medium ${
+            alcance === "dia" ? "pe-alcance-marcada text-on-brand" : "text-text-2"
+          }`}
+        >
+          Un día
+        </button>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={alcance === "semana"}
+          onClick={alElegirSemana}
+          className={`pe-alcance ${estilos.pulsable} flex h-10 items-center gap-1.5 rounded-full px-4 text-[15px] font-medium ${
+            alcance === "semana" ? "pe-alcance-marcada text-on-brand" : "text-text-2"
+          }`}
+        >
+          <IconoCorona tam={16} />
+          Una semana
+        </button>
       </div>
     </div>
   );
@@ -654,6 +823,61 @@ function CampoNumeroTarjeta({
   );
 }
 
+interface PropsFilaCategorias<T extends string> {
+  etiqueta: string;
+  categorias: Record<string, readonly T[]>;
+  seleccionados: readonly string[];
+  alCambiar: (valores: T[]) => void;
+}
+
+/**
+ * Chips de categoría encima de un `CampoAutocompletar`: pulsar una añade de
+ * golpe TODOS sus miembros que aún falten (unión, sin duplicar los ya
+ * elegidos); volver a pulsarla —cuando ya están los miembros completos— los
+ * quita todos. No sustituye la búsqueda libre, que sigue debajo para casos
+ * sueltos que no encajan en ninguna categoría.
+ *
+ * "Activa" significa "todos los miembros de la categoría están
+ * seleccionados", no "alguno lo está": a medias no se lee como un filtro
+ * aplicado, y `aria-pressed` tiene que decir la verdad de ese estado binario.
+ */
+function FilaCategorias<T extends string>({
+  etiqueta,
+  categorias,
+  seleccionados,
+  alCambiar,
+}: PropsFilaCategorias<T>) {
+  return (
+    <div className="mb-2 flex flex-wrap gap-2" role="group" aria-label={`Categorías rápidas de ${etiqueta}`}>
+      {Object.entries(categorias).map(([nombre, miembros]) => {
+        const activa = miembros.every((m) => seleccionados.includes(m));
+        return (
+          <button
+            key={nombre}
+            type="button"
+            aria-pressed={activa}
+            onClick={() => {
+              if (activa) {
+                alCambiar(seleccionados.filter((v) => !miembros.includes(v as T)) as T[]);
+              } else {
+                const faltantes = miembros.filter((m) => !seleccionados.includes(m));
+                alCambiar([...seleccionados, ...faltantes] as T[]);
+              }
+            }}
+            className={`${estilos.pulsable} flex min-h-9 items-center rounded-[var(--radius)] border px-3 text-sm font-medium hover:-translate-y-0.5 ${
+              activa
+                ? "border-brand bg-brand text-on-brand"
+                : "border-line bg-surface text-text-2 hover:border-line-strong"
+            }`}
+          >
+            {nombre}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 interface PropsCampoPildoras {
   id: string;
   etiqueta: string;
@@ -683,9 +907,9 @@ function CampoPildoras({ id, etiqueta, name, valor, opciones, alCambiar }: Props
         return (
           <label
             key={opcion.valor}
-            className={`${estilos.pildora} ${estilos.pulsable} flex min-h-11 cursor-pointer items-center rounded-[var(--radius)] border px-4 text-[15px] font-medium has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
+            className={`pe-pildora ${estilos.pildora} ${estilos.pulsable} flex min-h-11 cursor-pointer items-center rounded-[var(--radius)] border px-4 text-[15px] font-medium hover:-translate-y-0.5 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
               marcado
-                ? "border-brand bg-brand text-on-brand"
+                ? "pe-pildora-marcada border-brand text-on-brand"
                 : "border-line bg-surface text-text-2 hover:border-line-strong"
             }`}
           >

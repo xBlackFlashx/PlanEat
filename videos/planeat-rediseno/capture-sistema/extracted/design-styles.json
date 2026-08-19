@@ -1,0 +1,152 @@
+{
+  "typography": [
+    {
+      "role": "body",
+      "fontFamily": "Poppins",
+      "fontSize": "46px",
+      "fontWeight": "400",
+      "lineHeight": "48.3px",
+      "letterSpacing": "-0.46px",
+      "color": "#0F172A",
+      "sampleText": "Tu día, resuelto"
+    },
+    {
+      "role": "display",
+      "fontFamily": "Inter",
+      "fontSize": "28px",
+      "fontWeight": "600",
+      "lineHeight": "33.6px",
+      "letterSpacing": "-0.7px",
+      "color": "#0F172A",
+      "sampleText": "Sistema de diseño"
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Inter",
+      "fontSize": "21px",
+      "fontWeight": "600",
+      "lineHeight": "26.25px",
+      "letterSpacing": "-0.105px",
+      "color": "#0F172A",
+      "sampleText": "Tipografía"
+    },
+    {
+      "role": "code",
+      "fontFamily": "ui-monospace",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "lineHeight": "17.55px",
+      "letterSpacing": "0.13px",
+      "color": "#0F172A",
+      "sampleText": ".voz-1"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      4,
+      6,
+      8,
+      12,
+      16,
+      20,
+      24,
+      64
+    ],
+    "baseUnit": 4
+  },
+  "radius": [
+    "14px"
+  ],
+  "shadows": [],
+  "buttons": [
+    {
+      "label": "Oscuro",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#475569",
+      "padding": "0px 12px",
+      "borderRadius": "14px",
+      "border": "1px solid rgb(226, 232, 240)",
+      "boxShadow": "none",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "height": "44px"
+    },
+    {
+      "label": "Radio base",
+      "background": "#047857",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "12px 20px",
+      "borderRadius": "10px",
+      "border": "0px solid rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "height": "45px"
+    },
+    {
+      "label": "Radio grande",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#0F172A",
+      "padding": "12px 20px",
+      "borderRadius": "14px",
+      "border": "1px solid rgb(203, 213, 225)",
+      "boxShadow": "none",
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "height": "47px"
+    },
+    {
+      "label": "●",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#0F172A",
+      "padding": "0px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid rgb(203, 213, 225)",
+      "boxShadow": "none",
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "height": "48px"
+    }
+  ],
+  "cards": [],
+  "nav": {
+    "label": "navigation",
+    "background": "transparent",
+    "backgroundImage": "",
+    "backdropFilter": "",
+    "color": "#0F172A",
+    "padding": "0px",
+    "borderRadius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "77px"
+  },
+  "chips": [],
+  "statCells": [],
+  "tabs": [
+    {
+      "label": "1.111 kcal",
+      "background": "transparent",
+      "color": "#0F172A",
+      "padding": "16px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(15, 23, 42)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "height": "57.2969px"
+    }
+  ],
+  "backgrounds": [],
+  "glass": []
+}

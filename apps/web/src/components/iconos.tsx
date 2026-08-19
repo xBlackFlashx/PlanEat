@@ -132,3 +132,12 @@ export function IconoFlecha(props: PropsIcono) {
     </Svg>
   );
 }
+
+/** Estado Pro. Corona lineal: tres picos + base, nunca sólida/rellena. */
+export function IconoCorona(props: PropsIcono) {
+  return (
+    <Svg {...props}>
+      <path d="M4 17 3 8l5 4 4-6 4 6 5-4-1 9Z" />
+    </Svg>
+  );
+}

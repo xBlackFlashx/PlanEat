@@ -21,7 +21,9 @@
         "fibraG": 0,
         "sodioMg": 60
       },
-      "alergenos": [],
+      "alergenos": [
+        "pollo"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 500 g",
@@ -45,7 +47,9 @@
         "fibraG": 0,
         "sodioMg": 85
       },
-      "alergenos": [],
+      "alergenos": [
+        "pollo"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 500 g",
@@ -69,7 +73,9 @@
         "fibraG": 0,
         "sodioMg": 55
       },
-      "alergenos": [],
+      "alergenos": [
+        "ternera"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 400 g",
@@ -93,7 +99,9 @@
         "fibraG": 0,
         "sodioMg": 55
       },
-      "alergenos": [],
+      "alergenos": [
+        "cerdo"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 500 g",
@@ -118,7 +126,8 @@
         "sodioMg": 60
       },
       "alergenos": [
-        "pescado"
+        "pescado",
+        "salmon"
       ],
       "formatosCompra": [
         {
@@ -144,6 +153,7 @@
         "sodioMg": 100
       },
       "alergenos": [
+        "merluza",
         "pescado"
       ],
       "formatosCompra": [
@@ -170,6 +180,7 @@
         "sodioMg": 54
       },
       "alergenos": [
+        "bacalao",
         "pescado"
       ],
       "formatosCompra": [
@@ -196,6 +207,7 @@
         "sodioMg": 320
       },
       "alergenos": [
+        "atun",
         "pescado"
       ],
       "formatosCompra": [
@@ -248,6 +260,7 @@
         "sodioMg": 142
       },
       "alergenos": [
+        "huevo",
         "huevos"
       ],
       "formatosCompra": [
@@ -256,13 +269,15 @@
           "gramos": 720,
           "precioEstimadoCents": 290
         }
-      ]
+      ],
+      "gramosPorPieza": 60
     },
     {
       "id": "clara_huevo",
       "nombre": "Clara de huevo",
       "estado": "crudo",
       "categoria": "huevos",
+      "grupoCompra": "huevo",
       "perecedero": true,
       "fuente": "USDA FDC",
       "panel": {
@@ -300,7 +315,8 @@
         "sodioMg": 44
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "leche"
       ],
       "formatosCompra": [
         {
@@ -326,7 +342,8 @@
         "sodioMg": 46
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "yogur"
       ],
       "formatosCompra": [
         {
@@ -352,7 +369,8 @@
         "sodioMg": 35
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "yogur"
       ],
       "formatosCompra": [
         {
@@ -378,7 +396,9 @@
         "sodioMg": 50
       },
       "alergenos": [
-        "lacteos"
+        "cottage",
+        "lacteos",
+        "queso"
       ],
       "formatosCompra": [
         {
@@ -404,7 +424,8 @@
         "sodioMg": 330
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "requeson"
       ],
       "formatosCompra": [
         {
@@ -430,7 +451,8 @@
         "sodioMg": 700
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "queso"
       ],
       "formatosCompra": [
         {
@@ -456,7 +478,8 @@
         "sodioMg": 480
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "mozzarella"
       ],
       "formatosCompra": [
         {
@@ -578,7 +601,8 @@
         "sodioMg": 14
       },
       "alergenos": [
-        "soja"
+        "soja",
+        "tofu"
       ],
       "formatosCompra": [
         {
@@ -604,7 +628,8 @@
         "sodioMg": 9
       },
       "alergenos": [
-        "soja"
+        "soja",
+        "tempeh"
       ],
       "formatosCompra": [
         {
@@ -630,7 +655,8 @@
         "sodioMg": 20
       },
       "alergenos": [
-        "soja"
+        "soja",
+        "soya"
       ],
       "formatosCompra": [
         {
@@ -655,7 +681,9 @@
         "fibraG": 1.0,
         "sodioMg": 5
       },
-      "alergenos": [],
+      "alergenos": [
+        "arroz"
+      ],
       "formatosCompra": [
         {
           "descripcion": "paquete de 1 kg",
@@ -679,7 +707,9 @@
         "fibraG": 3.5,
         "sodioMg": 5
       },
-      "alergenos": [],
+      "alergenos": [
+        "arroz"
+      ],
       "formatosCompra": [
         {
           "descripcion": "paquete de 1 kg",
@@ -704,7 +734,8 @@
         "sodioMg": 6
       },
       "alergenos": [
-        "gluten"
+        "gluten",
+        "pasta"
       ],
       "formatosCompra": [
         {
@@ -756,7 +787,8 @@
         "sodioMg": 450
       },
       "alergenos": [
-        "gluten"
+        "gluten",
+        "pan"
       ],
       "formatosCompra": [
         {
@@ -782,6 +814,7 @@
         "sodioMg": 2
       },
       "alergenos": [
+        "avena",
         "gluten"
       ],
       "formatosCompra": [
@@ -807,14 +840,17 @@
         "fibraG": 2.2,
         "sodioMg": 6
       },
-      "alergenos": [],
+      "alergenos": [
+        "papa"
+      ],
       "formatosCompra": [
         {
           "descripcion": "malla de 2 kg",
           "gramos": 2000,
           "precioEstimadoCents": 220
         }
-      ]
+      ],
+      "gramosPorPieza": 170
     },
     {
       "id": "boniato",
@@ -831,14 +867,17 @@
         "fibraG": 3.0,
         "sodioMg": 55
       },
-      "alergenos": [],
+      "alergenos": [
+        "camote"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 1 kg",
           "gramos": 1000,
           "precioEstimadoCents": 250
         }
-      ]
+      ],
+      "gramosPorPieza": 130
     },
     {
       "id": "quinoa",
@@ -855,7 +894,9 @@
         "fibraG": 7.0,
         "sodioMg": 5
       },
-      "alergenos": [],
+      "alergenos": [
+        "quinoa"
+      ],
       "formatosCompra": [
         {
           "descripcion": "paquete de 500 g",
@@ -880,6 +921,7 @@
         "sodioMg": 10
       },
       "alergenos": [
+        "cuscus",
         "gluten"
       ],
       "formatosCompra": [
@@ -906,7 +948,9 @@
         "sodioMg": 570
       },
       "alergenos": [
-        "gluten"
+        "gluten",
+        "tortilla",
+        "trigo"
       ],
       "formatosCompra": [
         {
@@ -914,7 +958,9 @@
           "gramos": 320,
           "precioEstimadoCents": 190
         }
-      ]
+      ],
+      "gramosPorPieza": 30,
+      "unidadPieza": "tortilla"
     },
     {
       "id": "brocoli",
@@ -931,7 +977,9 @@
         "fibraG": 2.6,
         "sodioMg": 33
       },
-      "alergenos": [],
+      "alergenos": [
+        "brocoli"
+      ],
       "formatosCompra": [
         {
           "descripcion": "pieza de 500 g",
@@ -979,14 +1027,17 @@
         "fibraG": 1.2,
         "sodioMg": 5
       },
-      "alergenos": [],
+      "alergenos": [
+        "tomate"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 1 kg",
           "gramos": 1000,
           "precioEstimadoCents": 220
         }
-      ]
+      ],
+      "gramosPorPieza": 120
     },
     {
       "id": "tomate_triturado",
@@ -1027,14 +1078,17 @@
         "fibraG": 1.7,
         "sodioMg": 4
       },
-      "alergenos": [],
+      "alergenos": [
+        "cebolla"
+      ],
       "formatosCompra": [
         {
           "descripcion": "malla de 1 kg",
           "gramos": 1000,
           "precioEstimadoCents": 130
         }
-      ]
+      ],
+      "gramosPorPieza": 110
     },
     {
       "id": "pimiento_rojo",
@@ -1051,14 +1105,17 @@
         "fibraG": 2.1,
         "sodioMg": 4
       },
-      "alergenos": [],
+      "alergenos": [
+        "pimiento"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 500 g",
           "gramos": 500,
           "precioEstimadoCents": 200
         }
-      ]
+      ],
+      "gramosPorPieza": 150
     },
     {
       "id": "calabacin",
@@ -1075,14 +1132,17 @@
         "fibraG": 1.0,
         "sodioMg": 8
       },
-      "alergenos": [],
+      "alergenos": [
+        "calabacita"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 750 g",
           "gramos": 750,
           "precioEstimadoCents": 150
         }
-      ]
+      ],
+      "gramosPorPieza": 200
     },
     {
       "id": "berenjena",
@@ -1099,14 +1159,17 @@
         "fibraG": 3.0,
         "sodioMg": 2
       },
-      "alergenos": [],
+      "alergenos": [
+        "berenjena"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 500 g",
           "gramos": 500,
           "precioEstimadoCents": 160
         }
-      ]
+      ],
+      "gramosPorPieza": 250
     },
     {
       "id": "zanahoria",
@@ -1123,14 +1186,17 @@
         "fibraG": 2.8,
         "sodioMg": 69
       },
-      "alergenos": [],
+      "alergenos": [
+        "zanahoria"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 1 kg",
           "gramos": 1000,
           "precioEstimadoCents": 120
         }
-      ]
+      ],
+      "gramosPorPieza": 60
     },
     {
       "id": "champinones",
@@ -1171,7 +1237,9 @@
         "fibraG": 2.1,
         "sodioMg": 17
       },
-      "alergenos": [],
+      "alergenos": [
+        "ajo"
+      ],
       "formatosCompra": [
         {
           "descripcion": "malla de 3 cabezas, 150 g",
@@ -1195,7 +1263,9 @@
         "fibraG": 1.3,
         "sodioMg": 28
       },
-      "alergenos": [],
+      "alergenos": [
+        "lechuga"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 200 g",
@@ -1219,14 +1289,17 @@
         "fibraG": 0.5,
         "sodioMg": 2
       },
-      "alergenos": [],
+      "alergenos": [
+        "pepino"
+      ],
       "formatosCompra": [
         {
           "descripcion": "pieza de 400 g",
           "gramos": 400,
           "precioEstimadoCents": 90
         }
-      ]
+      ],
+      "gramosPorPieza": 350
     },
     {
       "id": "judias_verdes",
@@ -1291,7 +1364,9 @@
         "fibraG": 2.0,
         "sodioMg": 30
       },
-      "alergenos": [],
+      "alergenos": [
+        "coliflor"
+      ],
       "formatosCompra": [
         {
           "descripcion": "pieza de 800 g",
@@ -1315,14 +1390,17 @@
         "fibraG": 2.6,
         "sodioMg": 1
       },
-      "alergenos": [],
+      "alergenos": [
+        "platano"
+      ],
       "formatosCompra": [
         {
           "descripcion": "manojo de 1 kg",
           "gramos": 1000,
           "precioEstimadoCents": 180
         }
-      ]
+      ],
+      "gramosPorPieza": 120
     },
     {
       "id": "manzana",
@@ -1339,14 +1417,17 @@
         "fibraG": 2.4,
         "sodioMg": 1
       },
-      "alergenos": [],
+      "alergenos": [
+        "manzana"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 1 kg",
           "gramos": 1000,
           "precioEstimadoCents": 210
         }
-      ]
+      ],
+      "gramosPorPieza": 180
     },
     {
       "id": "fresas",
@@ -1411,14 +1492,17 @@
         "fibraG": 6.7,
         "sodioMg": 7
       },
-      "alergenos": [],
+      "alergenos": [
+        "aguacate"
+      ],
       "formatosCompra": [
         {
           "descripcion": "unidad de 200 g",
           "gramos": 200,
           "precioEstimadoCents": 150
         }
-      ]
+      ],
+      "gramosPorPieza": 200
     },
     {
       "id": "limon",
@@ -1435,14 +1519,17 @@
         "fibraG": 2.8,
         "sodioMg": 2
       },
-      "alergenos": [],
+      "alergenos": [
+        "limon"
+      ],
       "formatosCompra": [
         {
           "descripcion": "malla de 500 g",
           "gramos": 500,
           "precioEstimadoCents": 150
         }
-      ]
+      ],
+      "gramosPorPieza": 60
     },
     {
       "id": "aceite_oliva",
@@ -1459,7 +1546,10 @@
         "fibraG": 0,
         "sodioMg": 2
       },
-      "alergenos": [],
+      "alergenos": [
+        "aceite",
+        "oliva"
+      ],
       "formatosCompra": [
         {
           "descripcion": "botella de 1 L",
@@ -1536,7 +1626,9 @@
         "sodioMg": 17
       },
       "alergenos": [
-        "cacahuetes"
+        "cacahuate",
+        "cacahuetes",
+        "crema"
       ],
       "formatosCompra": [
         {
@@ -1585,7 +1677,9 @@
         "fibraG": 34.0,
         "sodioMg": 16
       },
-      "alergenos": [],
+      "alergenos": [
+        "chia"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 250 g",
@@ -1609,7 +1703,9 @@
         "fibraG": 0,
         "sodioMg": 38700
       },
-      "alergenos": [],
+      "alergenos": [
+        "sal"
+      ],
       "formatosCompra": [
         {
           "descripcion": "paquete de 1 kg",
@@ -1633,7 +1729,9 @@
         "fibraG": 25.0,
         "sodioMg": 20
       },
-      "alergenos": [],
+      "alergenos": [
+        "pimienta"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 50 g",
@@ -1657,7 +1755,9 @@
         "fibraG": 35.0,
         "sodioMg": 68
       },
-      "alergenos": [],
+      "alergenos": [
+        "paprika"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 75 g",
@@ -1681,7 +1781,9 @@
         "fibraG": 11.0,
         "sodioMg": 168
       },
-      "alergenos": [],
+      "alergenos": [
+        "comino"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 50 g",
@@ -1705,7 +1807,9 @@
         "fibraG": 42.0,
         "sodioMg": 25
       },
-      "alergenos": [],
+      "alergenos": [
+        "oregano"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 30 g",
@@ -1730,7 +1834,8 @@
         "sodioMg": 8
       },
       "alergenos": [
-        "sulfitos"
+        "sulfitos",
+        "vinagre"
       ],
       "formatosCompra": [
         {
@@ -1755,7 +1860,9 @@
         "fibraG": 0.2,
         "sodioMg": 4
       },
-      "alergenos": [],
+      "alergenos": [
+        "miel"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 500 g",
@@ -1780,6 +1887,7 @@
         "sodioMg": 50
       },
       "alergenos": [
+        "avena",
         "gluten"
       ],
       "formatosCompra": [
@@ -1830,7 +1938,9 @@
         "sodioMg": 1529
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "parmesano",
+        "queso"
       ],
       "formatosCompra": [
         {
@@ -1856,7 +1966,9 @@
         "sodioMg": 621
       },
       "alergenos": [
-        "lacteos"
+        "cheddar",
+        "lacteos",
+        "queso"
       ],
       "formatosCompra": [
         {
@@ -1882,7 +1994,8 @@
         "sodioMg": 917
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "queso"
       ],
       "formatosCompra": [
         {
@@ -1908,7 +2021,8 @@
         "sodioMg": 192
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "queso"
       ],
       "formatosCompra": [
         {
@@ -1934,7 +2048,8 @@
         "sodioMg": 11
       },
       "alergenos": [
-        "lacteos"
+        "lacteos",
+        "mantequilla"
       ],
       "formatosCompra": [
         {
@@ -1960,8 +2075,9 @@
         "sodioMg": 130
       },
       "alergenos": [
+        "frutos_de_cascara",
         "gluten",
-        "frutos_de_cascara"
+        "granola"
       ],
       "formatosCompra": [
         {
@@ -1986,7 +2102,9 @@
         "fibraG": 0.0,
         "sodioMg": 1717
       },
-      "alergenos": [],
+      "alergenos": [
+        "tocino"
+      ],
       "formatosCompra": [
         {
           "descripcion": "paquete de 150 g",
@@ -2010,7 +2128,9 @@
         "fibraG": 0.0,
         "sodioMg": 1050
       },
-      "alergenos": [],
+      "alergenos": [
+        "jamon"
+      ],
       "formatosCompra": [
         {
           "descripcion": "sobre de 200 g",
@@ -2034,7 +2154,9 @@
         "fibraG": 0.0,
         "sodioMg": 1050
       },
-      "alergenos": [],
+      "alergenos": [
+        "pavo"
+      ],
       "formatosCompra": [
         {
           "descripcion": "sobre de 150 g",
@@ -2058,7 +2180,10 @@
         "fibraG": 0.0,
         "sodioMg": 720
       },
-      "alergenos": [],
+      "alergenos": [
+        "pavo",
+        "salchicha"
+      ],
       "formatosCompra": [
         {
           "descripcion": "paquete de 300 g",
@@ -2106,7 +2231,9 @@
         "fibraG": 3.8,
         "sodioMg": 25
       },
-      "alergenos": [],
+      "alergenos": [
+        "coles"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bandeja de 400 g",
@@ -2130,7 +2257,9 @@
         "fibraG": 1.6,
         "sodioMg": 27
       },
-      "alergenos": [],
+      "alergenos": [
+        "arugula"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 100 g",
@@ -2154,7 +2283,9 @@
         "fibraG": 2.1,
         "sodioMg": 27
       },
-      "alergenos": [],
+      "alergenos": [
+        "col"
+      ],
       "formatosCompra": [
         {
           "descripcion": "unidad de 800 g",
@@ -2178,7 +2309,9 @@
         "fibraG": 3.6,
         "sodioMg": 38
       },
-      "alergenos": [],
+      "alergenos": [
+        "kale"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 200 g",
@@ -2202,14 +2335,17 @@
         "fibraG": 1.7,
         "sodioMg": 3
       },
-      "alergenos": [],
+      "alergenos": [
+        "pimiento"
+      ],
       "formatosCompra": [
         {
           "descripcion": "unidad ~120 g",
           "gramos": 120,
           "precioEstimadoCents": 60
         }
-      ]
+      ],
+      "gramosPorPieza": 120
     },
     {
       "id": "cebolleta",
@@ -2233,7 +2369,8 @@
           "gramos": 100,
           "precioEstimadoCents": 90
         }
-      ]
+      ],
+      "gramosPorPieza": 15
     },
     {
       "id": "jengibre",
@@ -2250,7 +2387,9 @@
         "fibraG": 2.0,
         "sodioMg": 13
       },
-      "alergenos": [],
+      "alergenos": [
+        "jengibre"
+      ],
       "formatosCompra": [
         {
           "descripcion": "raíz de 100 g",
@@ -2274,7 +2413,9 @@
         "fibraG": 0.9,
         "sodioMg": 16
       },
-      "alergenos": [],
+      "alergenos": [
+        "melon"
+      ],
       "formatosCompra": [
         {
           "descripcion": "unidad ~1,2 kg",
@@ -2298,7 +2439,9 @@
         "fibraG": 0.4,
         "sodioMg": 1
       },
-      "alergenos": [],
+      "alergenos": [
+        "sandia"
+      ],
       "formatosCompra": [
         {
           "descripcion": "cuarto ~1,5 kg",
@@ -2322,7 +2465,9 @@
         "fibraG": 0.5,
         "sodioMg": 1
       },
-      "alergenos": [],
+      "alergenos": [
+        "pina"
+      ],
       "formatosCompra": [
         {
           "descripcion": "lata de 432 g escurrida",
@@ -2346,7 +2491,9 @@
         "fibraG": 0.2,
         "sodioMg": 1
       },
-      "alergenos": [],
+      "alergenos": [
+        "naranja"
+      ],
       "formatosCompra": [
         {
           "descripcion": "brik de 1 L",
@@ -2446,7 +2593,9 @@
         "fibraG": 0.6,
         "sodioMg": 900
       },
-      "alergenos": [],
+      "alergenos": [
+        "salsa"
+      ],
       "formatosCompra": [
         {
           "descripcion": "botella de 300 g",
@@ -2471,8 +2620,9 @@
         "sodioMg": 3186
       },
       "alergenos": [
-        "soja",
-        "gluten"
+        "gluten",
+        "salsa",
+        "soja"
       ],
       "formatosCompra": [
         {
@@ -2498,7 +2648,9 @@
         "sodioMg": 5493
       },
       "alergenos": [
-        "soja"
+        "salsa",
+        "soja",
+        "soya"
       ],
       "formatosCompra": [
         {
@@ -2524,7 +2676,8 @@
         "sodioMg": 635
       },
       "alergenos": [
-        "huevos"
+        "huevos",
+        "mayonesa"
       ],
       "formatosCompra": [
         {
@@ -2549,7 +2702,9 @@
         "fibraG": 3.3,
         "sodioMg": 1123
       },
-      "alergenos": [],
+      "alergenos": [
+        "mostaza"
+      ],
       "formatosCompra": [
         {
           "descripcion": "tarro de 200 g",
@@ -2573,7 +2728,9 @@
         "fibraG": 0.5,
         "sodioMg": 22
       },
-      "alergenos": [],
+      "alergenos": [
+        "mermelada"
+      ],
       "formatosCompra": [
         {
           "descripcion": "tarro de 340 g",
@@ -2598,8 +2755,10 @@
         "sodioMg": 690
       },
       "alergenos": [
+        "albahaca",
+        "frutos_de_cascara",
         "lacteos",
-        "frutos_de_cascara"
+        "pesto"
       ],
       "formatosCompra": [
         {
@@ -2624,7 +2783,9 @@
         "fibraG": 1.5,
         "sodioMg": 500
       },
-      "alergenos": [],
+      "alergenos": [
+        "salsa"
+      ],
       "formatosCompra": [
         {
           "descripcion": "tarro de 250 g",
@@ -2649,7 +2810,8 @@
         "sodioMg": 732
       },
       "alergenos": [
-        "gluten"
+        "gluten",
+        "pan"
       ],
       "formatosCompra": [
         {
@@ -2722,7 +2884,9 @@
         "fibraG": 53.0,
         "sodioMg": 10
       },
-      "alergenos": [],
+      "alergenos": [
+        "canela"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 40 g",
@@ -2746,7 +2910,9 @@
         "fibraG": 0.0,
         "sodioMg": 9
       },
-      "alergenos": [],
+      "alergenos": [
+        "vainilla"
+      ],
       "formatosCompra": [
         {
           "descripcion": "frasco de 60 ml",
@@ -2770,7 +2936,9 @@
         "fibraG": 42.6,
         "sodioMg": 50
       },
-      "alergenos": [],
+      "alergenos": [
+        "romero"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 20 g",
@@ -2794,7 +2962,9 @@
         "fibraG": 7.4,
         "sodioMg": 62
       },
-      "alergenos": [],
+      "alergenos": [
+        "estragon"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 15 g",
@@ -2818,7 +2988,9 @@
         "fibraG": 27.2,
         "sodioMg": 30
       },
-      "alergenos": [],
+      "alergenos": [
+        "pimienta"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bote de 40 g",
@@ -2842,7 +3014,9 @@
         "fibraG": 0.0,
         "sodioMg": 137
       },
-      "alergenos": [],
+      "alergenos": [
+        "pollo"
+      ],
       "formatosCompra": [
         {
           "descripcion": "brik de 1 L",
@@ -2866,7 +3040,9 @@
         "fibraG": 27.3,
         "sodioMg": 30
       },
-      "alergenos": [],
+      "alergenos": [
+        "linaza"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 250 g",
@@ -2890,7 +3066,9 @@
         "fibraG": 8.6,
         "sodioMg": 9
       },
-      "alergenos": [],
+      "alergenos": [
+        "girasol"
+      ],
       "formatosCompra": [
         {
           "descripcion": "bolsa de 200 g",
@@ -2915,7 +3093,8 @@
         "sodioMg": 23
       },
       "alergenos": [
-        "sulfitos"
+        "sulfitos",
+        "vinagre"
       ],
       "formatosCompra": [
         {
@@ -2941,6 +3120,8 @@
         "sodioMg": 0
       },
       "alergenos": [
+        "aceite",
+        "ajonjoli",
         "sesamo"
       ],
       "formatosCompra": [
@@ -2973,7 +3154,9 @@
           "gramos": 500,
           "precioEstimadoCents": 110
         }
-      ]
+      ],
+      "gramosPorPieza": 40,
+      "unidadPieza": "tallo"
     },
     {
       "id": "pepinillo",

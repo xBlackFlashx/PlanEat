@@ -574,7 +574,12 @@ def test_lp_totales_son_los_de_sigma_cuantizado():
 # ---------------------------------------------------------------------------
 
 
-def test_receta_maximo_dos_veces_por_semana(cat):
+def test_receta_no_supera_max_usos_recetas_semana(cat):
+    """Antes "máximo dos veces": el límite subió a 4 en la cuarta ronda de
+    "menos ingredientes" (ver LAMBDA_INGREDIENTES/MAX_USOS_RECETA_SEMANA en
+    __init__.py). El test sigue el valor real de la constante, no un número
+    fijo, para no tener que renombrarse otra vez si vuelve a cambiar.
+    """
     for seed in range(12):
         r, _ = plan(
             cat, dias=7, slots=["desayuno", "comida", "merienda", "cena"], seed=seed
@@ -620,13 +625,19 @@ def test_la_reparacion_dura_conserva_los_totales(cat_estrecho):
     """Sustituir un item obliga a rehacer el LP: los totales no pueden quedarse
     con los de la receta vieja. Es la mentira más fácil de colar aquí.
 
-    Necesita un catálogo estrecho (ver `_catalogo_recortado`): con las 91
-    recetas del catálogo real, siete días de cinco comidas ya no agotan el
-    tope de dos usos por receta lo bastante como para forzar una reparación.
+    Necesita un catálogo estrecho (ver `_catalogo_recortado`) Y una ventana
+    larga: la cuarta ronda de "menos ingredientes" subió
+    MAX_USOS_RECETA_SEMANA de 2 a 4, así que siete días de cinco comidas
+    (35 comidas) ya no agotan ni el catálogo recortado de 36 recetas -con más
+    margen de repetición por receta sobra pool de sobra y nunca hace falta
+    reparar-. Verificado por sonda (scripts/_probe_estrecho.py de esta
+    ronda): a dias=7 nunca dispara reparación con ningún tamaño de catálogo
+    factible; a dias=21 (tres semanas, mismo horizonte largo que ya soporta
+    el motor) sí, de forma consistente (20/20 semillas probadas).
     """
     visto = False
     for seed in range(15):
-        r, traza = plan(cat_estrecho, dias=7, slots=SLOTS_5, seed=seed)
+        r, traza = plan(cat_estrecho, dias=21, slots=SLOTS_5, seed=seed)
         assert r.ok
         if traza.reparaciones_duras:
             visto = True

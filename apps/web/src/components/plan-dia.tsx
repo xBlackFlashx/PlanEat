@@ -29,7 +29,7 @@ import { NOMBRE_SLOT, ORDEN_SLOTS } from "@/lib/perfil";
 import type { RecetaResumen } from "@/lib/tipos";
 
 import { BloqueNutricionalComida, BloqueNutricionalDia } from "./bloque-nutricional";
-import { IconoCambiar, IconoFicha } from "./iconos";
+import { IconoCambiar } from "./iconos";
 import { PanelReceta } from "./panel-receta";
 import estilos from "./planeat.module.css";
 
@@ -249,10 +249,28 @@ function ItemComida({
   const titulo = receta?.titulo ?? "Receta sin ficha disponible";
   const kcalItem = receta ? receta.porRacion.kcal * item.factorRacion : null;
   const racion = formatearRacionTexto(item.factorRacion);
+  // La tarjeta entera hace de botón "Ver ficha": un tap en cualquier punto de
+  // la fila abre el panel lateral, ya no hace falta un icono aparte para eso.
+  const abrirFicha = receta ? () => alVerFicha(receta, item.factorRacion) : undefined;
 
   return (
     <li
-      className={`${estilos.filaItem} flex items-center gap-3 border-b border-line py-3 last:border-0`}
+      role={abrirFicha ? "button" : undefined}
+      tabIndex={abrirFicha ? 0 : undefined}
+      onClick={abrirFicha}
+      onKeyDown={
+        abrirFicha
+          ? (evento) => {
+              if (evento.key !== "Enter" && evento.key !== " ") return;
+              evento.preventDefault();
+              abrirFicha();
+            }
+          : undefined
+      }
+      aria-label={abrirFicha ? `Ver la ficha de ${titulo}` : undefined}
+      className={`${estilos.filaItem} flex items-center gap-3 border-b border-line py-3 last:border-0 ${
+        abrirFicha ? `${estilos.pulsable} cursor-pointer hover:bg-surface-2` : ""
+      }`}
     >
       {/* Foto real del plato cuando el catálogo la trae; si no, la inicial
           del plato. Nunca un icono de cámara rota ni una foto de archivo
@@ -314,23 +332,17 @@ function ItemComida({
         {alCambiarReceta && (
           <button
             type="button"
-            onClick={() => alCambiarReceta(item.recetaId)}
+            onClick={(evento) => {
+              // La fila entera abre la ficha (`abrirFicha` en el `<li>`); este
+              // botón vive dentro de esa fila y necesita su propio click.
+              evento.stopPropagation();
+              alCambiarReceta(item.recetaId);
+            }}
             disabled={regenerando}
             className={`${estilos.acciones} ${estilos.pulsable} hidden size-11 place-items-center rounded-[var(--radius-sm)] text-text-2 hover:bg-surface-2 hover:text-text disabled:opacity-50 sm:grid`}
           >
             <IconoCambiar />
             <span className="sr-only">Cambiar {titulo}</span>
-          </button>
-        )}
-
-        {receta && (
-          <button
-            type="button"
-            onClick={() => alVerFicha(receta, item.factorRacion)}
-            className={`${estilos.pulsable} grid size-11 place-items-center rounded-[var(--radius-sm)] text-text-2 hover:bg-surface-2 hover:text-text`}
-          >
-            <IconoFicha />
-            <span className="sr-only">Ver la ficha de {titulo}</span>
           </button>
         )}
       </div>

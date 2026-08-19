@@ -160,6 +160,8 @@ export interface Contexto {
   pesoCoste: number;
   /** Céntimos por ración que el presupuesto permite. */
   umbralCoste: number;
+  /** §2.2h: mayor `nIngr` del POOL, normalizador de `nuevoPre`. Siempre ≥ 1. */
+  escalaNuevos: number;
   /** Temperatura del softmax. La etapa C la sube en cada reintento. */
   tau: number;
   /** 'sin_presupuesto' | 'precios_incompletos'. La UI ya consume estos motivos. */
@@ -183,13 +185,20 @@ export interface Contexto {
    * más. En el backend sobraba tiempo; en el navegador esto es la diferencia
    * entre decenas de milisegundos y segundos de hilo bloqueado.
    *
-   * `despPre` y `costPre` se llenan una vez por petición; `solPre`, una vez por
-   * día, en `recalcularSolape`. Si alguien muta `bitsSemana` sin volver a
-   * llamarla, el término de solape se queda en el día anterior.
+   * `despPre` y `costPre` se llenan una vez por petición; `solPre` y
+   * `nuevoPre`, una vez por día, en `recalcularSolape`. Si alguien muta
+   * `bitsSemana` sin volver a llamarla, los dos términos se quedan en el día
+   * anterior.
+   *
+   * `nuevoPre` no puede arrancar en ceros como `solPre`: con `bitsSemana`
+   * vacío (día 1) TODOS los ingredientes de cada receta son nuevos, así que
+   * `contextoDe` lo calcula de verdad antes de devolver el contexto en vez de
+   * dejarlo para la primera llamada a `recalcularSolape`. §2.2h.
    */
   despPre: Float32Array;
   costPre: Float32Array;
   solPre: Float32Array;
+  nuevoPre: Float32Array;
 }
 
 // ---------------------------------------------------------------------------

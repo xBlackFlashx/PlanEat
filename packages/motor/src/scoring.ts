@@ -1,5 +1,5 @@
 /**
- * Etapa A: contexto de la petición, los siete términos del score, el muestreo
+ * Etapa A: contexto de la petición, los ocho términos del score, el muestreo
  * softmax con top-K y el bucle de selección de un día. Port de
  * `services/solver/app/solver/scoring.py:188-514` y DISENO §2.
  *
@@ -22,15 +22,16 @@
  * de V8 no está obligado a coincidir a 1 ULP con la libm de CPython— y costaría
  * rendimiento real. La decisión está tomada y escrita en docs/port-typescript.md;
  * lo que sí se respeta es materializar float32 donde Python lo materializa:
- * `vectorMacro`, `despPre`, `costPre`, `solPre`, `penRep` y el score final.
+ * `vectorMacro`, `despPre`, `costPre`, `solPre`, `nuevoPre`, `penRep` y el
+ * score final.
  *
- * DIVERGENCIA de estructura, no de resultado: Python recalcula los siete
+ * DIVERGENCIA de estructura, no de resultado: Python recalcula los OCHO
  * términos en cada `scoreSlot`. Aquí `desp` y `cost` se precalculan una vez por
- * petición y `sol` una vez por día, porque no dependen del slot ni del residuo.
- * Reduce el trabajo de popcount unas 60 veces sin cambiar ni un bit (ver
- * `Contexto.despPre` en tipos.ts). El precio es que `bitsSemana` y `solPre`
- * pueden desincronizarse: quien mute `bitsSemana` DEBE llamar a
- * `recalcularSolape`.
+ * petición y `sol` y `nuevo` una vez por día, porque no dependen del slot ni
+ * del residuo. Reduce el trabajo de popcount unas 60 veces sin cambiar ni un
+ * bit (ver `Contexto.despPre` en tipos.ts). El precio es que `bitsSemana`,
+ * `solPre` y `nuevoPre` pueden desincronizarse: quien mute `bitsSemana` DEBE
+ * llamar a `recalcularSolape`.
  */
 
 import type { CatalogoCompilado } from "./catalogo.ts";
@@ -48,6 +49,7 @@ import {
   W_DESP,
   W_ESC,
   W_FIT,
+  W_NUEVO,
   W_REP,
   W_SOL,
 } from "./constantes.ts";
@@ -58,6 +60,7 @@ import {
   normaL2,
   ordenarPorScoreEId,
   popcountAnd,
+  popcountAndNot,
   softmaxEstable,
   umbralTopK,
 } from "./numerico.ts";
@@ -323,18 +326,36 @@ function cobertura(pool: Pool, mascara: Uint32Array, salida: Float32Array): void
 }
 
 /**
- * Recalcula `solPre` a partir de `ctx.bitsSemana`. Hay que llamarla cada vez que
- * la etapa D cierra un día y acumula los ingredientes de su mejor candidato.
+ * Ingredientes nuevos de cada receta del pool respecto de `ctx.bitsSemana`,
+ * escrito en `salida`. `scoring.py:358-370` (h). Hermano de `cobertura`, pero
+ * NO su complemento: normaliza por `ctx.escalaNuevos` (una constante del
+ * pool), no por el `nIngr` de cada receta —esa es justo la diferencia que
+ * separa a este término de `sol`. Ver el comentario de `W_NUEVO` en
+ * constantes.ts.
+ */
+function nuevosDe(pool: Pool, ctx: Contexto, salida: Float32Array): void {
+  const w = pool.w32;
+  const escala = ctx.escalaNuevos;
+  for (let i = 0; i < pool.p; i++) {
+    salida[i] = popcountAndNot(pool.bits, i * w, ctx.bitsSemana, 0, w) / escala;
+  }
+}
+
+/**
+ * Recalcula `solPre` y `nuevoPre` a partir de `ctx.bitsSemana`. Hay que
+ * llamarla cada vez que la etapa D cierra un día y acumula los ingredientes de
+ * su mejor candidato.
  *
  * Existe porque el precálculo del solape es la única parte del contexto que
  * cambia DENTRO de una petición. Si alguien muta `bitsSemana` y no llama aquí,
- * el término de solape se queda congelado en el día anterior y el fallo es
+ * los dos términos se quedan congelados en el día anterior y el fallo es
  * invisible: el plan sale, sólo que con más líneas de la compra de las que
  * debería. No se puede detectar desde aquí sin volver a hacer el popcount, que
  * es justo lo que se quería evitar; así que es contrato del llamante.
  */
 export function recalcularSolape(pool: Pool, ctx: Contexto): void {
   cobertura(pool, ctx.bitsSemana, ctx.solPre);
+  nuevosDe(pool, ctx, ctx.nuevoPre);
 }
 
 /**
@@ -387,6 +408,7 @@ export function contextoDe(
   const despPre = new Float32Array(pool.p);
   const costPre = new Float32Array(pool.p);
   const solPre = new Float32Array(pool.p);
+  const nuevoPre = new Float32Array(pool.p);
   const bitsDespensa = bitsDe(cat, restr.despensaAlimentoIds ?? []);
   cobertura(pool, bitsDespensa, despPre);
 
@@ -399,7 +421,17 @@ export function contextoDe(
   // `solPre` se queda en ceros: `bitsSemana` arranca vacío y el primer día el
   // término de solape no distorsiona. La etapa D lo recalcula al cerrar cada día.
 
-  return {
+  // §2.2h: mayor `nIngr` del pool, guardado a ≥ 1 igual que `n_seguro` en
+  // Python (`max(1, ...)` en vez de `Math.max`, para no forzar todo el bucle a
+  // float por un único NaN si `pool.p === 0`).
+  let maxNIngr = 0;
+  for (let i = 0; i < pool.p; i++) {
+    const n = pool.nIngr[i] ?? 0;
+    if (n > maxNIngr) maxNIngr = n;
+  }
+  const escalaNuevos = maxNIngr > 0 ? maxNIngr : 1;
+
+  const ctx: Contexto = {
     cuota: cuotasDe(slots),
     topes: topesPorSlot(restr),
     bitsDespensa,
@@ -412,6 +444,7 @@ export function contextoDe(
     ),
     pesoCoste,
     umbralCoste: umbral,
+    escalaNuevos,
     tau,
     costeDesactivadoPor: motivo,
     vetoSemana: null,
@@ -419,7 +452,13 @@ export function contextoDe(
     despPre,
     costPre,
     solPre,
+    nuevoPre,
   };
+  // A diferencia de `solPre`, `nuevoPre` NO puede arrancar en ceros: con
+  // `bitsSemana` vacío todos los ingredientes de cada receta son nuevos. Ver
+  // el comentario de `nuevoPre` en tipos.ts.
+  nuevosDe(pool, ctx, nuevoPre);
+  return ctx;
 }
 
 /** `pool.coste_conocido.mean()`: fracción de filas del pool con precio real. */
@@ -497,7 +536,7 @@ export function vectorMacro(residuo: Float64Array, salida: Float64Array): boolea
  *    exigirlos a rajatabla dejaría al usuario sin plan, y una repetición de más
  *    es infinitamente mejor que un fallo.
  *
- * Python calcula los siete términos para TODAS las filas y sólo al final
+ * Python calcula los ocho términos para TODAS las filas y sólo al final
  * sustituye las inadmisibles por −inf; es desperdicio deliberado por
  * vectorización. Aquí se saltan, que ahorra trabajo real y no cambia el
  * resultado porque el valor descartado nunca se lee.
@@ -555,6 +594,7 @@ export function scoreSlot(
   const solPre = ctx.solPre;
   const costPre = ctx.costPre;
   const penRep = ctx.penRep;
+  const nuevoPre = ctx.nuevoPre;
   const nutr = pool.nutr;
   const vMacro = pool.vMacro;
 
@@ -595,6 +635,7 @@ export function scoreSlot(
     // (c)(d)(e) Despensa, solape y coste: precalculados. Ver la cabecera.
     // (f) Repetición: precalculada una vez por petición en `contextoDe`.
     // (g) Afinidad: el término existe y vale cero.
+    // (h) Ingredientes nuevos: precalculado, igual que solape. §2.2h
     salida[i] =
       W_FIT * fit +
       W_ESC * esc +
@@ -602,7 +643,8 @@ export function scoreSlot(
       W_SOL * (solPre[i] ?? 0) +
       W_AFIN * AFIN_NEUTRA -
       pesoCoste * (costPre[i] ?? 0) -
-      W_REP * (penRep[i] ?? 0);
+      W_REP * (penRep[i] ?? 0) -
+      W_NUEVO * (nuevoPre[i] ?? 0);
   }
 }
 

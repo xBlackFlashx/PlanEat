@@ -36,6 +36,7 @@
  */
 
 import type { CatalogoCompilado } from "./catalogo.ts";
+import { W_ALERGENO } from "./catalogo.ts";
 import {
   ALERGENOS,
   IDX_ALERGENO,
@@ -301,6 +302,11 @@ export function mascarasRestriccion(
   for (const a of ALERGENOS) {
     if (!restr.alergenosExcluidos.includes(a)) continue;
     const bit = IDX_ALERGENO[a];
+    // `mAlergeno` es multi-palabra (W_ALERGENO, ver catalogo.ts): la palabra
+    // que le toca a este alérgeno y su posición dentro de ella, no un único
+    // desplazamiento sobre un entero por fila.
+    const palabra = bit / 32 | 0;
+    const bitEnPalabra = bit % 32;
     const libre = new Uint8Array(cat.n);
     // Máscara NEGADA: «esta receta NO lleva el alérgeno». Es la única del mapa
     // que se invierte, y por eso es la única cuya ganancia significa «cuántas
@@ -308,7 +314,7 @@ export function mascarasRestriccion(
     // calcula —el usuario merece saber cuánto le cuesta su alergia— y jamás
     // se convierte en una sugerencia: lo impide `ejesSugeribles`.
     for (let i = 0; i < cat.n; i++) {
-      libre[i] = ((cat.mAlergeno[i] ?? 0) >>> bit) & 1 ? 0 : 1;
+      libre[i] = ((cat.mAlergeno[i * W_ALERGENO + palabra] ?? 0) >>> bitEnPalabra) & 1 ? 0 : 1;
     }
     m.set(`alergeno:${a}`, libre);
   }

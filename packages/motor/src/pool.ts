@@ -23,6 +23,7 @@
  */
 
 import type { CatalogoCompilado } from "./catalogo.ts";
+import { W_ALERGENO } from "./catalogo.ts";
 import {
   IDX_ALERGENO,
   IDX_DIETA,
@@ -154,16 +155,18 @@ export function bitsDe(
 /**
  * Filtro duro de nivel 1, sin caché. `scoring.py:88-96`.
  *
- * Las tres máscaras del catálogo vienen colapsadas a un entero por fila, así que
- * los tres barridos de columnas de numpy son aquí un único bucle plano con tres
- * comprobaciones de bits. Se recorren las N filas del catálogo, que es el único
- * bucle sobre recetas que este módulo se permite: los demás van sobre el pool ya
- * filtrado.
+ * `mDieta`/`mSlot` vienen colapsadas a un entero por fila, así que ese barrido
+ * de columnas de numpy es aquí una sola comprobación de bits. `mAlergeno` ya
+ * no cabe en un entero (W_ALERGENO > 1, ver `catalogo.ts`), así que su
+ * comprobación es un bucle corto de `W_ALERGENO` palabras en vez de un único
+ * `&` — sigue siendo O(1) por receta, W_ALERGENO no depende de `cat.n`. Se
+ * recorren las N filas del catálogo, que es el único bucle sobre recetas que
+ * este módulo se permite: los demás van sobre el pool ya filtrado.
  */
 function idxBase(
   cat: CatalogoCompilado,
   dieta: string,
-  mascaraAlergenos: number,
+  mascaraAlergenos: Uint32Array,
   topeGlobal: number,
 ): Int32Array {
   // La anotación explícita `| undefined` no es ruido: `IDX_DIETA` es un Record
@@ -179,9 +182,11 @@ function idxBase(
   }
   const idx = new Int32Array(cat.n);
   let p = 0;
-  for (let i = 0; i < cat.n; i++) {
+  filas: for (let i = 0; i < cat.n; i++) {
     if ((((cat.mDieta[i] ?? 0) >>> bitDieta) & 1) === 0) continue;
-    if (((cat.mAlergeno[i] ?? 0) & mascaraAlergenos) !== 0) continue;
+    for (let w = 0; w < W_ALERGENO; w++) {
+      if (((cat.mAlergeno[i * W_ALERGENO + w] ?? 0) & mascaraAlergenos[w]) !== 0) continue filas;
+    }
     if ((cat.minutos[i] ?? 0) > topeGlobal) continue;
     idx[p] = i;
     p++;
@@ -194,7 +199,7 @@ function idxBaseCacheado(
   cat: CatalogoCompilado,
   dieta: string,
   alergenosOrdenados: readonly string[],
-  mascaraAlergenos: number,
+  mascaraAlergenos: Uint32Array,
   topeGlobal: number,
 ): Int32Array {
   const clave = claveCache(cat.version, dieta, alergenosOrdenados, topeGlobal);
@@ -283,7 +288,12 @@ export function construirPool(
   // dos peticiones idénticas usarían dos entradas distintas de la caché. No
   // sería un fallo de corrección, pero sí una caché que deja de servir.
   const alergenosOrdenados = [...restr.alergenosExcluidos].sort(comparaId);
-  let mascaraAlergenos = 0;
+  // W_ALERGENO palabras, no un único entero: con N_ALERGENOS > 32 un solo
+  // `number` desbordaría exactamente como desbordaba `mAlergeno` antes de
+  // portarlo a multi-palabra (ver `catalogo.ts`). Mismo `>>> 0` que
+  // `escribirMascara` del compilador, por la misma razón: `1 << 31` es
+  // negativo en JS y Uint32Array espera el patrón de bits sin signo.
+  const mascaraAlergenos = new Uint32Array(W_ALERGENO);
   for (const a of alergenosOrdenados) {
     const bit: number | undefined = IDX_ALERGENO[a];
     // Un alérgeno fuera del vocabulario se ignora, igual que en Python
@@ -291,7 +301,9 @@ export function construirPool(
     // filtrar por él no quitaría nada; lo que NO se puede hacer es lanzar y
     // dejar al usuario sin plan por un alérgeno que nuestro catálogo aún no
     // etiqueta.
-    if (bit !== undefined) mascaraAlergenos |= 1 << bit;
+    if (bit === undefined) continue;
+    const palabra = bit / 32 | 0;
+    mascaraAlergenos[palabra] = ((mascaraAlergenos[palabra] ?? 0) | (1 << (bit % 32))) >>> 0;
   }
 
   const base = idxBaseCacheado(

@@ -1,0 +1,15 @@
+{
+  "summary": {
+    "webAnimations": 0,
+    "cssDeclarations": 28,
+    "scrollTargets": 2,
+    "cdpAnimations": 10,
+    "canvases": 0
+  },
+  "namedAnimations": [
+    "planeat-module___htVAW__aparicion",
+    "planeat-module___htVAW__entrada"
+  ],
+  "scrollTriggeredElements": 2,
+  "representativeAnimations": []
+}

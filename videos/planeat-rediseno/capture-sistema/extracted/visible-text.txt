@@ -1,0 +1,230 @@
+[a] PlanEat
+[button] Oscuro
+[h1] Sistema de diseño
+[p] Referencia viva de los tokens. Alterna el tema con el botón de arriba: todo lo de esta página debe seguir siendo legible en los dos. Y pruébala también con el interruptor del sistema operativo en el estado contrario al elegido aquí — la elección explícita tiene que ganar en ambas direcciones, y ese es justo el caso que se rompe sin que nadie se entere.
+[h2] Tipografía
+[p] Dos fuentes con reparto estricto. Inter hace el trabajo: toda la interfaz, todo el cuerpo y todos los números — se mantiene igual tras el rediseño porque trae la feature OpenType «tnum» de verdad, y eso es una restricción técnica, no de marca. Poppins pone la voz (sustituye a Space Grotesk), y sólo en cuatro sitios: el titular de portada, el título de una ficha de receta, el titular de sobre-restricción y su cifra héroe. Nunca en interfaz, nunca en un número, nunca por debajo de 24 px, nunca en negrita. Las dos son OFL 1.1 y se sirven desde el propio dominio.
+[code] voz-1
+[span] 34 → 46 px · 1,05 · 400 Poppins
+[p] Tu día, resuelto
+[code] voz-2
+[span] 26 → 32 px · 1,10 · 400 Poppins
+[p] Lentejas con verduras
+[code] t-1
+[span] 24 → 28 px · 1,20 · 600
+[p] Martes 12
+[code] t-2
+[span] 19 → 21 px · 1,25 · 600
+[p] Comida
+[code] t-3
+[span] 16 → 17 px · 1,30 · 600
+[p] Ensalada de garbanzos
+[code] cuerpo
+[span] 16 px · 1,55 · 400
+[p] Prosa, capa 1 y pasos de receta.
+[code] cuerpo-sm
+[span] 14 px · 1,50 · 400
+[p] Secundario, metadatos y ayudas.
+[code] etiqueta
+[span] 13 px · 1,35 · 500
+[p] Proteína · Carbohidratos · Grasa
+[code] micro
+[span] 12 px · 1,30 · 500 · versal
+[p] Lista de la compra
+[code] .cifra-heroe
+[span] 40 → 56 px · 1,00 · 600 tabular
+[p] 1.847
+[h2] Números tabulares
+[p] Inter trae la feature OpenType «tnum» de verdad: sustituye cada dígito por una variante de anchura fija. Sin ella las columnas de gramos se desplazan a cada actualización. Las dos filas de abajo son el mismo texto: la de arriba con tabular-nums, la de abajo sin ella. Si se ven iguales, la fuente no está cargando.
+[caption] Comparación de cifras con y sin números tabulares
+[th] Variante
+[th] Energía
+[th] Proteína
+[th] Precio
+[th] tabular-nums
+[td] 1.111 kcal
+[td] 111 g
+[td] 11,11 €
+[th] tabular-nums
+[td] 1.847 kcal
+[td] 142 g
+[td] 38,50 €
+[th] proporcional
+[td] 1.111 kcal
+[td] 111 g
+[td] 11,11 €
+[th] proporcional
+[td] 1.847 kcal
+[td] 142 g
+[td] 38,50 €
+[h2] Superficies
+[p] Gris neutro (slate), sin sesgo de matiz: con la marca ahora en verde, un gris frío o cálido «tiraría» hacia o contra ese verde y competiría con él en vez de dejarlo respirar. Las tarjetas de comida se separan por fondo, no por sombra. El número es el contraste de cada superficie contra el fondo de página; son diferencias de superficie, no de texto, y por eso son pequeñas a propósito.
+[p] Fondo
+[code] --bg
+[dt] Claro
+[dd] 1,00:1
+[dt] Oscuro
+[dd] 1,00:1
+[p] Superficie
+[code] --surface
+[dt] Claro
+[dd] 1,05:1
+[dt] Oscuro
+[dd] 1,09:1
+[p] Superficie 2
+[code] --surface-2
+[dt] Claro
+[dd] 1,05:1
+[dt] Oscuro
+[dd] 1,24:1
+[p] Superficie 3
+[code] --surface-3
+[dt] Claro
+[dd] 1,18:1
+[dt] Oscuro
+[dd] 1,47:1
+[h2] Texto y líneas
+[p] Contraste contra el fondo de página en cada tema. La especificación pide AAA (7:1) en las cifras nutricionales: sólo --text y --text-2 lo cumplen, así que ninguna cifra puede ir en --text-3.
+[p] Texto
+[code] --text
+[dt] Claro
+[dd] 17,06:1
+[dt] Oscuro
+[dd] 17,09:1
+[p] Cumple AAA (7:1). Es el que llevan las cifras nutricionales.
+[p] Texto 2
+[code] --text-2
+[dt] Claro
+[dd] 7,24:1
+[dt] Oscuro
+[dd] 12,61:1
+[p] Cumple AAA. Es el secundario por defecto sobre el fondo de página.
+[p] Texto 3
+[code] --text-3
+[dt] Claro
+[dd] 5,19:1
+[dt] Oscuro
+[dd] 7,30:1
+[p] 5,19:1 en claro, 7,30:1 en oscuro: cumple AA sobre --bg en los dos temas (mejora sobre el sistema anterior, que se quedaba en 4,47:1 en claro). No llega a AAA en claro — las cifras siguen yendo en --text o --text-2, nunca aquí.
+[p] Línea
+[code] --line
+[dt] Claro
+[dd] 1,18:1
+[dt] Oscuro
+[dd] 1,47:1
+[p] Decorativa. Nunca como único indicador de foco, selección o estado.
+[h2] Macronutrientes
+[p] Azul / ámbar / violeta. Reemplaza la triada Okabe-Ito del sistema anterior (rediseño completo, 2026-08-17). Elegida evitando el eje rojo-verde —el más común en daltonismo— y evitando coincidir con el verde de marca, pero es un juicio de diseño, no una validación de laboratorio como lo era Okabe-Ito: por eso la barra de macros sigue llevando etiquetas directas obligatorias, ahora por prudencia y no sólo por contraste — si alguien las quita, la paleta pierde su única red de seguridad real.
+[p] Proteína
+[code] --protein
+[dt] Claro
+[dd] 4,94:1
+[dt] Oscuro
+[dd] 7,36:1
+[p] Cumple AA (4,5:1) como texto en ambos temas. Se usa igual sólo como marca gráfica.
+[p] Carbohidratos
+[code] --carb
+[dt] Claro
+[dd] 4,80:1
+[dt] Oscuro
+[dd] 11,22:1
+[p] Cumple AA en ambos temas — el sistema anterior no llegaba a 3:1 en claro. Aun así lleva etiqueta directa en la barra de macros, por claridad, no por falta de contraste.
+[p] Grasa
+[code] --fat
+[dt] Claro
+[dd] 5,45:1
+[dt] Oscuro
+[dd] 6,88:1
+[p] Cumple AA en ambos temas.
+[h2] Marca y estados
+[p] La marca es verde (rediseño completo, 2026-08-17: reemplaza el índigo anterior). Es el match de dominio para un producto de nutrición — «Calorie & Nutrition Counter» en vez de un genérico «SaaS de confianza» — y esta vez SÍ hay un token de «éxito» de facto: el macro de grasa se movió a violeta, así que el verde ya no coincide con ningún macronutriente y la ambigüedad que forzaba a evitarlo en el sistema anterior desaparece. El éxito reutiliza --brand con icono, igual que antes; lo que cambia es que ahora puede ser literalmente verde sin colisionar. El rojo sigue reservado a error.
+[p] Marca
+[code] --brand
+[dt] Claro
+[dd] 5,24:1
+[dt] Oscuro
+[dd] 9,74:1
+[p] Cómodo en ambos temas, también como texto.
+[p] Error
+[code] --danger
+[dt] Claro
+[dd] 4,62:1
+[dt] Oscuro
+[dd] 6,77:1
+[p] Cumple AA como texto en ambos temas.
+[p] Aviso
+[code] --warning
+[dt] Claro
+[dd] 4,80:1
+[dt] Oscuro
+[dd] 11,22:1
+[p] Cumple AA como texto en ambos temas. Mismo hex que --carb, a propósito.
+[h2] Forma
+[p] Tres radios. Suficiente calidez sin parecer un juguete. Las clases cortas existen desde el pulido del sistema: antes había que escribir rounded-[var(--radius-lg)] porque los tokens de forma no estaban expuestos a Tailwind. Los componentes todavía usan la forma larga; migrarlos queda pendiente.
+[code] rounded-sm
+[code] --radius-sm
+[code] 7 px
+[p] Controles pequeños e items de lista
+[code] rounded-base
+[code] --radius
+[code] 10 px
+[p] Botones y campos
+[code] rounded-lg
+[code] --radius-lg
+[code] 14 px
+[p] Tarjetas, hojas y paneles
+[p] La única sombra del sistema, reservada a flotantes: popovers, diálogos, arrastre.
+[span] shadow-pop
+[code] --shadow-pop
+[h2] Movimiento
+[p] Ningún componente declara una duración propia. La regla de asimetría es que la salida dura aproximadamente el 65 % de la entrada. Pasa el puntero por encima de las muestras para ver cada duración; con prefers-reduced-motion activo no debería moverse ninguna.
+[code] dur-rapida
+[span] 120 ms
+[p] Color: hover, foco, borde
+[code] dur-media
+[span] 220 ms
+[p] Entrada de panel, hoja, crossfade
+[code] dur-lenta
+[span] 320 ms
+[p] Transición de pantalla a resultado
+[code] dur-cuadre
+[span] 500 ms
+[p] Sólo el compás 4 del estado de generación
+[code] ease-entrada
+[code] cubic-bezier(0, 0, .2, 1)
+[p] Lo que entra
+[code] ease-salida
+[code] cubic-bezier(.4, 0, 1, 1)
+[p] Lo que sale, ≈65 % de la entrada
+[code] ease-suave
+[code] cubic-bezier(.2, .8, .2, 1)
+[p] Recolocación de layout
+[h2] Foco de teclado
+[p] Contorno de 2 px en el acento de marca, con 2 px de separación. Tabula hasta los tres controles de abajo: cada uno tiene un radio distinto y el contorno debe seguir su forma sin deformarla. Si el círculo se convierte en un cuadrado redondeado, ha vuelto el defecto que tenía la regla de foco.
+[button] Radio base
+[button] Radio grande
+[h2] Barra de macros
+[p] Capa 2 de las tres de presentación nutricional. Apilada y nunca donut: la barra permite marcar el objetivo en el eje, funciona a 320 px de ancho y se compacta en móvil sin perder información. Y no se oculta en móvil, que es donde más se consulta.
+[span] Reparto de macros
+[strong] 1980
+[span] kcal
+[span] -20
+[span] vs objetivo
+[span] Proteína
+[span] 142
+[span] Carbohidratos
+[span] 198
+[span] Grasa
+[p] Dentro de objetivo.
+[span] Reparto de macros
+[strong] 2340
+[span] kcal
+[span] 340
+[span] vs objetivo
+[span] Proteína
+[span] 118
+[span] Carbohidratos
+[span] 268
+[span] Grasa
+[p] Desviado: el aviso aparece solo al superar el ±3 %.
+[p] Lo que esta página todavía no verifica, para que nadie lo dé por comprobado: la triada de macros no se ha pasado por un simulador de daltonismo sobre capturas reales de la vista de plan —las muestras de aquí no tienen la geometría real—, y los contrastes de arriba están calculados, no medidos sobre lo que pinta el navegador.

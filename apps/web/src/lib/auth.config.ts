@@ -19,13 +19,19 @@ export const authConfig: NextAuthConfig = {
   providers: [],
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.esAdmin = (user as { esAdmin?: boolean }).esAdmin ?? false;
+      if (user) {
+        token.esAdmin = (user as { esAdmin?: boolean }).esAdmin ?? false;
+        // Igual que `esAdmin`: el tier se fija aquí, en login, y no se vuelve
+        // a tocar hasta el próximo login. Ver el porqué en `auth.ts`.
+        token.tier = (user as { tier?: "FREE" | "PRO" }).tier ?? "FREE";
+      }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub ?? "";
         session.user.esAdmin = Boolean(token.esAdmin);
+        session.user.tier = (token.tier as "FREE" | "PRO" | undefined) ?? "FREE";
       }
       return session;
     },

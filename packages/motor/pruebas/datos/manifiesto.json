@@ -1,6 +1,6 @@
 {
-  "versionCatalogo": "c6949aca1558dab1",
-  "versionGeneradorPython": "1.0.0",
+  "versionCatalogo": "c1b93a8c1e0373e2",
+  "versionGeneradorPython": "1.5.0",
   "nRecetas": 240,
   "nAlimentos": 121,
   "pasoRacion": 0.05,
@@ -39,26 +39,26 @@
     }
   },
   "porciones": {
-    "total": 2152,
-    "reales": 2008,
+    "total": 2159,
+    "reales": 2015,
     "sinteticos": 144,
     "porR": {
-      "1": 250,
-      "2": 769,
-      "3": 377,
-      "4": 356,
-      "5": 376,
+      "1": 302,
+      "2": 726,
+      "3": 372,
+      "4": 357,
+      "5": 378,
       "6": 24
     },
     "porBucket": {
-      "malo": 896,
-      "aceptable": 593,
-      "ok": 663
+      "malo": 1073,
+      "aceptable": 527,
+      "ok": 559
     },
-    "conCotaActiva": 2096,
-    "conNutrienteInactivo": 1708,
-    "conSodioAcotado": 408,
-    "conSigmaFueraDeRejillaAnclada0": 95,
+    "conCotaActiva": 2137,
+    "conNutrienteInactivo": 1793,
+    "conSodioAcotado": 330,
+    "conSigmaFueraDeRejillaAnclada0": 91,
     "emergencias": 0
   }
 }

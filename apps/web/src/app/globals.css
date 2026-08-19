@@ -111,6 +111,46 @@
   --brand-line: light-dark(#bbe5d3, #1e4436);
   --on-brand: light-dark(#ffffff, #0b1220);
 
+  /* Dorado — estado Pro (corona, insignia). Token aparte de `--brand`: marcar
+     "esto es de pago" con el mismo verde que CTA/enlaces lo confundiría con
+     una acción normal. Escala "yellow" de Tailwind, no "amber": `--carb` y
+     `--warning` ya ocupan amber (#b45309/#fbbf24) y un dorado en la misma
+     familia se leería como el mismo color en una insignia junto a una
+     etiqueta de carbohidratos. Contraste verificado con la misma fórmula WCAG
+     que el resto del fichero (relative luminance + ratio (L1+0.05)/(L2+0.05)):
+       · claro:  --gold #a16207 sobre blanco             = 4,92:1 (AA 4,5:1 ✓)
+                 --gold-hover #854d0a sobre blanco        = 6,86:1
+                 --on-gold #ffffff sobre --gold           = 4,92:1 (mismo par)
+       · oscuro: --gold #eab308 sobre --bg oscuro #0b1220 = 9,76:1
+                 --gold-hover #facc15 sobre --bg oscuro   = 13,2:1 aprox.
+                 --on-gold #0b1220 sobre --gold           = 9,76:1 (mismo par)
+     `--on-gold` reutiliza los mismos dos valores que `--on-brand`
+     (blanco/`--bg` oscuro) a propósito: es el mismo patrón "texto sobre
+     pastilla de color fuerte", no una coincidencia que haya que romper. */
+  --gold: light-dark(#a16207, #eab308);
+  --gold-hover: light-dark(#854d0a, #facc15);
+  --gold-soft: light-dark(#fef9c3, #2c2208);
+  --on-gold: light-dark(#ffffff, #0b1220);
+
+  /* Energía — acento "FIT": el naranja de las apps de fitness/gimnasio
+     (ui-ux-pro-max, perfil "Fitness/Gym App"), NO el ámbar que ya ocupan
+     `--carb`/`--warning` (#b45309/#fbbf24) — misma razón que separó `--gold`
+     de esa familia: dos acentos del mismo tono se leerían como el mismo
+     color. Uso decorativo puntual (insignias "foto real", chips de
+     categoría, halos de imagen) — nunca sustituye a `--brand` en CTA o
+     enlaces, que siguen siendo la acción principal. Contraste verificado con
+     la misma fórmula WCAG que el resto del fichero:
+       · claro:  --energia #c2410a sobre blanco               = 5,18:1 (AA ✓)
+                 --energia-hover #9a3412 sobre blanco          = 7,31:1
+                 --on-energia #ffffff sobre --energia          = 5,18:1 (mismo par)
+       · oscuro: --energia #fb923c sobre --bg oscuro #0b1220   = 8,27:1
+                 --energia-hover #fdba74 sobre --bg oscuro     = 11,10:1
+                 --on-energia #0b1220 sobre --energia          = 8,27:1 (mismo par) */
+  --energia: light-dark(#c2410a, #fb923c);
+  --energia-hover: light-dark(#9a3412, #fdba74);
+  --energia-soft: light-dark(#ffedd5, #341a06);
+  --on-energia: light-dark(#ffffff, #0b1220);
+
   /* Macronutrientes — azul/ámbar/violeta. Reemplaza la triada Okabe-Ito.
      ADVERTENCIA HONESTA (paralela a la de diseno-producto.md, no una
      promesa nueva): esta triada NO está validada en laboratorio contra
@@ -223,6 +263,16 @@
   --color-brand-soft: var(--brand-soft);
   --color-brand-line: var(--brand-line);
   --color-on-brand: var(--on-brand);
+
+  --color-gold: var(--gold);
+  --color-gold-hover: var(--gold-hover);
+  --color-gold-soft: var(--gold-soft);
+  --color-on-gold: var(--on-gold);
+
+  --color-energia: var(--energia);
+  --color-energia-hover: var(--energia-hover);
+  --color-energia-soft: var(--energia-soft);
+  --color-on-energia: var(--on-energia);
 
   --color-protein: var(--protein);
   --color-protein-soft: var(--protein-soft);
@@ -425,9 +475,54 @@
 
 @layer base {
   body {
+    position: relative;
+    isolation: isolate;
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Textura global de fondo — arregla el fondo plano reportado por usuario
+     ("los backgrounds no tienen sentido es totalmente blanco"). La causa
+     real: hasta ahora sólo `body { background: var(--bg) }` pintaba TODA
+     página, y `--bg` en claro (#f8fafc) es visualmente indistinguible de
+     blanco puro; el único parche existente era una textura local dentro del
+     hero de `/` y `/precios`, así que cualquier sección por debajo del
+     pliegue —y páginas enteras como `/entrar`— se veían lisas.
+
+     Dirección elegida vía ui-ux-pro-max (`--domain style`, búsqueda "wellness
+     health app trust green background"): estilo `organic-biophilic`
+     (nature-inspired, verde, "texture overlays (subtle)", recomendado para
+     health apps) — no un patrón SaaS genérico. Reutiliza el MISMO lenguaje
+     visual que ya existía en el hero de la portada (blobs radiales de marca +
+     rejilla de puntos), sólo que ahora vive una vez aquí y cubre TODA página
+     sin que cada una tenga que declarar nada.
+
+     `position: fixed` + `z-index: -1`: el pseudo-elemento pinta detrás de
+     todo el contenido de `body` (que gana su propio stacking context por el
+     `isolation: isolate` de arriba) y por delante del `background` sólido de
+     `body`, anclado al viewport para que la textura no se repita ni se corte
+     en páginas largas. Ninguna tarjeta pierde contraste: `--surface`,
+     `--surface-2` y `--brand-soft` son fondos opacos que se pintan encima en
+     el flujo normal, tapando la textura en su área.
+
+     Sólo tokens ya declarados en la sección 1 — cero literales. Como
+     `--brand`, `--fat` y `--line-strong` ya resuelven con `light-dark()`, el
+     resultado se adapta solo a claro/oscuro sin bloques `@media` ni
+     `[data-theme]` propios. Sin animación: no hace falta tocar el bloque de
+     `prefers-reduced-motion` de más abajo. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(65% 55% at 10% -5%, color-mix(in oklab, var(--brand) 10%, transparent), transparent 70%),
+      radial-gradient(55% 50% at 100% 0%, color-mix(in oklab, var(--fat) 7%, transparent), transparent 70%),
+      radial-gradient(45% 40% at 0% 100%, color-mix(in oklab, var(--gold) 6%, transparent), transparent 70%),
+      radial-gradient(color-mix(in oklab, var(--line-strong) 40%, transparent) 1px, transparent 1px);
+    background-size: auto, auto, auto, 24px 24px;
   }
 
   /* Toda cifra nutricional o de precio usa números tabulares. Sin esto las

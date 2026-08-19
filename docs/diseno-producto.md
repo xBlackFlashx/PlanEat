@@ -1011,7 +1011,14 @@ Mismo concepto, misma palabra, siempre. Sin sinónimos "para que no se repita".
 **Titular elegido** (sale directamente del posicionamiento de `spec.md` §2.3):
 
 > # Tu semana, resuelta.
-> Qué comer, cuánto cuesta y qué comprar. Sin listas de sesenta ingredientes.
+> Qué comer y qué comprar, sin listas de sesenta ingredientes.
+
+*(2026-08-19: se quitó "cuánto cuesta" del titular y de la portada. El coste
+real de la compra varía demasiado por región como para estimarlo con
+confianza en el catálogo actual — spec.md §2.3 lo seguía prometiendo como
+pilar, pero la implementación nunca llegó a mostrar una cifra de coste al
+usuario, así que la promesa quedaba sin cumplir. Decisión del producto, no
+sólo de copy.)*
 
 **Alternativas descartadas, para quien quiera montar un test A/B:**
 

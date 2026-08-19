@@ -87,8 +87,15 @@ export interface CatalogoSerializado {
   tieneMacro: number[];
   escalaMin: number[];
   escalaMax: number[];
-  /** Un entero por fila: bit IDX_DIETA[d]. Idem para alérgeno (14 bits) y slot (5). */
+  /** Un entero por fila: bit IDX_DIETA[d]. Idem para slot (5 bits). */
   mDieta: number[];
+  /** n*W_ALERGENO palabras sin signo, row-major — igual que `ingrBits`, no un
+   * entero por fila: con ALERGENOS.length > 32 un solo entero desborda (ver
+   * comentario de `escribirMascara`). `W_ALERGENO` se deriva de
+   * `ALERGENOS.length` en cada lado (aquí y en `catalogo.ts`); no viaja en
+   * este JSON porque no es un dato del catálogo, es una propiedad fija del
+   * vocabulario — la prueba de hash del vocabulario ya detecta si algún día
+   * se desincroniza. */
   mAlergeno: number[];
   mSlot: number[];
   minutos: number[];
@@ -113,6 +120,21 @@ export interface CatalogoSerializado {
   };
 }
 
+/**
+ * Un ingrediente tal y como lo lee la ficha de receta: el nombre legible y la
+ * cantidad tal cual la escribe la receta ("5 cdas · 50 g", "1 huevo"), no el
+ * gramaje crudo — eso ya lo tiene `IngredienteConGramos` para quien necesite
+ * calcular, no leer.
+ */
+export interface IngredienteVista {
+  nombre: string;
+  /** `recetas.json[].ingredientes[].descripcion`. Cadena vacía cuando la
+   * receta no aparece en `recetas.json` (no debería pasar, ver
+   * `leerPasosYCantidades`): la UI decide qué hacer con un hueco, esta capa
+   * no inventa una cifra. */
+  cantidad: string;
+}
+
 /** Una receta tal y como la dibuja la UI. Espejo de `RecetaResumen` de apps/web. */
 export interface RecetaVista {
   id: string;
@@ -121,8 +143,12 @@ export interface RecetaVista {
   minutos: number;
   slots: string[];
   alergenos: string[];
-  /** Nombres legibles ya resueltos contra ingredientes.json. */
-  ingredientes: string[];
+  /** Nombres legibles ya resueltos contra ingredientes.json, con la cantidad
+   * de `recetas.json`. */
+  ingredientes: IngredienteVista[];
+  /** Pasos de elaboración, en orden, de `recetas.json[].pasos`. Lista vacía
+   * cuando la receta no aparece en `recetas.json` (no debería pasar). */
+  pasos: string[];
   porRacion: {
     kcal: number;
     proteinaG: number;
@@ -180,6 +206,28 @@ export interface IngredienteConGramos {
    * `factorRacion` de cada item del plan — igual que hace
    * `construir_catalogo.py:150` con la nutrición. */
   gramos: number;
+  /**
+   * `ingredientes.json[].grupoCompra`, si lo tiene: el id del alimento bajo el
+   * que esta variante debe agruparse en la lista de la compra (p.ej.
+   * `clara_huevo` → `huevo`, porque comprar claras sueltas y huevo entero es
+   * la misma compra de supermercado con paneles nutricionales distintos —
+   * fusionar los ids rompería el cálculo nutricional). `undefined` para el
+   * caso normal de "este ingrediente es su propia cabecera de compra".
+   */
+  grupoCompra?: string;
+  /**
+   * `ingredientes.json[].gramosPorPieza`, si lo tiene: peso medio de una
+   * unidad comprable (un huevo, un plátano, una tortilla...), para que la
+   * lista de la compra pueda enseñar "≈ 3 piezas" en vez de "350 g" cuando
+   * eso es más útil que el gramaje exacto. `undefined` para lo que se compra
+   * y se usa por peso o volumen (arroz, aceite, especias, carne...), donde
+   * "piezas" no significa nada.
+   */
+  gramosPorPieza?: number;
+  /** Nombre de la unidad cuando no es "pieza" (p. ej. "tallo" para el apio,
+   * "tortilla" para la tortilla de trigo). Sólo tiene sentido junto a
+   * `gramosPorPieza`. */
+  unidadPieza?: string;
 }
 
 export interface RecetaConGramos {
@@ -390,16 +438,47 @@ function leerFilas(jsonl: string): FilaCruda[] {
   return filas;
 }
 
-/** Nombre legible y categoría de ingredientes.json, por id. */
-function leerInfoIngredientes(ingredientes: unknown): Map<string, { nombre: string; categoria: string }> {
-  const info = new Map<string, { nombre: string; categoria: string }>();
+/** Nombre, categoría, grupo de compra y equivalencia en piezas de
+ * ingredientes.json, por id. */
+function leerInfoIngredientes(ingredientes: unknown): Map<
+  string,
+  {
+    nombre: string;
+    categoria: string;
+    grupoCompra?: string;
+    gramosPorPieza?: number;
+    unidadPieza?: string;
+  }
+> {
+  const info = new Map<
+    string,
+    {
+      nombre: string;
+      categoria: string;
+      grupoCompra?: string;
+      gramosPorPieza?: number;
+      unidadPieza?: string;
+    }
+  >();
   const raiz = comoObjeto(ingredientes, "ingredientes.json");
   const lista = comoLista(raiz["ingredientes"] ?? [], "ingredientes.json.ingredientes");
   for (let i = 0; i < lista.length; i++) {
     const item = comoObjeto(lista[i], `ingredientes.json.ingredientes[${i}]`);
+    const grupoCompra = item["grupoCompra"];
+    const gramosPorPieza = item["gramosPorPieza"];
+    const unidadPieza = item["unidadPieza"];
     info.set(comoTexto(item["id"], `ingredientes.json.ingredientes[${i}].id`), {
       nombre: comoTexto(item["nombre"], `ingredientes.json.ingredientes[${i}].nombre`),
       categoria: comoTexto(item["categoria"], `ingredientes.json.ingredientes[${i}].categoria`),
+      grupoCompra: grupoCompra === undefined
+        ? undefined
+        : comoTexto(grupoCompra, `ingredientes.json.ingredientes[${i}].grupoCompra`),
+      gramosPorPieza: gramosPorPieza === undefined
+        ? undefined
+        : comoNumero(gramosPorPieza, `ingredientes.json.ingredientes[${i}].gramosPorPieza`),
+      unidadPieza: unidadPieza === undefined
+        ? undefined
+        : comoTexto(unidadPieza, `ingredientes.json.ingredientes[${i}].unidadPieza`),
     });
   }
   return info;
@@ -418,6 +497,39 @@ function leerImagenes(imagenes: unknown): Map<string, string> {
   for (const [id, valor] of Object.entries(raiz)) {
     const entrada = comoObjeto(valor, `imagenes.json.${id}`);
     info.set(id, comoTexto(entrada["url"], `imagenes.json.${id}.url`));
+  }
+  return info;
+}
+
+/**
+ * Pasos de elaboración y descripción de cantidad por ingrediente, de
+ * `recetas.json` crudo — mismo motivo que `porcionesDeReceta`: ninguno de los
+ * dos sobrevive a la compilación a `catalogo.jsonl`, que sólo lleva los
+ * alimentoId del bitset que necesita el solver.
+ */
+function leerPasosYCantidades(recetasJson: unknown): Map<
+  string,
+  { pasos: string[]; cantidades: Map<string, string> }
+> {
+  const info = new Map<string, { pasos: string[]; cantidades: Map<string, string> }>();
+  const raiz = comoObjeto(recetasJson, "recetas.json");
+  const lista = comoLista(raiz["recetas"] ?? [], "recetas.json.recetas");
+  for (let i = 0; i < lista.length; i++) {
+    const donde = `recetas.json.recetas[${i}]`;
+    const f = comoObjeto(lista[i], donde);
+    const id = comoTexto(f["id"], `${donde}.id`);
+    const pasos = listaDeTextos(f["pasos"], `${donde}.pasos`);
+    const ingredientesLista = comoLista(f["ingredientes"], `${donde}.ingredientes`);
+    const cantidades = new Map<string, string>();
+    for (let j = 0; j < ingredientesLista.length; j++) {
+      const io = comoObjeto(ingredientesLista[j], `${donde}.ingredientes[${j}]`);
+      const alimentoId = comoTexto(io["alimentoId"], `${donde}.ingredientes[${j}].alimentoId`);
+      cantidades.set(
+        alimentoId,
+        comoTexto(io["descripcion"], `${donde}.ingredientes[${j}].descripcion`),
+      );
+    }
+    info.set(id, { pasos, cantidades });
   }
   return info;
 }
@@ -453,6 +565,37 @@ function mascaraDe(vocabulario: readonly string[], etiquetas: readonly string[])
     if (bit >= 0) mascara |= 1 << bit;
   }
   return mascara;
+}
+
+/**
+ * Palabras de 32 bits que hacen falta para `ALERGENOS.length` bits. No es
+ * `Math.ceil(nAlimentos / 32)` (eso es `w32`, que varía con el catálogo):
+ * el vocabulario de alérgenos es fijo, así que esto también lo es — pero deja
+ * de ser 1 en cuanto ALERGENOS pasa de 32 categorías (2026-08-19: ya van 25,
+ * y el negocio quiere más), así que ya no puede ser "un entero por fila"
+ * como mDieta/mSlot. Ver `escribirMascara`.
+ */
+const W_ALERGENO = Math.max(1, Math.ceil(ALERGENOS.length / BITS_POR_PALABRA));
+
+/**
+ * Como `mascaraDe`, pero para vocabularios que pueden pasar de 32 etiquetas:
+ * escribe sobre varias palabras de 32 bits en vez de devolver un único
+ * entero que se desbordaría. Mismo `>>> 0` que `escribirBitset` y por la
+ * misma razón: `1 << 31` es negativo en JS.
+ */
+function escribirMascara(
+  destino: number[],
+  base: number,
+  etiquetas: readonly string[],
+  vocabulario: readonly string[],
+): void {
+  for (const etiqueta of etiquetas) {
+    const bit = indiceEn(vocabulario, etiqueta);
+    if (bit < 0) continue;
+    const palabra = base + (bit / BITS_POR_PALABRA | 0);
+    const anterior = destino[palabra] ?? 0;
+    destino[palabra] = (anterior | (1 << (bit % BITS_POR_PALABRA))) >>> 0;
+  }
 }
 
 /** Escribe el bitset de un conjunto de alimentos sobre `destino[base .. base+w32)`. */
@@ -516,7 +659,7 @@ export function compilar(jsonl: string, ingredientes: unknown): CatalogoSerializ
   const escalaMin: number[] = new Array<number>(n).fill(0);
   const escalaMax: number[] = new Array<number>(n).fill(0);
   const mDieta: number[] = new Array<number>(n).fill(0);
-  const mAlergeno: number[] = new Array<number>(n).fill(0);
+  const mAlergeno: number[] = new Array<number>(n * W_ALERGENO).fill(0);
   const mSlot: number[] = new Array<number>(n).fill(0);
   const minutos: number[] = new Array<number>(n).fill(0);
   const ingrBits: number[] = new Array<number>(n * w32).fill(0);
@@ -546,7 +689,7 @@ export function compilar(jsonl: string, ingredientes: unknown): CatalogoSerializ
     escalaMin[i] = f.escalaMin;
     escalaMax[i] = f.escalaMax;
     mDieta[i] = mascaraDe(DIETAS, f.dietas);
-    mAlergeno[i] = mascaraDe(ALERGENOS, f.alergenos);
+    escribirMascara(mAlergeno, i * W_ALERGENO, f.alergenos, ALERGENOS);
     mSlot[i] = mascaraDe(SLOTS, f.slots);
     minutos[i] = f.minutos;
     escribirBitset(ingrBits, i * w32, f.ingredientes, alimentoIdx);
@@ -627,12 +770,14 @@ export function compilar(jsonl: string, ingredientes: unknown): CatalogoSerializ
 export function vistaDeRecetas(
   jsonl: string,
   ingredientes: unknown,
+  recetasJson: unknown,
   version: string,
   imagenes: unknown = undefined,
 ): VistaRecetas {
   const filas = leerFilas(jsonl);
   const info = leerInfoIngredientes(ingredientes);
   const fotos = leerImagenes(imagenes);
+  const detalle = leerPasosYCantidades(recetasJson);
   const recetas: Record<string, RecetaVista> = {};
 
   const alimentos: AlimentoVista[] = alimentosCitados(filas).map((id) => ({
@@ -644,6 +789,7 @@ export function vistaDeRecetas(
   for (const f of filas) {
     const v = (c: number): number => f.nutr[c] ?? 0;
     const s = (c: number): boolean => f.conocido[c] === true;
+    const d = detalle.get(f.id);
     recetas[f.id] = {
       id: f.id,
       titulo: f.titulo,
@@ -651,7 +797,11 @@ export function vistaDeRecetas(
       minutos: f.minutos,
       slots: f.slots,
       alergenos: f.alergenos,
-      ingredientes: f.ingredientes.map((id) => info.get(id)?.nombre ?? id),
+      ingredientes: f.ingredientes.map((id) => ({
+        nombre: info.get(id)?.nombre ?? id,
+        cantidad: d?.cantidades.get(id) ?? "",
+      })),
+      pasos: d?.pasos ?? [],
       porRacion: {
         kcal: v(0),
         proteinaG: v(1),
@@ -711,11 +861,19 @@ export function porcionesDeReceta(
       ingredientes: ingredientesLista.map((item, j) => {
         const io = comoObjeto(item, `${donde}.ingredientes[${j}]`);
         const alimentoId = comoTexto(io["alimentoId"], `${donde}.ingredientes[${j}].alimentoId`);
+        const datos = info.get(alimentoId);
         return {
           alimentoId,
-          nombre: info.get(alimentoId)?.nombre ?? alimentoId,
-          categoria: info.get(alimentoId)?.categoria ?? "otros",
+          nombre: datos?.nombre ?? alimentoId,
+          categoria: datos?.categoria ?? "otros",
           gramos: comoNumero(io["gramos"], `${donde}.ingredientes[${j}].gramos`),
+          // Sólo se añaden las claves cuando existen: `{ grupoCompra: undefined }`
+          // no es lo mismo que omitirla para `assert.deepStrictEqual` (compara
+          // el propio conjunto de claves), y los fixtures de prueba de este
+          // paquete comparan objetos completos, no sólo sus valores.
+          ...(datos?.grupoCompra === undefined ? {} : { grupoCompra: datos.grupoCompra }),
+          ...(datos?.gramosPorPieza === undefined ? {} : { gramosPorPieza: datos.gramosPorPieza }),
+          ...(datos?.unidadPieza === undefined ? {} : { unidadPieza: datos.unidadPieza }),
         };
       }),
     };
@@ -816,7 +974,7 @@ export function principal(argv: readonly string[]): number {
   }
 
   const cat = compilar(jsonl, ingredientes);
-  const vista = vistaDeRecetas(jsonl, ingredientes, cat.version, imagenes);
+  const vista = vistaDeRecetas(jsonl, ingredientes, recetasJson, cat.version, imagenes);
   const porciones = porcionesDeReceta(recetasJson, ingredientes, cat.version);
 
   const salidas: [string, string][] = [

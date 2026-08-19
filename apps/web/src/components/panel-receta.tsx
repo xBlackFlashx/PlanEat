@@ -14,7 +14,7 @@
  * ## La foto, cuando la hay — y el mismo hueco cuando no
  *
  * `docs/diseno-producto.md` §3.5 pide abrir con una foto 3:2 y §2.6 fija la
- * densidad en «baja: la foto manda». Las 91 recetas del catálogo ya traen
+ * densidad en «baja: la foto manda». Las 240 recetas del catálogo ya traen
  * `imagenUrl` (`services/solver/data/imagenes.json`, vía
  * `services/solver/scripts/buscar_imagenes.py`), así que en el caso normal la
  * cabecera es la foto real del plato con su `aspect-ratio` declarado — la
@@ -200,8 +200,11 @@ export function PanelReceta({
                   className="mt-4 text-pretty text-[17px] leading-relaxed text-text-2 sm:text-[18px]"
                 >
                   {receta.ingredientes.map((ingrediente, indice) => (
-                    <li key={ingrediente} className="inline">
-                      {ingrediente}
+                    <li key={ingrediente.nombre} className="inline">
+                      {ingrediente.nombre}
+                      {ingrediente.cantidad && (
+                        <span className="text-text-3"> ({ingrediente.cantidad})</span>
+                      )}
                       {/* El punto medio va pegado a la palabra anterior con un
                           espacio duro y suelto detrás: así nunca empieza una
                           línea, que es como se lee un separador huérfano. */}
@@ -255,6 +258,21 @@ export function PanelReceta({
               ? receta.alergenos.map(nombreAlergeno).join(", ")
               : "Ninguno de los catorce de declaración obligatoria."}
           </p>
+
+          {/* Los pasos, tal cual los trae `recetas.json`: no se escalan con
+              `factorRacion` porque son instrucciones ("mezcla", "hornea 20
+              minutos"), no cantidades — escalarlos sería inventar un texto
+              que la receta original nunca dijo. */}
+          {receta.pasos.length > 0 && (
+            <>
+              <h3 className="mt-8 text-base font-semibold">Preparación</h3>
+              <ol className="mt-2 list-decimal space-y-2 pl-5 text-[15px] leading-relaxed text-text-2">
+                {receta.pasos.map((paso, indice) => (
+                  <li key={indice}>{paso}</li>
+                ))}
+              </ol>
+            </>
+          )}
 
           {/* Capa 3, plegada y con memoria. La tabla completa es referencia: el
               que la quiere la abre y se le recuerda abierta; el que no, no paga
@@ -312,9 +330,6 @@ export function PanelReceta({
           <p className="mt-8 border-t border-line pt-4 text-sm leading-relaxed text-text-3">
             Los alérgenos salen de los ingredientes declarados en nuestro
             catálogo y no sustituyen a leer la etiqueta del producto que compres.
-            Las cantidades por ingrediente y los pasos de elaboración están en el
-            catálogo original pero todavía no llegan hasta aquí: llegan con la
-            vista de receta completa.
           </p>
         </div>
 

@@ -29,7 +29,7 @@ import { dirname, resolve } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { cargarCatalogo } from "../src/catalogo.ts";
+import { W_ALERGENO, cargarCatalogo } from "../src/catalogo.ts";
 import {
   MAX_USOS_RECETA_SEMANA,
   UMBRAL_ERROR_ACEPTABLE,
@@ -97,7 +97,7 @@ function catalogoRecortado(n: number): CatalogoCompilado {
     escalaMin: CATALOGO_JSON.escalaMin.slice(0, n),
     escalaMax: CATALOGO_JSON.escalaMax.slice(0, n),
     mDieta: CATALOGO_JSON.mDieta.slice(0, n),
-    mAlergeno: CATALOGO_JSON.mAlergeno.slice(0, n),
+    mAlergeno: CATALOGO_JSON.mAlergeno.slice(0, n * W_ALERGENO),
     mSlot: CATALOGO_JSON.mSlot.slice(0, n),
     minutos: CATALOGO_JSON.minutos.slice(0, n),
     ingrBits: CATALOGO_JSON.ingrBits.slice(0, n * w32),
@@ -490,11 +490,15 @@ test("una tolerancia de kcal fuera de [0, 0,5] no se interpreta, se rechaza", ()
 });
 
 test("minCandidatosSlot se deriva del tope de repeticiones, no se inventa", () => {
+  // Cuarta ronda de "menos ingredientes": MAX_USOS_RECETA_SEMANA subió de 2 a
+  // 4 y MIN_CANDIDATOS_SLOT_SEMANA bajó de 8 a 6 en consecuencia (misma
+  // holgura de 4, recalculada con el nuevo tope). Los literales de abajo
+  // salen de volver a aplicar la fórmula, no de adivinar.
   assert.equal(minCandidatosSlot(1), 3); // elegir + 2 reparaciones
-  assert.equal(minCandidatosSlot(2), 5); // ceil(2/2) + 4
-  assert.equal(minCandidatosSlot(3), 6);
-  assert.equal(minCandidatosSlot(7), 8); // topado por MIN_CANDIDATOS_SLOT_SEMANA
-  assert.equal(minCandidatosSlot(30), 8);
+  assert.equal(minCandidatosSlot(2), 5); // ceil(2/4) + 4
+  assert.equal(minCandidatosSlot(3), 5); // ceil(3/4) + 4
+  assert.equal(minCandidatosSlot(7), 6); // ceil(7/4) + 4, topado por MIN_CANDIDATOS_SLOT_SEMANA
+  assert.equal(minCandidatosSlot(30), 6);
 });
 
 // ---------------------------------------------------------------------------
@@ -873,7 +877,7 @@ function catalogoDe(n: number): CatalogoCompilado {
     escalaMin: repetir(base.escalaMin, 1),
     escalaMax: repetir(base.escalaMax, 1),
     mDieta: repetir(base.mDieta, 1),
-    mAlergeno: repetir(base.mAlergeno, 1),
+    mAlergeno: repetir(base.mAlergeno, W_ALERGENO),
     mSlot: repetir(base.mSlot, 1),
     minutos: repetir(base.minutos, 1),
     ingrBits: repetir(base.ingrBits, base.w32),
