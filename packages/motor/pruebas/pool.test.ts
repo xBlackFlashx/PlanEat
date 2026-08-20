@@ -72,9 +72,9 @@ test("cada dieta deja exactamente las recetas que deja el construir_pool de Pyth
   const esperado: ReadonlyArray<readonly [TipoDieta, number]> = [
     ["omnivora", 240],
     ["vegetariana", 138],
-    ["vegana", 73],
+    ["vegana", 72],
     ["pescetariana", 176],
-    ["baja_en_carbohidratos", 133],
+    ["baja_en_carbohidratos", 134],
     ["mediterranea", 105],
   ];
   for (const [dieta, p] of esperado) {
@@ -90,7 +90,6 @@ test("la dieta no filtra por conteo sino por receta: los ids son los del Python"
   "ensalada_garbanzos",
   "quinoa_tofu_pimiento",
   "curry_garbanzos",
-  "revuelto_champinones_tofu",
   "tostada_cacahuete_platano",
   "manzana_almendras",
   "cuscus_verduras_garbanzos",
@@ -207,6 +206,7 @@ test("la dieta no filtra por conteo sino por receta: los ids son los del Python"
   "revuelto_pavo_queso_tostada",
   "revuelto_bacon_champinones",
   "tofu_revuelto_verduras",
+  "tempeh_salteado_verduras",
   "ensalada_kale_manzana",
   "manzana_crema_cacahuate",
   "huevo_duro_pepino_sal",
@@ -319,8 +319,8 @@ test("toda receta del pool está marcada con la dieta pedida", () => {
 
 test("los alérgenos excluidos quitan las recetas que dice Python, y sólo ésas", () => {
   const casos: ReadonlyArray<readonly [Alergeno[], number]> = [
-    [["gluten"], 174],
-    [["lacteos", "gluten"], 132],
+    [["gluten"], 177],
+    [["lacteos", "gluten"], 134],
     [["huevos"], 204],
   ];
   for (const [alergenos, p] of casos) {
@@ -338,8 +338,8 @@ test("los alérgenos excluidos quitan las recetas que dice Python, y sólo ésas
       "ensalada_garbanzos",
       "quinoa_tofu_pimiento",
       "curry_garbanzos",
-      "revuelto_champinones_tofu",
       "manzana_almendras",
+      "cuscus_verduras_garbanzos",
       "ensalada_pepino_tomate_verano",
       "esparragos_horno",
       "ensalada_espinacas_sencilla",
@@ -355,6 +355,7 @@ test("los alérgenos excluidos quitan las recetas que dice Python, y sólo ésas
       "tazon_tofu_arroz",
       "ensalada_alubias_aguacate",
       "sopa_lentejas_verduras",
+      "bowl_tempeh_cuscus",
       "ensalada_kale_manzana",
       "tazon_soja_arroz_verduras",
       "ensalada_pepino_alubias_eneldo",
@@ -374,6 +375,7 @@ test("los alérgenos excluidos quitan las recetas que dice Python, y sólo ésas
       "ensalada_lentejas_verduras_vegana",
       "tofu_curry_verduras_vegano",
       "crema_lentejas_zanahoria",
+      "ensalada_cuscus_verduras_vegana",
       "tofu_salteado_pimientos_vegano",
       "lentejas_curry_boniato",
       "ensalada_garbanzos_espinacas_pasas",
@@ -422,7 +424,7 @@ test("los ingredientes excluidos quitan las recetas que los usan", () => {
   assert.equal(construirPool(CAT, restr({ ingredientesExcluidos: ["pechuga_pollo"] })).p, 203);
   assert.equal(
     construirPool(CAT, restr({ ingredientesExcluidos: ["pechuga_pollo", "arroz_blanco"] })).p,
-    196,
+    193,
   );
 });
 

@@ -377,14 +377,21 @@ test("puerta 1: un slot sin candidatos suficientes falla aunque el pool sea gran
 });
 
 test("puerta 2: si los filtros se comen más de la mitad del catálogo, la culpa es del usuario", () => {
-  // Vegana sola ya no vale: la ampliación la llevó de 19 a 73 recetas, muy
-  // por ENCIMA de MIN_POOL (40). Vegana + gluten + soja tampoco: el pool baja
-  // a 35, pero el desayuno se queda con 1 sola candidata y dispara antes la
-  // puerta 1 (slot_sin_candidatos), no la 2. Vegana + gluten + ajonjolí +
-  // sulfitos excluidos deja 34 de 240, con las tres comidas por encima del
-  // mínimo por slot — comprobado contra el catálogo real, no adivinado.
+  // Vegana sola ya no vale: la ampliación la llevó de 19 a 72 recetas, muy
+  // por ENCIMA de MIN_POOL (40). Cualquier combinación con gluten tampoco:
+  // vegana + gluten ya deja el desayuno en 2 candidatas (2026-08-19: al
+  // sustituir la levadura nutricional por queso parmesano, la única receta
+  // vegana de desayuno sin gluten —el revuelto de champiñones— pasó a llevar
+  // lácteos y dejó de ser vegana), por debajo de MIN_CANDIDATOS_SLOT_DIA (3),
+  // así que dispara antes la puerta 1 (slot_sin_candidatos), no la 2.
+  // Vegana + cacahuetes + frutos de cáscara + soja + sulfitos excluidos deja
+  // 37 de 240, con las tres comidas por encima del mínimo por slot —
+  // comprobado contra el catálogo real, no adivinado.
   const { respuesta, traza } = generar(
-    solicitud(1, { dieta: "vegana", alergenosExcluidos: ["gluten", "sesamo", "sulfitos"] }),
+    solicitud(1, {
+      dieta: "vegana",
+      alergenosExcluidos: ["cacahuetes", "frutos_de_cascara", "soja", "sulfitos"],
+    }),
     CAT,
     { hoy: HOY, seed: "1" },
   );
@@ -767,12 +774,16 @@ test("generarPlan distingue los cuatro desenlaces y nunca lanza", () => {
   const ok = generarPlan(solicitud(1), CAT, { hoy: HOY, seed: "1", vista: VISTA });
   assert.equal(ok.estado, "ok");
 
-  // Ver el test de la puerta 2 para el detalle: vegana sola, y vegana +
-  // gluten + soja, ya no sirven. Vegana + gluten + ajonjolí + sulfitos deja
-  // 34 de 240 con las tres comidas por encima del mínimo por slot, así que
-  // sigue disparando la puerta 2 y atribuyéndola al usuario.
+  // Ver el test de la puerta 2 para el detalle: vegana sola, y cualquier
+  // combinación de vegana con gluten, ya no sirven. Vegana + cacahuetes +
+  // frutos de cáscara + soja + sulfitos deja 37 de 240 con las tres comidas
+  // por encima del mínimo por slot, así que sigue disparando la puerta 2 y
+  // atribuyéndola al usuario.
   const restringido = generarPlan(
-    solicitud(1, { dieta: "vegana", alergenosExcluidos: ["gluten", "sesamo", "sulfitos"] }),
+    solicitud(1, {
+      dieta: "vegana",
+      alergenosExcluidos: ["cacahuetes", "frutos_de_cascara", "soja", "sulfitos"],
+    }),
     CAT,
     {
       hoy: HOY,

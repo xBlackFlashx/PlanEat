@@ -1121,7 +1121,7 @@
           "descripcion": "80 g"
         },
         {
-          "alimentoId": "levadura_nutricional",
+          "alimentoId": "queso_parmesano",
           "gramos": 8,
           "descripcion": "1 cda · 8 g"
         },
@@ -1144,7 +1144,7 @@
       "pasos": [
         "Desmenuza el tofu con las manos.",
         "Saltea los champiñones laminados con el aceite y el ajo, 5 minutos.",
-        "Añade el tofu desmenuzado y la levadura nutricional.",
+        "Añade el tofu desmenuzado y el queso parmesano rallado.",
         "Incorpora las espinacas al final hasta que reduzcan."
       ]
     },
@@ -1612,7 +1612,7 @@
     },
     {
       "id": "cuscus_verduras_garbanzos",
-      "titulo": "Cuscús con verduras y garbanzos",
+      "titulo": "Arroz con verduras y garbanzos",
       "minutosPreparacion": 10,
       "minutosCoccion": 15,
       "racionesBase": 1,
@@ -1623,7 +1623,7 @@
       "mediterranea": true,
       "ingredientes": [
         {
-          "alimentoId": "cuscus",
+          "alimentoId": "arroz_blanco",
           "gramos": 70,
           "descripcion": "70 g en crudo"
         },
@@ -1664,10 +1664,10 @@
         }
       ],
       "pasos": [
-        "Hidrata el cuscús con el mismo volumen de agua hirviendo y tápalo 5 minutos.",
+        "Cuece el arroz en agua con sal unas 18 minutos, hasta que esté tierno, y escurre.",
         "Saltea las verduras en dados con el aceite y el comino, 8 minutos.",
         "Añade los garbanzos escurridos y calienta 2 minutos.",
-        "Mezcla con el cuscús desgranado con un tenedor."
+        "Mezcla con el arroz cocido."
       ]
     },
     {
@@ -4152,7 +4152,7 @@
     },
     {
       "id": "tempeh_salteado_verduras",
-      "titulo": "Tempeh salteado con verduras",
+      "titulo": "Tofu salteado con verduras",
       "minutosPreparacion": 10,
       "minutosCoccion": 10,
       "racionesBase": 1,
@@ -4163,7 +4163,7 @@
       "mediterranea": false,
       "ingredientes": [
         {
-          "alimentoId": "tempeh",
+          "alimentoId": "tofu_firme",
           "gramos": 150,
           "descripcion": "150 g"
         },
@@ -4194,7 +4194,7 @@
         }
       ],
       "pasos": [
-        "Corta el tempeh en tiras y dóralo en el aceite 3 minutos.",
+        "Corta el tofu en tiras y dóralo en el aceite 3 minutos.",
         "Añade el brócoli, la zanahoria y el jengibre; saltea 6 minutos.",
         "Riega con la salsa de soya y sirve."
       ]
@@ -4617,7 +4617,7 @@
     },
     {
       "id": "bowl_tempeh_cuscus",
-      "titulo": "Bowl de tempeh y cuscús",
+      "titulo": "Bowl de tofu y arroz",
       "minutosPreparacion": 10,
       "minutosCoccion": 10,
       "racionesBase": 1,
@@ -4627,12 +4627,12 @@
       "mediterranea": true,
       "ingredientes": [
         {
-          "alimentoId": "tempeh",
+          "alimentoId": "tofu_firme",
           "gramos": 120,
           "descripcion": "120 g"
         },
         {
-          "alimentoId": "cuscus",
+          "alimentoId": "arroz_blanco",
           "gramos": 70,
           "descripcion": "70 g en crudo"
         },
@@ -4658,8 +4658,8 @@
         }
       ],
       "pasos": [
-        "Prepara el cuscús con agua hirviendo según el paquete.",
-        "Saltea el tempeh en cubos con el pimiento y la calabacita.",
+        "Cuece el arroz en agua con sal según el paquete.",
+        "Saltea el tofu en cubos con el pimiento y la calabacita.",
         "Mezcla todo y aliña con aceite y limón."
       ]
     },
@@ -4708,7 +4708,7 @@
     },
     {
       "id": "ensalada_kale_manzana",
-      "titulo": "Ensalada de kale y manzana con nueces",
+      "titulo": "Ensalada de espinacas y manzana con nueces",
       "minutosPreparacion": 10,
       "minutosCoccion": 0,
       "racionesBase": 1,
@@ -4718,7 +4718,7 @@
       "mediterranea": false,
       "ingredientes": [
         {
-          "alimentoId": "kale",
+          "alimentoId": "espinacas",
           "gramos": 60,
           "descripcion": "60 g"
         },
@@ -4744,7 +4744,7 @@
         }
       ],
       "pasos": [
-        "Masajea el kale con un poco de aceite para ablandarlo.",
+        "Aliña las espinacas con un poco de aceite.",
         "Añade la manzana en láminas y las nueces.",
         "Aliña con el resto del aceite y el vinagre."
       ]
@@ -6515,7 +6515,7 @@
     },
     {
       "id": "ensalada_tempeh_kale",
-      "titulo": "Ensalada de tempeh y kale",
+      "titulo": "Ensalada de tofu y espinacas",
       "minutosPreparacion": 10,
       "minutosCoccion": 8,
       "racionesBase": 1,
@@ -6525,12 +6525,12 @@
       "mediterranea": false,
       "ingredientes": [
         {
-          "alimentoId": "tempeh",
+          "alimentoId": "tofu_firme",
           "gramos": 120,
           "descripcion": "120 g"
         },
         {
-          "alimentoId": "kale",
+          "alimentoId": "espinacas",
           "gramos": 60,
           "descripcion": "60 g"
         },
@@ -6551,8 +6551,8 @@
         }
       ],
       "pasos": [
-        "Dora el tempeh en cubos.",
-        "Masajea el kale con un poco de aceite.",
+        "Dora el tofu en cubos.",
+        "Aliña las espinacas con un poco de aceite.",
         "Mezcla todo con la zanahoria rallada y aliña con vinagre."
       ]
     },
@@ -6781,7 +6781,7 @@
     },
     {
       "id": "tempeh_teriyaki_verduras",
-      "titulo": "Tempeh a la teriyaki con verduras",
+      "titulo": "Tofu a la teriyaki con verduras",
       "minutosPreparacion": 10,
       "minutosCoccion": 10,
       "racionesBase": 1,
@@ -6792,7 +6792,7 @@
       "mediterranea": false,
       "ingredientes": [
         {
-          "alimentoId": "tempeh",
+          "alimentoId": "tofu_firme",
           "gramos": 140,
           "descripcion": "140 g"
         },
@@ -6813,7 +6813,7 @@
         }
       ],
       "pasos": [
-        "Corta el tempeh en tiras y dora 4 minutos.",
+        "Corta el tofu en tiras y dora 4 minutos.",
         "Añade el pimiento y el brócoli; saltea 5 minutos.",
         "Incorpora la salsa teriyaki y cuece 2 minutos más."
       ]
@@ -7161,7 +7161,7 @@
     },
     {
       "id": "wrap_tempeh_verduras",
-      "titulo": "Wrap de tempeh con verduras",
+      "titulo": "Wrap de tofu con verduras",
       "minutosPreparacion": 10,
       "minutosCoccion": 8,
       "racionesBase": 1,
@@ -7177,7 +7177,7 @@
           "descripcion": "1 pieza · 60 g"
         },
         {
-          "alimentoId": "tempeh",
+          "alimentoId": "tofu_firme",
           "gramos": 100,
           "descripcion": "100 g"
         },
@@ -7198,8 +7198,8 @@
         }
       ],
       "pasos": [
-        "Dora el tempeh en tiras con el aceite 5 minutos.",
-        "Rellena la tortilla con el tempeh, la lechuga y el tomate.",
+        "Dora el tofu en tiras con el aceite 5 minutos.",
+        "Rellena la tortilla con el tofu, la lechuga y el tomate.",
         "Enrolla y sirve."
       ]
     },
@@ -7244,7 +7244,7 @@
     },
     {
       "id": "ensalada_cuscus_verduras_vegana",
-      "titulo": "Ensalada de cuscús con verduras",
+      "titulo": "Ensalada de arroz con verduras",
       "minutosPreparacion": 10,
       "minutosCoccion": 10,
       "racionesBase": 1,
@@ -7254,7 +7254,7 @@
       "mediterranea": true,
       "ingredientes": [
         {
-          "alimentoId": "cuscus",
+          "alimentoId": "arroz_blanco",
           "gramos": 70,
           "descripcion": "70 g en crudo"
         },
@@ -7280,7 +7280,7 @@
         }
       ],
       "pasos": [
-        "Prepara el cuscús con agua hirviendo según el paquete.",
+        "Cuece el arroz según el paquete y deja enfriar.",
         "Mezcla con el pepino y el tomate en dados.",
         "Aliña con aceite y limón."
       ]
@@ -7540,7 +7540,7 @@
     },
     {
       "id": "tazon_tempeh_quinoa_verduras",
-      "titulo": "Tazón de tempeh con quinoa y verduras",
+      "titulo": "Tazón de tofu con quinoa y verduras",
       "minutosPreparacion": 10,
       "minutosCoccion": 15,
       "racionesBase": 1,
@@ -7550,7 +7550,7 @@
       "mediterranea": false,
       "ingredientes": [
         {
-          "alimentoId": "tempeh",
+          "alimentoId": "tofu_firme",
           "gramos": 130,
           "descripcion": "130 g"
         },
@@ -7577,7 +7577,7 @@
       ],
       "pasos": [
         "Cuece la quinoa según el paquete.",
-        "Saltea el tempeh, la calabacita y la zanahoria en el aceite 8 minutos.",
+        "Saltea el tofu, la calabacita y la zanahoria en el aceite 8 minutos.",
         "Sirve sobre la quinoa."
       ]
     },

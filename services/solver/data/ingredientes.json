@@ -613,33 +613,6 @@
       ]
     },
     {
-      "id": "tempeh",
-      "nombre": "Tempeh",
-      "estado": "listo",
-      "categoria": "refrigerados",
-      "perecedero": true,
-      "fuente": "USDA FDC",
-      "panel": {
-        "kcal": 192,
-        "proteinaG": 20.0,
-        "carbohidratoG": 7.6,
-        "grasaG": 11.0,
-        "fibraG": 0,
-        "sodioMg": 9
-      },
-      "alergenos": [
-        "soja",
-        "tempeh"
-      ],
-      "formatosCompra": [
-        {
-          "descripcion": "bloque de 200 g",
-          "gramos": 200,
-          "precioEstimadoCents": 300
-        }
-      ]
-    },
-    {
       "id": "soja_texturizada",
       "nombre": "Soya texturizada fina",
       "estado": "crudo",
@@ -902,33 +875,6 @@
           "descripcion": "paquete de 500 g",
           "gramos": 500,
           "precioEstimadoCents": 350
-        }
-      ]
-    },
-    {
-      "id": "cuscus",
-      "nombre": "Cuscús",
-      "estado": "crudo",
-      "categoria": "despensa",
-      "perecedero": false,
-      "fuente": "USDA FDC",
-      "panel": {
-        "kcal": 376,
-        "proteinaG": 12.8,
-        "carbohidratoG": 77.0,
-        "grasaG": 0.6,
-        "fibraG": 5.0,
-        "sodioMg": 10
-      },
-      "alergenos": [
-        "cuscus",
-        "gluten"
-      ],
-      "formatosCompra": [
-        {
-          "descripcion": "paquete de 500 g",
-          "gramos": 500,
-          "precioEstimadoCents": 160
         }
       ]
     },
@@ -1899,30 +1845,6 @@
       ]
     },
     {
-      "id": "levadura_nutricional",
-      "nombre": "Levadura nutricional",
-      "estado": "listo",
-      "categoria": "despensa",
-      "perecedero": false,
-      "fuente": "USDA FDC",
-      "panel": {
-        "kcal": 325,
-        "proteinaG": 45.0,
-        "carbohidratoG": 36.0,
-        "grasaG": 5.0,
-        "fibraG": 21.0,
-        "sodioMg": 30
-      },
-      "alergenos": [],
-      "formatosCompra": [
-        {
-          "descripcion": "bote de 125 g",
-          "gramos": 125,
-          "precioEstimadoCents": 400
-        }
-      ]
-    },
-    {
       "id": "queso_parmesano",
       "nombre": "Queso parmesano rallado",
       "estado": "listo",
@@ -2291,32 +2213,6 @@
           "descripcion": "unidad de 800 g",
           "gramos": 800,
           "precioEstimadoCents": 130
-        }
-      ]
-    },
-    {
-      "id": "kale",
-      "nombre": "Kale (col rizada)",
-      "estado": "crudo",
-      "categoria": "verduleria",
-      "perecedero": true,
-      "fuente": "USDA FDC",
-      "panel": {
-        "kcal": 49,
-        "proteinaG": 4.3,
-        "carbohidratoG": 8.8,
-        "grasaG": 0.9,
-        "fibraG": 3.6,
-        "sodioMg": 38
-      },
-      "alergenos": [
-        "kale"
-      ],
-      "formatosCompra": [
-        {
-          "descripcion": "bolsa de 200 g",
-          "gramos": 200,
-          "precioEstimadoCents": 190
         }
       ]
     },

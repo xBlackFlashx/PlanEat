@@ -158,7 +158,7 @@ test("la ablación cuantifica cada eje contra el mismo p0 que Python", () => {
   assert.deepEqual(Object.fromEntries(ganancia), {
     dieta: 19,
     "alergeno:gluten": 13,
-    "tiempo:desayuno": 30,
+    "tiempo:desayuno": 32,
     slots: 7,
   });
 });
@@ -201,11 +201,11 @@ test("la dieta culpable se nombra con su nombre legible y con el p0 de la ablaci
   assert.equal(f.restriccionCulpable, "dieta");
   assert.equal(
     f.mensaje,
-    "La dieta vegana deja 73 recetas para 5 comidas al día, y no me da para un plan variado.",
+    "La dieta vegana deja 72 recetas para 5 comidas al día, y no me da para un plan variado.",
   );
-  assert.equal(f.recetasCandidatas, 73);
+  assert.equal(f.recetasCandidatas, 72);
   assert.deepEqual(f.sugerencias, [
-    "Ampliar la dieta más allá de «vegana» (+167 recetas)",
+    "Ampliar la dieta más allá de «vegana» (+168 recetas)",
     "Planificar 4 comidas al día en vez de 5",
     "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
   ]);
@@ -232,7 +232,7 @@ test("un alérgeno puede ser el culpable y decirse por su nombre", () => {
   assert.equal(f.restriccionCulpable, "alergeno:gluten");
   assert.equal(
     f.mensaje,
-    "Excluir gluten deja 58 recetas. Mantenemos la exclusión: la seguridad va primero.",
+    "Excluir gluten deja 60 recetas. Mantenemos la exclusión: la seguridad va primero.",
   );
 });
 
@@ -256,11 +256,11 @@ test("un pool vacío por ingredientes excluidos se explica y se cuantifica", () 
   assert.equal(f.restriccionCulpable, "ingredientes_excluidos");
   assert.equal(
     f.mensaje,
-    "Tus 121 ingredientes excluidos dejan fuera 211 recetas y me quedo con 0.",
+    "Tus 117 ingredientes excluidos dejan fuera 211 recetas y me quedo con 0.",
   );
   assert.equal(f.recetasCandidatas, 0);
   assert.deepEqual(f.sugerencias, [
-    "Revisar tus 121 ingredientes excluidos (+211 recetas)",
+    "Revisar tus 117 ingredientes excluidos (+211 recetas)",
     "Planificar 2 comidas al día en vez de 3",
     "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
   ]);
@@ -273,7 +273,7 @@ test("con dos slots no se ofrece quitar una comida", () => {
   const r = restr({ dieta: "vegana", slots: dos });
   const f = diagnosticarPool(CAT, r, dos, poolDe(r).p, {}, 3);
   assert.deepEqual(f.sugerencias, [
-    "Ampliar la dieta más allá de «vegana» (+111 recetas)",
+    "Ampliar la dieta más allá de «vegana» (+112 recetas)",
     "Elegir otras comidas del día (+20 recetas)",
     "Avisarte en cuanto el catálogo tenga más recetas que te encajen",
   ]);

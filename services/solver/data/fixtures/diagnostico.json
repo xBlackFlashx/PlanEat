@@ -208,7 +208,7 @@
       "fallo": {
         "restriccionCulpable": "slot_sin_candidatos:desayuno",
         "mensaje": "Sólo encuentro 1 recetas para el desayuno con tus filtros, y necesito al menos 3 para armar el plan sin repetir.",
-        "recetasCandidatas": 64,
+        "recetasCandidatas": 66,
         "sugerencias": [
           "Elegir otras comidas del día (+6 recetas)",
           "Planificar 2 comidas al día en vez de 3",
@@ -325,6 +325,6 @@
       }
     }
   ],
-  "catalogoVersion": "c1b93a8c1e0373e2",
+  "catalogoVersion": "100da762e89826bb",
   "nRecetas": 240
 }

@@ -453,6 +453,100 @@ function cantidadCompra(gramosTotales: number, piezas: ItemListaCompra["piezas"]
   return `≈ ${piezas.cantidad} ${piezas.unidad}${piezas.cantidad === 1 ? "" : "s"}`;
 }
 
+/**
+ * Icono de sección de la lista de la compra. Misma familia que `iconos.tsx`
+ * (trazo 1,75, extremos redondeados, caja de 24, `currentColor`) pero vive
+ * aquí y no allí: son formas de pasillo de supermercado, no del flujo del
+ * generador, y no tiene sentido que el resto de la app pueda importarlas.
+ * Puramente decorativo (`aria-hidden`) — el nombre de la sección, en `micro`
+ * al lado, es quien lleva el significado; por eso una categoría nueva que
+ * `NOMBRE_CATEGORIA` no reconozca cae en la forma genérica de despensa en vez
+ * de dejar el hueco vacío. */
+function IconoCategoria({ categoria, tam = 16 }: { categoria: string; tam?: number }) {
+  const trazo = (children: React.ReactNode) => (
+    <svg
+      width={tam}
+      height={tam}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {children}
+    </svg>
+  );
+
+  switch (categoria) {
+    case "verduleria":
+      return trazo(
+        <>
+          <path d="M6 20c8 0 12-6 12-14-8 0-12 6-12 14Z" />
+          <path d="M6.5 19.5C8 15 10.5 11.5 15 9" />
+        </>,
+      );
+    case "fruteria":
+      return trazo(
+        <>
+          <path d="M12 8.5c-3.3 0-5.5 2.4-5.5 5.8S9 19.5 12 19.5s5.5-2.4 5.5-5.2S15.3 8.5 12 8.5Z" />
+          <path d="M12 8.5V6" />
+          <path d="M12 6c1.2-1.6 3-1.4 3.2.2" />
+        </>,
+      );
+    case "carniceria":
+      return trazo(
+        <>
+          <path d="M9.5 14.5c-2.2 2.2-2.6 5-1 6.6 1.6 1.6 4.4 1.2 6.6-1" />
+          <path d="M9.5 14.5c-3.3-3.3-3.6-8.3.2-11 3.4-2.4 7.6-.6 8.3 3.2.7 3.9-2.2 7.1-5.8 7.8" />
+        </>,
+      );
+    case "pescaderia":
+      return trazo(
+        <>
+          <path d="M3 12c4.2-4 10.6-4 14.8 0-4.2 4-10.6 4-14.8 0Z" />
+          <path d="M17.8 12 21 9.3v5.4L17.8 12Z" />
+          <path d="M7.6 11.1h.01" />
+        </>,
+      );
+    case "lacteos":
+      return trazo(
+        <>
+          <path d="M9.5 3h5l1 4h-7l1-4Z" />
+          <path d="M8.5 7h7v12.5a1.5 1.5 0 0 1-1.5 1.5h-4a1.5 1.5 0 0 1-1.5-1.5V7Z" />
+        </>,
+      );
+    case "huevos":
+      return trazo(<path d="M12 4C9 8 6.8 12.3 6.8 15.4a5.2 5.2 0 0 0 10.4 0C17.2 12.3 15 8 12 4Z" />);
+    case "conservas":
+      return trazo(
+        <>
+          <path d="M7.5 8.5h9V19a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2V8.5Z" />
+          <path d="M7.5 8.5V6a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v2.5" />
+        </>,
+      );
+    case "refrigerados":
+      return trazo(<path d="M12 3v18M4.9 7.5l14.2 9M19.1 7.5 4.9 16.5" />);
+    case "panaderia":
+      return trazo(
+        <>
+          <path d="M5 13.2c0-5.4 3.1-9.7 7-9.7s7 4.3 7 9.7-3.1 6.3-7 6.3-7-.9-7-6.3Z" />
+          <path d="M8.2 13.2h7.6" />
+        </>,
+      );
+    case "despensa":
+    default:
+      return trazo(
+        <>
+          <path d="M4 9h16l-1.4 10.3a1.5 1.5 0 0 1-1.5 1.2H6.9a1.5 1.5 0 0 1-1.5-1.2L4 9Z" />
+          <path d="M8 9V6.5A4 4 0 0 1 12 2.5a4 4 0 0 1 4 4V9" />
+        </>,
+      );
+  }
+}
+
 function ListaCompra({ items }: { items: ItemListaCompra[] }) {
   if (items.length === 0) return null;
 
@@ -468,40 +562,52 @@ function ListaCompra({ items }: { items: ItemListaCompra[] }) {
 
   return (
     <section className="rounded-[var(--radius-lg)] bg-surface p-6 sm:p-8">
-      <h2 className="text-xl font-semibold tracking-tight">Lista de la compra</h2>
-      <p className="mt-1 text-sm text-text-2">Para los 7 días, ya sumada.</p>
-      <p className="text-sm text-text-2">
-        {items.length} {items.length === 1 ? "ingrediente distinto" : "ingredientes distintos"}.
+      <h2 className="t-1">Lista de la compra</h2>
+      <p className="mt-1 cuerpo-sm text-text-2">
+        Para los 7 días, ya sumada ·{" "}
+        <span className="tabular-nums" data-numeric>
+          {items.length}
+        </span>{" "}
+        {items.length === 1 ? "ingrediente distinto" : "ingredientes distintos"}
       </p>
 
-      <div className="mt-6 flex flex-col gap-6">
+      <div className="mt-6 flex flex-col gap-7">
         {[...grupos.entries()].map(([categoria, itemsDelGrupo]) => (
           <div key={categoria}>
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-text-2">
-              {NOMBRE_CATEGORIA[categoria] ?? categoria}
-            </h3>
-            <ul className="mt-2 flex flex-col gap-1.5">
+            <div className="flex items-center gap-2 border-b border-line pb-2">
+              <span
+                aria-hidden="true"
+                className="grid size-7 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-surface-2 text-text-2"
+              >
+                <IconoCategoria categoria={categoria} />
+              </span>
+              <h3 className="micro text-text-2">{NOMBRE_CATEGORIA[categoria] ?? categoria}</h3>
+              <span className="ml-auto tabular-nums micro text-text-3" data-numeric>
+                {itemsDelGrupo.length}
+              </span>
+            </div>
+            <ul className="mt-1 flex flex-col">
               {itemsDelGrupo.map((item) => (
                 <li
                   key={item.alimentoId}
-                  className="border-b border-line py-1.5 text-[15px] last:border-0"
+                  className="border-b border-line py-2.5 text-[15px] last:border-0"
                 >
                   <div className="flex flex-col gap-1">
                     <div className="flex items-baseline justify-between gap-3">
-                      <span>
+                      <span className="text-text">
                         {item.nombre}
                         {item.enRecetas > 1 && (
-                          <span className="ml-2 text-sm text-text-2">
+                          <span className="ml-1.5 cuerpo-sm text-text-3">
                             (en {item.enRecetas} recetas)
                           </span>
                         )}
                       </span>
-                      <span className="shrink-0 tabular-nums text-text-2" data-numeric>
+                      <span className="shrink-0 cifra text-text" data-numeric>
                         {cantidadCompra(item.gramos, item.piezas)}
                       </span>
                     </div>
                     {item.desglose && (
-                      <ul className="flex flex-col gap-0.5 pl-3 text-sm text-text-2">
+                      <ul className="mt-0.5 flex flex-col gap-1 border-l border-line pl-3 cuerpo-sm text-text-2">
                         {item.desglose.map((variante) => (
                           <li
                             key={variante.nombre}

@@ -52,12 +52,12 @@
               "cena"
             ],
             "nItems": 3,
-            "kcal": 1903.9,
+            "kcal": 1906.9,
             "kcalEnBanda": true,
-            "proteinaG": 127.6,
+            "proteinaG": 127.0,
             "proteinaEnRango": true,
-            "carbohidratoG": 195.7,
-            "grasaG": 68.6,
+            "carbohidratoG": 201.0,
+            "grasaG": 69.4,
             "sumaComidasCuadra": true
           }
         ],
@@ -75,63 +75,63 @@
                 "items": [
                   {
                     "recetaId": "tostada_queso_tomate",
-                    "factorRacion": 1.1,
+                    "factorRacion": 1.0,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 244.0,
-                  "proteinaG": 13.4,
-                  "carbohidratoG": 22.0,
-                  "grasaG": 10.9,
-                  "fibraG": 3.3,
-                  "sodioMg": 264.1
+                  "kcal": 221.8,
+                  "proteinaG": 12.1,
+                  "carbohidratoG": 20.0,
+                  "grasaG": 9.9,
+                  "fibraG": 3.0,
+                  "sodioMg": 240.1
                 }
               },
               {
                 "slot": "comida",
                 "items": [
                   {
-                    "recetaId": "pasta_champinones_parmesano",
+                    "recetaId": "wrap_atun_aguacate",
                     "factorRacion": 1.8,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 863.0,
-                  "proteinaG": 40.1,
-                  "carbohidratoG": 118.5,
-                  "grasaG": 26.9,
-                  "fibraG": 15.2,
-                  "sodioMg": 437.8
+                  "kcal": 716.3,
+                  "proteinaG": 59.5,
+                  "carbohidratoG": 65.6,
+                  "grasaG": 25.7,
+                  "fibraG": 13.6,
+                  "sodioMg": 1214.5
                 }
               },
               {
                 "slot": "cena",
                 "items": [
                   {
-                    "recetaId": "lomo_cerdo_boniato_horno",
-                    "factorRacion": 1.8,
+                    "recetaId": "tazon_tofu_arroz",
+                    "factorRacion": 1.75,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 796.9,
-                  "proteinaG": 74.1,
-                  "carbohidratoG": 55.2,
-                  "grasaG": 30.8,
-                  "fibraG": 8.9,
-                  "sodioMg": 327.8
+                  "kcal": 968.8,
+                  "proteinaG": 55.3,
+                  "carbohidratoG": 115.5,
+                  "grasaG": 33.8,
+                  "fibraG": 14.2,
+                  "sodioMg": 1061.9
                 }
               }
             ],
             "totales": {
-              "kcal": 1903.9,
-              "proteinaG": 127.6,
-              "carbohidratoG": 195.7,
-              "grasaG": 68.6,
-              "fibraG": 27.4,
-              "sodioMg": 1029.6
+              "kcal": 1906.9,
+              "proteinaG": 127.0,
+              "carbohidratoG": 201.0,
+              "grasaG": 69.4,
+              "fibraG": 30.8,
+              "sodioMg": 2516.5
             },
             "objetivo": {
               "kcal": 2000.0,
@@ -153,9 +153,9 @@
             }
           }
         ],
-        "msTranscurridos": 12,
+        "msTranscurridos": 17,
         "seed": "1",
-        "versionCatalogo": "c1b93a8c1e0373e2",
+        "versionCatalogo": "100da762e89826bb",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
@@ -355,7 +355,7 @@
         ],
         "msTranscurridos": 3,
         "seed": "7",
-        "versionCatalogo": "c1b93a8c1e0373e2",
+        "versionCatalogo": "100da762e89826bb",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
@@ -1495,9 +1495,9 @@
             }
           }
         ],
-        "msTranscurridos": 42,
+        "msTranscurridos": 41,
         "seed": "42",
-        "versionCatalogo": "c1b93a8c1e0373e2",
+        "versionCatalogo": "100da762e89826bb",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
@@ -1895,7 +1895,7 @@
         ],
         "msTranscurridos": 16,
         "seed": "1",
-        "versionCatalogo": "c1b93a8c1e0373e2",
+        "versionCatalogo": "100da762e89826bb",
         "versionGenerador": "1.5.0",
         "pool": 138,
         "catalogoEstrecho": false
@@ -1999,7 +1999,7 @@
         ],
         "maxUsosPorReceta": 2
       },
-      "poolTraza": 174,
+      "poolTraza": 177,
       "planReferencia": {
         "ok": true,
         "dias": [
@@ -2174,11 +2174,11 @@
             }
           }
         ],
-        "msTranscurridos": 12,
+        "msTranscurridos": 10,
         "seed": "12",
-        "versionCatalogo": "c1b93a8c1e0373e2",
+        "versionCatalogo": "100da762e89826bb",
         "versionGenerador": "1.5.0",
-        "pool": 174,
+        "pool": 177,
         "catalogoEstrecho": false
       }
     },
@@ -2269,12 +2269,12 @@
               "cena"
             ],
             "nItems": 3,
-            "kcal": 1525.3,
+            "kcal": 1634.7,
             "kcalEnBanda": true,
-            "proteinaG": 128.1,
+            "proteinaG": 126.0,
             "proteinaEnRango": true,
-            "carbohidratoG": 131.7,
-            "grasaG": 62.6,
+            "carbohidratoG": 176.6,
+            "grasaG": 49.6,
             "sumaComidasCuadra": true
           },
           {
@@ -2285,12 +2285,12 @@
               "cena"
             ],
             "nItems": 3,
-            "kcal": 1513.6,
-            "kcalEnBanda": false,
-            "proteinaG": 126.4,
+            "kcal": 1641.6,
+            "kcalEnBanda": true,
+            "proteinaG": 116.3,
             "proteinaEnRango": true,
-            "carbohidratoG": 115.9,
-            "grasaG": 67.7,
+            "carbohidratoG": 163.4,
+            "grasaG": 56.1,
             "sumaComidasCuadra": true
           },
           {
@@ -2301,12 +2301,12 @@
               "cena"
             ],
             "nItems": 3,
-            "kcal": 1525.3,
+            "kcal": 1634.7,
             "kcalEnBanda": true,
-            "proteinaG": 128.1,
+            "proteinaG": 126.0,
             "proteinaEnRango": true,
-            "carbohidratoG": 131.7,
-            "grasaG": 62.6,
+            "carbohidratoG": 176.6,
+            "grasaG": 49.6,
             "sumaComidasCuadra": true
           }
         ],
@@ -2324,17 +2324,17 @@
                 "items": [
                   {
                     "recetaId": "queso_batido_fresas",
-                    "factorRacion": 1.35,
+                    "factorRacion": 1.8,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 289.0,
-                  "proteinaG": 30.7,
-                  "carbohidratoG": 34.8,
-                  "grasaG": 5.5,
-                  "fibraG": 8.6,
-                  "sodioMg": 172.9
+                  "kcal": 385.4,
+                  "proteinaG": 40.9,
+                  "carbohidratoG": 46.3,
+                  "grasaG": 7.3,
+                  "fibraG": 11.5,
+                  "sodioMg": 230.6
                 }
               },
               {
@@ -2359,28 +2359,28 @@
                 "slot": "cena",
                 "items": [
                   {
-                    "recetaId": "tempeh_teriyaki_verduras",
-                    "factorRacion": 1.8,
+                    "recetaId": "pasta_gambas_ajillo",
+                    "factorRacion": 1.15,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 598.3,
-                  "proteinaG": 57.6,
-                  "carbohidratoG": 41.3,
-                  "grasaG": 28.6,
-                  "fibraG": 6.1,
-                  "sodioMg": 1221.5
+                  "kcal": 611.4,
+                  "proteinaG": 45.3,
+                  "carbohidratoG": 74.6,
+                  "grasaG": 13.8,
+                  "fibraG": 3.1,
+                  "sodioMg": 425.8
                 }
               }
             ],
             "totales": {
-              "kcal": 1525.3,
-              "proteinaG": 128.1,
-              "carbohidratoG": 131.7,
-              "grasaG": 62.6,
-              "fibraG": 20.2,
-              "sodioMg": 3290.4
+              "kcal": 1634.7,
+              "proteinaG": 126.0,
+              "carbohidratoG": 176.6,
+              "grasaG": 49.6,
+              "fibraG": 20.0,
+              "sodioMg": 2552.4
             },
             "objetivo": {
               "kcal": 1600.0,
@@ -2408,64 +2408,64 @@
                 "slot": "desayuno",
                 "items": [
                   {
-                    "recetaId": "batido_fresas_platano",
-                    "factorRacion": 1.8,
+                    "recetaId": "huevos_duros_faciles",
+                    "factorRacion": 1.15,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 285.1,
-                  "proteinaG": 9.8,
-                  "carbohidratoG": 57.3,
-                  "grasaG": 4.4,
-                  "fibraG": 7.3,
-                  "sodioMg": 98.3
+                  "kcal": 164.5,
+                  "proteinaG": 14.5,
+                  "carbohidratoG": 0.8,
+                  "grasaG": 10.9,
+                  "fibraG": 0.0,
+                  "sodioMg": 163.3
                 }
               },
               {
                 "slot": "comida",
                 "items": [
                   {
-                    "recetaId": "tempeh_teriyaki_verduras",
+                    "recetaId": "pasta_gambas_ajillo",
                     "factorRacion": 1.8,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 598.3,
-                  "proteinaG": 57.6,
-                  "carbohidratoG": 41.3,
-                  "grasaG": 28.6,
-                  "fibraG": 6.1,
-                  "sodioMg": 1221.5
+                  "kcal": 957.0,
+                  "proteinaG": 71.0,
+                  "carbohidratoG": 116.8,
+                  "grasaG": 21.6,
+                  "fibraG": 4.8,
+                  "sodioMg": 666.5
                 }
               },
               {
                 "slot": "cena",
                 "items": [
                   {
-                    "recetaId": "salmon_teriyaki_brocoli",
-                    "factorRacion": 1.45,
+                    "recetaId": "wrap_pavo_espinacas_queso",
+                    "factorRacion": 1.8,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 630.2,
-                  "proteinaG": 59.0,
-                  "carbohidratoG": 17.2,
-                  "grasaG": 34.7,
-                  "fibraG": 5.0,
-                  "sodioMg": 1050.4
+                  "kcal": 520.1,
+                  "proteinaG": 30.8,
+                  "carbohidratoG": 45.8,
+                  "grasaG": 23.6,
+                  "fibraG": 5.3,
+                  "sodioMg": 1394.6
                 }
               }
             ],
             "totales": {
-              "kcal": 1513.6,
-              "proteinaG": 126.4,
-              "carbohidratoG": 115.9,
-              "grasaG": 67.7,
-              "fibraG": 18.4,
-              "sodioMg": 2370.1
+              "kcal": 1641.6,
+              "proteinaG": 116.3,
+              "carbohidratoG": 163.4,
+              "grasaG": 56.1,
+              "fibraG": 10.2,
+              "sodioMg": 2224.5
             },
             "objetivo": {
               "kcal": 1600.0,
@@ -2494,17 +2494,17 @@
                 "items": [
                   {
                     "recetaId": "queso_batido_fresas",
-                    "factorRacion": 1.35,
+                    "factorRacion": 1.8,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 289.0,
-                  "proteinaG": 30.7,
-                  "carbohidratoG": 34.8,
-                  "grasaG": 5.5,
-                  "fibraG": 8.6,
-                  "sodioMg": 172.9
+                  "kcal": 385.4,
+                  "proteinaG": 40.9,
+                  "carbohidratoG": 46.3,
+                  "grasaG": 7.3,
+                  "fibraG": 11.5,
+                  "sodioMg": 230.6
                 }
               },
               {
@@ -2529,28 +2529,28 @@
                 "slot": "cena",
                 "items": [
                   {
-                    "recetaId": "tempeh_teriyaki_verduras",
-                    "factorRacion": 1.8,
+                    "recetaId": "pasta_gambas_ajillo",
+                    "factorRacion": 1.15,
                     "bloqueado": false
                   }
                 ],
                 "totales": {
-                  "kcal": 598.3,
-                  "proteinaG": 57.6,
-                  "carbohidratoG": 41.3,
-                  "grasaG": 28.6,
-                  "fibraG": 6.1,
-                  "sodioMg": 1221.5
+                  "kcal": 611.4,
+                  "proteinaG": 45.3,
+                  "carbohidratoG": 74.6,
+                  "grasaG": 13.8,
+                  "fibraG": 3.1,
+                  "sodioMg": 425.8
                 }
               }
             ],
             "totales": {
-              "kcal": 1525.3,
-              "proteinaG": 128.1,
-              "carbohidratoG": 131.7,
-              "grasaG": 62.6,
-              "fibraG": 20.2,
-              "sodioMg": 3290.4
+              "kcal": 1634.7,
+              "proteinaG": 126.0,
+              "carbohidratoG": 176.6,
+              "grasaG": 49.6,
+              "fibraG": 20.0,
+              "sodioMg": 2552.4
             },
             "objetivo": {
               "kcal": 1600.0,
@@ -2572,15 +2572,15 @@
             }
           }
         ],
-        "msTranscurridos": 20,
+        "msTranscurridos": 15,
         "seed": "5",
-        "versionCatalogo": "c1b93a8c1e0373e2",
+        "versionCatalogo": "100da762e89826bb",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
       }
     }
   ],
-  "catalogoVersion": "c1b93a8c1e0373e2",
+  "catalogoVersion": "100da762e89826bb",
   "nRecetas": 240
 }
