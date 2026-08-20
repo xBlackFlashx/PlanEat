@@ -777,14 +777,22 @@ test("scoreSlot con el pool del catálogo semilla se mantiene en el orden de los
   }
   const usPorLlamada = ((performance.now() - t0) * 1000) / REPETICIONES;
   // 670 llamadas por semana es la cota alta de la auditoría. El umbral es
-  // deliberadamente laxo (10 µs por llamada con P=36, es decir ~7 ms por semana
-  // entera): no está para medir la máquina de nadie, está para que una
-  // regresión de dos órdenes de magnitud —un BigInt, un array de objetos, un
-  // popcount metido otra vez dentro del bucle— salte en CI en vez de aparecer
-  // como una demo que se cuelga.
+  // deliberadamente laxo: no está para medir la máquina de nadie, está para
+  // que una regresión de dos órdenes de magnitud —un BigInt, un array de
+  // objetos, un popcount metido otra vez dentro del bucle— salte en CI en vez
+  // de aparecer como una demo que se cuelga.
+  //
+  // El umbral era 10 µs con P=36 (catálogo de 91 recetas). El catálogo creció
+  // a 240 recetas (P=240 en el pool semilla de esta prueba) y el scoring ganó
+  // el término (h) de "ingredientes nuevos" —trabajo real, no ruido—, así que
+  // 10 µs ya no tenía margen: local (Apple Silicon) mide 2.4 µs, pero el
+  // runner compartido de GitHub Actions, más lento, mide ~10.2 µs y hacía
+  // fallar la prueba por una décima. 50 µs sigue siendo ~20x el caso local y
+  // deja sitio de sobra a la variación de CI sin dejar de atrapar una
+  // regresión real (dos órdenes de magnitud serían >200 µs).
   assert.ok(
-    usPorLlamada < 10,
-    `scoreSlot tarda ${usPorLlamada.toFixed(2)} µs con P=${pool.p}, y no debería pasar de 10`,
+    usPorLlamada < 50,
+    `scoreSlot tarda ${usPorLlamada.toFixed(2)} µs con P=${pool.p}, y no debería pasar de 50`,
   );
   console.log(
     `      scoreSlot: ${usPorLlamada.toFixed(2)} µs/llamada con P=${pool.p} ` +
