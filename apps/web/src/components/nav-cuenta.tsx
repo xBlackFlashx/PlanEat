@@ -13,12 +13,26 @@ import { IconoCorona } from "./iconos";
  * llega la sesión), sin sesión (Entrar + Suscríbete) y con sesión (Admin si
  * `esAdmin`, el correo y Salir, más Suscríbete o la insignia Pro según el
  * tier).
+ *
+ * Jerarquía deliberada: "Suscríbete" es la conversión que le interesa al
+ * negocio, así que es el único botón lleno (`BOTON_DESTACADO`). "Entrar" es
+ * un botón, pero discreto (`BOTON_DISCRETO`, mismo lenguaje que
+ * `ThemeToggle`: borde, sin relleno) — necesita leerse como acción, no como
+ * texto suelto, pero sin competir con Suscríbete. "Admin"/"Salir"/el correo
+ * siguen como enlace de texto plano (`ENLACE`): son utilidad de cuenta, no
+ * llamadas a la acción.
  */
 const ENLACE = "text-sm text-text-2 underline-offset-4 hover:text-text hover:underline";
 
-/** Insignia dorada del estado Pro. Píldora, no enlace de texto plano: se
- * nota a propósito distinta de "Suscríbete", que sí sigue el mismo patrón
- * que "Admin"/"Salir". */
+const BOTON_DESTACADO =
+  "inline-flex min-h-11 items-center rounded-lg bg-brand px-4 text-sm font-medium text-on-brand transition-colors dur-rapida ease-suave hover:bg-brand-hover";
+
+const BOTON_DISCRETO =
+  "inline-flex min-h-11 items-center rounded-lg border border-line px-3.5 text-sm text-text-2 transition-colors dur-rapida ease-suave hover:bg-surface-2 hover:text-text";
+
+/** Insignia dorada del estado Pro. Píldora, para que se note distinta de
+ * "Admin"/"Salir" (enlace de texto plano) aunque ahora comparta protagonismo
+ * visual con "Suscríbete" (también destacado, mismo motivo: conversión). */
 const INSIGNIA_PRO =
   "inline-flex items-center gap-1.5 rounded-full bg-gold px-3 py-1 text-sm font-semibold text-on-gold transition-colors dur-rapida ease-suave hover:bg-gold-hover";
 
@@ -32,10 +46,10 @@ export function NavCuenta() {
   if (status === "unauthenticated" || !sesion?.user) {
     return (
       <div className="flex items-center gap-3">
-        <Link href="/precios" className={ENLACE}>
+        <Link href="/precios" className={BOTON_DESTACADO}>
           Suscríbete
         </Link>
-        <Link href="/entrar" className={ENLACE}>
+        <Link href="/entrar" className={BOTON_DISCRETO}>
           Entrar
         </Link>
       </div>
@@ -56,7 +70,7 @@ export function NavCuenta() {
           Pro
         </Link>
       ) : (
-        <Link href="/precios" className={ENLACE}>
+        <Link href="/precios" className={BOTON_DESTACADO}>
           Suscríbete
         </Link>
       )}
