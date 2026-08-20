@@ -34,6 +34,7 @@ from . import (
     W_DESP,
     W_ESC,
     W_FIT,
+    W_NUEVO,
     W_REP,
     W_SOL,
 )
@@ -196,6 +197,7 @@ class Contexto:
     pen_rep: np.ndarray  # (P,) float32
     peso_coste: float  # 0 si no hay presupuesto o faltan precios
     umbral_coste: float  # cents por ración que el presupuesto permite
+    escala_nuevos: float  # §2.2h: mayor n_ingr del pool, para normalizar pen_nuevos
     tau: float
     coste_desactivado_por: str | None = None
     # --- Restricciones duras de variedad semanal (§5.1) ---------------------
@@ -264,6 +266,13 @@ def contexto_de(cat, pool: Pool, restr, n_dias: int, tau: float) -> Contexto:
     else:
         umbral = presupuesto / max(1, n_dias * len(slots) * max(1, restr.comensales))
 
+    # §2.2h: normalizador de pen_nuevos. Es del POOL, no del catálogo entero,
+    # por la misma razón que la puerta de coste mide sobre el pool: lo que
+    # importa es el tamaño de receta más grande que el usuario puede comer,
+    # no el global. `max(1, ...)` es la misma guarda de división por cero que
+    # `n_seguro` usa fila a fila.
+    escala_nuevos = float(max(1, int(pool.n_ingr.max()))) if pool.p else 1.0
+
     return Contexto(
         cuota=cuotas_de(slots),
         topes=topes_por_slot(restr),
@@ -274,6 +283,7 @@ def contexto_de(cat, pool: Pool, restr, n_dias: int, tau: float) -> Contexto:
         ),
         peso_coste=peso_coste,
         umbral_coste=umbral,
+        escala_nuevos=escala_nuevos,
         tau=tau,
         coste_desactivado_por=motivo,
     )
@@ -364,6 +374,18 @@ def score_slot(
         np.bitwise_count(pool.bits & ctx.bits_semana).sum(axis=1).astype(np.float32)
         / n_seguro
     )
+    # (h) Ingredientes nuevos: penaliza el conteo ABSOLUTO, no la fracción. §2.2h
+    # `sol` premia la fracción ya cubierta y por eso trata igual a una receta de
+    # 2 ingredientes con 0 en la despensa (sol=0, añade 2) que a una de 10
+    # ingredientes con 0 en la despensa (sol=0, añade 10): misma sol, impacto
+    # muy distinto en la lista de la compra. Se normaliza por el mayor n_ingr
+    # del pool (no por el de la propia receta, que es lo que ya hace `sol`) para
+    # que el término mida "cuánto pesa esto en la despensa de la semana", no
+    # "qué fracción de sí misma repite".
+    nuevos = (
+        np.bitwise_count(pool.bits & ~ctx.bits_semana).sum(axis=1).astype(np.float32)
+        / ctx.escala_nuevos
+    )
 
     if ctx.peso_coste > 0.0:
         b = max(ctx.umbral_coste, 1e-6)
@@ -382,6 +404,7 @@ def score_slot(
         + W_AFIN * afin
         - ctx.peso_coste * cost
         - W_REP * ctx.pen_rep
+        - W_NUEVO * nuevos
     )
     return np.where(admisible, s.astype(np.float32), -np.inf)
 

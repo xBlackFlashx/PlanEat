@@ -36,9 +36,13 @@ import {
   SLOTS,
   TOP_K,
   W_AFIN,
+  W_COST,
+  W_DESP,
   W_ESC,
   W_FIT,
+  W_NUEVO,
   W_REP,
+  W_SOL,
 } from "../src/constantes.ts";
 import { construirPool, invalidarCachePool } from "../src/pool.ts";
 import { contadorDeSorteos, rngDe } from "../src/rng.ts";
@@ -449,30 +453,39 @@ test("el tope de minutos es POR SLOT y no filtra el pool entero", () => {
   assert.ok(admisibles > 0, "el tope del desayuno se ha comido las comidas");
 });
 
-test("con el residuo de kcal cubierto, esc vale 0 para todo el pool, no 1", () => {
-  // Uniforme, así que no discrimina; pero desplaza el score absoluto en −2,0 y
-  // con ello la media y la σ del z-score del muestreo. Reproducirlo tal cual.
+test("con el residuo de kcal cubierto, esc vale 0 para todo el pool y sólo (h) discrimina", () => {
+  // fit = 0,5 y esc = 0 para todos; sin despensa, semana, coste ni repetición
+  // el score deja de ser una constante desde que existe W_NUEVO (§2.2h): cada
+  // fila resta W_NUEVO·nuevoPre[i], y nuevoPre varía con el tamaño de la
+  // receta (más ingredientes con bitsSemana vacío = más "nuevos"). Antes de
+  // esta ronda el score SÍ era exactamente W_FIT·0,5 para todo el pool; ya no
+  // lo es, y eso es justo el punto del término.
   const e = REF.escenarios.find((x) => x.nombre === "residuo-cubierto");
   assert.ok(e !== undefined);
   const { pool, ctx } = montar(e);
   const salida = new Float32Array(pool.p);
   scoreSlot(pool, ctx, e.slot, f64(e.residuo), new Uint8Array(pool.p), salida);
-  // fit = 0,5 y esc = 0 para todos; sin despensa, semana, coste ni repetición
-  // el score es exactamente W_FIT·0,5.
   for (let i = 0; i < pool.p; i++) {
     if (!Number.isFinite(salida[i])) continue;
-    casiIgual(salida[i] ?? NaN, W_FIT * 0.5, 1e-6, `fila ${i}`);
+    const esperado = W_FIT * 0.5 - W_NUEVO * (ctx.nuevoPre[i] ?? 0);
+    casiIgual(salida[i] ?? NaN, esperado, 1e-6, `fila ${i}`);
   }
 });
 
-test("el rango del score es [-3,5 ; 8,7], que es el del código y no el de DISENO", () => {
+test("el rango del score es [-6,5 ; 9,9], que es el del código y no el de DISENO", () => {
   // W_AFIN vale 0,0: el término existe y no aporta. DISENO §2.2 escribe 0,8·φ,
   // y el documento se equivoca. Si alguien «corrige» el peso, este test cae.
+  // El máximo (fit=esc=desp=sol=1, nuevo=0) y el mínimo (fit=esc=desp=sol=0,
+  // cost=penRep=nuevo=1) se han movido con cada ronda de W_SOL/W_NUEVO de esta
+  // sesión: 9,5 (W_SOL=2,0) -> 10,7 (W_SOL=3,2) -> ahora, con W_SOL=2,4 y la
+  // llegada de W_NUEVO (primer término negativo aparte de W_REP), el máximo
+  // baja a 9,9 y el mínimo se hunde de −3,5 a −6,5. Ver el comentario de
+  // W_AFIN en constantes.ts para la cuenta completa.
   assert.equal(W_AFIN, 0.0);
-  const maximo = W_FIT + W_ESC + 1.5 + 1.2 + W_AFIN;
-  const minimo = -1.5 - W_REP;
-  casiIgual(maximo, 8.7, 1e-12, "máximo del score");
-  casiIgual(minimo, -3.5, 1e-12, "mínimo del score");
+  const maximo = W_FIT + W_ESC + W_DESP + W_SOL + W_AFIN;
+  const minimo = -W_COST - W_REP - W_NUEVO;
+  casiIgual(maximo, 9.9, 1e-12, "máximo del score");
+  casiIgual(minimo, -6.5, 1e-12, "mínimo del score");
   for (const e of REF.escenarios) {
     for (const s of e.score) {
       const v = num(s);
@@ -764,14 +777,22 @@ test("scoreSlot con el pool del catálogo semilla se mantiene en el orden de los
   }
   const usPorLlamada = ((performance.now() - t0) * 1000) / REPETICIONES;
   // 670 llamadas por semana es la cota alta de la auditoría. El umbral es
-  // deliberadamente laxo (10 µs por llamada con P=36, es decir ~7 ms por semana
-  // entera): no está para medir la máquina de nadie, está para que una
-  // regresión de dos órdenes de magnitud —un BigInt, un array de objetos, un
-  // popcount metido otra vez dentro del bucle— salte en CI en vez de aparecer
-  // como una demo que se cuelga.
+  // deliberadamente laxo: no está para medir la máquina de nadie, está para
+  // que una regresión de dos órdenes de magnitud —un BigInt, un array de
+  // objetos, un popcount metido otra vez dentro del bucle— salte en CI en vez
+  // de aparecer como una demo que se cuelga.
+  //
+  // El umbral era 10 µs con P=36 (catálogo de 91 recetas). El catálogo creció
+  // a 240 recetas (P=240 en el pool semilla de esta prueba) y el scoring ganó
+  // el término (h) de "ingredientes nuevos" —trabajo real, no ruido—, así que
+  // 10 µs ya no tenía margen: local (Apple Silicon) mide 2.4 µs, pero el
+  // runner compartido de GitHub Actions, más lento, mide ~10.2 µs y hacía
+  // fallar la prueba por una décima. 50 µs sigue siendo ~20x el caso local y
+  // deja sitio de sobra a la variación de CI sin dejar de atrapar una
+  // regresión real (dos órdenes de magnitud serían >200 µs).
   assert.ok(
-    usPorLlamada < 10,
-    `scoreSlot tarda ${usPorLlamada.toFixed(2)} µs con P=${pool.p}, y no debería pasar de 10`,
+    usPorLlamada < 50,
+    `scoreSlot tarda ${usPorLlamada.toFixed(2)} µs con P=${pool.p}, y no debería pasar de 50`,
   );
   console.log(
     `      scoreSlot: ${usPorLlamada.toFixed(2)} µs/llamada con P=${pool.p} ` +

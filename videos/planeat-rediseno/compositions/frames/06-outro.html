@@ -1,0 +1,122 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      container-type: size;
+      overflow: hidden;
+    }
+
+    .outro-06-bg {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+    }
+
+    .outro-06-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .outro-06-word {
+      display: flex;
+      font-family: Poppins, sans-serif;
+      font-weight: 400;
+      font-size: 9cqw;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    .outro-06-ltr {
+      display: inline-block;
+      will-change: transform, opacity;
+    }
+
+    .outro-06-rule {
+      width: 60px;
+      height: 4px;
+      margin-top: 32px;
+      border-radius: 2px;
+      background: #047857;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="06-outro" data-duration="4"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div
+      class="outro-06-bg clip"
+      data-start="0"
+      data-duration="4"
+      data-track-index="0"
+    ></div>
+
+    <div
+      class="outro-06-content clip"
+      data-start="0"
+      data-duration="4"
+      data-track-index="1"
+    >
+      <div class="outro-06-word">
+        <span class="outro-06-ltr">P</span>
+        <span class="outro-06-ltr">l</span>
+        <span class="outro-06-ltr">a</span>
+        <span class="outro-06-ltr">n</span>
+        <span class="outro-06-ltr">E</span>
+        <span class="outro-06-ltr">a</span>
+        <span class="outro-06-ltr">t</span>
+      </div>
+      <div class="outro-06-rule"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0.0-1.6s): the wordmark's own letters settle into the
+      // lockup — a slightly lower / smaller start, long-tail decel,
+      // staggered so the word visibly assembles (the Adapt's signature
+      // move, sans a separate icon mark).
+      tl.fromTo(
+        ".outro-06-ltr",
+        { opacity: 0, y: 26, scale: 0.94 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.85,
+          ease: "power3.out",
+          stagger: 0.05,
+        },
+        0,
+      );
+
+      // Scene 2 (1.6-4.0s): the accent-line self-draws beneath the
+      // settled wordmark, then everything holds dead still through the
+      // render's actual end (final frame — no exit tween).
+      tl.fromTo(
+        ".outro-06-rule",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.7, ease: "power2.out" },
+        1.6,
+      );
+
+      window.__timelines["06-outro"] = tl;
+    })();
+  </script>
+</template>

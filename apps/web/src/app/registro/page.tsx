@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { PanelFotoAuth } from "@/components/panel-foto-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 import { FormularioRegistro } from "./formulario-registro";
@@ -25,20 +26,27 @@ export default function PaginaRegistro() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center px-4 py-16 sm:px-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Crear cuenta</h1>
-        <p className="mt-2 text-[15px] text-text-2">
-          Para el plan Pro semanal y su lista de la compra. Gratis sigue sin
-          cuenta.
-        </p>
-        <FormularioRegistro />
-        <p className="mt-6 text-sm text-text-2">
-          ¿Ya tienes cuenta?{" "}
-          <Link href="/entrar" className="font-medium text-text underline-offset-4 hover:underline">
-            Entra
-          </Link>
-        </p>
-      </main>
+      <div className="grid flex-1 lg:grid-cols-2">
+        <main className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center px-4 py-16 sm:px-6">
+          <h1 className="text-2xl font-semibold tracking-tight">Crear cuenta</h1>
+          <p className="mt-2 text-[15px] text-text-2">
+            Para el plan Pro semanal y su lista de la compra. Gratis sigue sin
+            cuenta.
+          </p>
+          <FormularioRegistro />
+          <p className="mt-6 text-sm text-text-2">
+            ¿Ya tienes cuenta?{" "}
+            <Link href="/entrar" className="font-medium text-text underline-offset-4 hover:underline">
+              Entra
+            </Link>
+          </p>
+        </main>
+
+        <PanelFotoAuth
+          recetaId="gambas_verduras_quinoa"
+          frase="La semana completa resuelta: qué comer y qué comprar, con la lista ya sumada."
+        />
+      </div>
     </div>
   );
 }

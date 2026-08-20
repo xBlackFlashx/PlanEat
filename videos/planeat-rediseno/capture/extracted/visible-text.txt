@@ -1,0 +1,185 @@
+[span] PlanEat
+[a] Sistema de diseño
+[a] Generar mi día
+[button] Oscuro
+[h1] Tu semana, resuelta.
+[p] Qué comer, cuánto cuesta y qué comprar. Sin listas de sesenta ingredientes.
+[p] Tu perfil
+[p] Soy
+[label] Sexo
+[option] mujer
+[option] hombre
+[label] Edad en años
+[p] años, mido
+[label] Altura en centímetros
+[p] cm y peso
+[label] Peso en kilogramos
+[p] kg.
+[p] Movimiento y objetivo
+[p] Me muevo
+[label] Nivel de actividad
+[option] casi nada
+[option] poco
+[option] lo normal
+[option] bastante
+[option] mucho
+[p] y quiero
+[label] Objetivo
+[option] adelgazar
+[option] mantenerme
+[option] ganar músculo
+[span] Algo de movimiento, 1 o 2 días de ejercicio suave
+[p] Elige tu semana típica, no la más ambiciosa.
+[p] Cómo comes
+[p] Como
+[label] Tipo de dieta
+[option] de todo
+[option] mediterráneo
+[option] vegetariano
+[option] vegano
+[option] pescetariano
+[option] bajo en carbohidratos
+[label] Comidas al día
+[p] comidas.
+[p] Qué evitas
+[p] Filtra por seguridad alimentaria, no sustituye leer la etiqueta del producto que compres.
+[label] gluten
+[label] crustáceos
+[label] huevos
+[label] pescado
+[label] cacahuetes
+[label] soja
+[label] lácteos
+[label] frutos de cáscara
+[label] apio
+[label] mostaza
+[label] sésamo
+[label] sulfitos
+[label] altramuces
+[label] moluscos
+[summary] Más alimentos a excluir
+[p] Despensa
+[label] Aceite de oliva virgen extra
+[label] Almendras
+[label] Arroz blanco
+[label] Arroz integral
+[label] Copos de avena
+[label] Bebida de avena
+[label] Comino molido
+[label] Crema de cacahuete
+[label] Cuscús
+[label] Lentejas secas
+[label] Levadura nutricional
+[label] Miel
+[label] Nueces
+[label] Orégano seco
+[label] Pasta integral
+[label] Pasta
+[label] Pimentón dulce
+[label] Pimienta negra molida
+[label] Quinoa
+[label] Sal
+[label] Semillas de chía
+[label] Vinagre de vino
+[p] Conservas
+[label] Aceitunas verdes
+[label] Atún claro al natural
+[label] Garbanzos cocidos
+[label] Lentejas cocidas
+[label] Tomate triturado
+[p] Frutería
+[label] Aguacate
+[label] Arándanos
+[label] Fresas
+[label] Limón
+[label] Manzana
+[label] Plátano
+[p] Verdulería
+[label] Ajo
+[label] Berenjena
+[label] Boniato
+[label] Brócoli
+[label] Calabacín
+[label] Cebolla
+[label] Champiñones
+[label] Coliflor
+[label] Espinacas
+[label] Guisantes
+[label] Judías verdes
+[label] Lechuga
+[label] Patata
+[label] Pepino
+[label] Pimiento rojo
+[label] Tomate
+[label] Zanahoria
+[p] Pescadería
+[label] Bacalao fresco
+[label] Gambas peladas
+[label] Merluza
+[label] Salmón
+[p] Huevos
+[label] Clara de huevo
+[label] Huevo
+[p] Lácteos
+[label] Leche semidesnatada
+[label] Queso fresco batido 0 %
+[label] Requesón
+[label] Yogur griego natural
+[label] Yogur natural
+[p] Panadería
+[label] Pan integral
+[label] Tortilla de trigo integral
+[p] Carnicería
+[label] Pechuga de pollo
+[label] Ternera magra (redondo)
+[p] Refrigerados
+[label] Tofu firme
+[button] Ver mi día
+[p] Sin registro. Tarda unos segundos.
+[p] Con esos datos tu día sale en
+[span] 1 870
+[span] kcal
+[p] repartidas en
+[p] comidas. Son estimaciones a partir de fórmulas poblacionales (Mifflin-St Jeor). No son consejo médico.
+[h2] Un día real, no una maqueta
+[p] Estas tres recetas y esta barra de progreso son un desayuno, una comida y una cena reales, sacadas del mismo catálogo de 36 recetas que usa el generador, con sus minutos, sus euros y sus gramos ya calculados. No es una ilustración de lo que podría salir: es lo que sale.
+[p] Desayuno
+[h3] Avena con yogur griego y arándanos
+[span] 5 min
+[span] 1–2 €
+[p] 400
+[span] kcal
+[p] Comida
+[h3] Curry de garbanzos con arroz
+[span] 30 min
+[span] 1–2 €
+[p] 670
+[span] kcal
+[p] Cena
+[h3] Pollo a la plancha con arroz integral y brócoli
+[span] 33 min
+[span] 2–3 €
+[p] 600
+[span] kcal
+[p] Cómo va el día
+[p] Este día se queda a 203 kcal de tu objetivo. Puedes cambiar una comida o ajustar el objetivo.
+[p] Ejemplo calculado con el perfil por defecto: mujer, 32 años, actividad ligera, mantener peso. Con tus datos, las cifras cambian.
+[h2] En qué se diferencia
+[h3] El coste, delante
+[p] Cada día trae su coste estimado en ingredientes, siempre como rango. La comida tiene precio y esconderlo hasta el supermercado no ayuda a nadie.
+[h3] La lista, corta
+[p] El plan se monta favoreciendo recetas que comparten ingredientes. Un plan que necesita sesenta cosas distintas es un plan que no se cocina.
+[h3] Lo que ya tienes, primero
+[p] Lo que hay en casa entra en el plan antes que lo que hay que comprar. Es la diferencia entre planificar y volver a llenar la nevera.
+[h2] El mismo cálculo, comprobado dos veces
+[p] El generador existe por duplicado a propósito: un motor de referencia en Python y un motor de producción en TypeScript que corre en tu navegador. En vez de pedirte que confíes, los enfrentamos entre sí antes de cada cambio, sin dar por hecho que coincidan.
+[p] Python
+[h3] Motor de referencia
+[p] Corre en servidor con el solver simplex HiGHS. Es el patrón contra el que se mide todo lo demás: 2 576 casos de funciones puras deben coincidir con él cifra a cifra.
+[p] TypeScript
+[h3] Motor de producción
+[p] Es el que genera tu plan ahora mismo, en el navegador. En 2 171 instancias del solver de porciones, la diferencia de energía frente a la referencia tiene un percentil 95 de cero kcal.
+[h2] Sin cuenta, sin tarjeta, sin plan de precios
+[p] PlanEat es gratis porque no hay nada que vender: no hay suscripción, no hay niveles, no hay letra pequeña que descubrir después de registrarte.
+[a] Generar mi día
+[p] Los objetivos se calculan con fórmulas poblacionales (Mifflin-St Jeor) y son estimaciones, no consejo médico. El filtro de alérgenos usa los ingredientes declarados en nuestro catálogo y no sustituye leer la etiqueta del producto que compres.

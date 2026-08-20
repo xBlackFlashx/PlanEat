@@ -23,8 +23,30 @@ const PORCIONES: PorcionesRecetas = {
         { alimentoId: "espinacas", nombre: "Espinacas", categoria: "verduras", gramos: 80 },
       ],
     },
+    tortilla_claras: {
+      racionesBase: 1,
+      ingredientes: [
+        {
+          alimentoId: "clara_huevo",
+          nombre: "Clara de huevo",
+          categoria: "huevos",
+          gramos: 200,
+          grupoCompra: "huevo",
+        },
+      ],
+    },
   },
 };
+
+function itemsDe(recetaId: string, factorRacion = 1) {
+  return dia([
+    {
+      slot: "comida" as const,
+      items: [{ recetaId, factorRacion, bloqueado: false }],
+      totales: { kcal: 0, proteinaG: 0, carbohidratoG: 0, grasaG: 0, fibraG: 0, sodioMg: 0 },
+    },
+  ]);
+}
 
 function dia(comidas: DiaPlan["comidas"]): DiaPlan {
   return {
@@ -94,6 +116,50 @@ test("una receta sin porciones conocidas se omite en vez de inventar gramos", ()
     ]),
   ];
   assert.deepEqual(listaDeLaCompra(dias, PORCIONES), []);
+});
+
+test("huevo entero y clara de huevo se agrupan bajo 'Huevo' con desglose, sin sumar los gramos", () => {
+  const dias: DiaPlan[] = [itemsDe("revuelto"), itemsDe("tortilla_claras")];
+  const lista = listaDeLaCompra(dias, PORCIONES);
+
+  const huevo = lista.find((i) => i.alimentoId === "huevo");
+  assert.ok(huevo, "debe existir un item agrupado bajo el alimentoId 'huevo'");
+  assert.equal(huevo?.nombre, "Huevo");
+  // Sólo el componente base (huevo entero): 100g de "revuelto". Nunca 100+200.
+  assert.equal(huevo?.gramos, 100);
+  assert.equal(huevo?.enRecetas, 1);
+
+  assert.deepEqual(huevo?.desglose, [
+    { nombre: "Huevo", gramos: 100, enRecetas: 1 },
+    { nombre: "Clara de huevo", gramos: 200, enRecetas: 1 },
+  ]);
+
+  // No debe colarse un item aparte con alimentoId "clara_huevo": está fundido
+  // en el desglose de "huevo".
+  assert.equal(
+    lista.find((i) => i.alimentoId === "clara_huevo"),
+    undefined,
+  );
+});
+
+test("si el plan sólo usa clara de huevo, no aparece desglose ni cabecera forzada a 'Huevo'", () => {
+  const dias: DiaPlan[] = [itemsDe("tortilla_claras")];
+  const lista = listaDeLaCompra(dias, PORCIONES);
+
+  assert.equal(lista.length, 1);
+  const item = lista[0];
+  assert.equal(item?.alimentoId, "clara_huevo");
+  assert.equal(item?.nombre, "Clara de huevo");
+  assert.equal(item?.gramos, 200);
+  assert.equal(item?.desglose, undefined);
+});
+
+test("si el plan sólo usa huevo entero, no aparece desglose", () => {
+  const dias: DiaPlan[] = [itemsDe("revuelto")];
+  const lista = listaDeLaCompra(dias, PORCIONES);
+
+  const huevo = lista.find((i) => i.alimentoId === "huevo");
+  assert.equal(huevo?.desglose, undefined);
 });
 
 test("ordena por categoria y luego por nombre", () => {

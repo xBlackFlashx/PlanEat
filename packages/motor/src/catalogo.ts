@@ -14,8 +14,9 @@
  * torcido. La regla para decidir qué se valida y qué no es una sola: **se
  * comprueba todo aquello que, de estar mal, se corrompería en silencio**. Una
  * longitud que no cuadra revienta sola en el primer acceso; un `mAlergeno` con
- * un bit de más se trunca al meterlo en un `Uint16Array` y deja pasar recetas
- * con alérgenos sin que nada falle. Lo primero no se comprueba, lo segundo sí.
+ * un bit de más se trunca al meterlo en un typed array demasiado estrecho y
+ * deja pasar recetas con alérgenos sin que nada falle. Lo primero no se
+ * comprueba, lo segundo sí.
  *
  * Invariante maestro heredado del Python, del que depende todo lo demás: **todos
  * los arrays están alineados por índice de fila**; la fila `i` es la misma
@@ -58,10 +59,15 @@ export type { CatalogoSerializado };
 // tuplas del vocabulario. Cambiar cualquiera de ellas no cambiaría ningún plan:
 // haría que este fichero dejara de detectar un catálogo corrupto.
 
-/** Bits que caben en cada una de las tres máscaras colapsadas, por su tupla. */
+/** Bits que caben en cada una de las máscaras colapsadas de un solo entero. */
 const BITS_DIETA = N_DIETAS;
-const BITS_ALERGENO = N_ALERGENOS;
 const BITS_SLOT = N_SLOTS;
+
+/** Palabras de 32 bits que hacen falta para `N_ALERGENOS` bits — espejo exacto
+ * de `W_ALERGENO` en `herramientas/compilar-catalogo.ts`. Deja de ser 1 en
+ * cuanto N_ALERGENOS pasa de 32 (2026-08-19: ya van 25 y subiendo), así que
+ * `mAlergeno` ya no cabe en "un entero por fila" como `mDieta`/`mSlot`. */
+export const W_ALERGENO = Math.max(1, Math.ceil(N_ALERGENOS / BITS_POR_PALABRA));
 
 /** Rango de `Int16Array`, que es donde viven los minutos. */
 const MIN_INT16 = -32768;
@@ -85,13 +91,17 @@ const MAX_ASCII = 0x7f;
  *
  *  - Las matrices `(n, k)` de numpy son arrays planos de `n*k` en row-major: la
  *    fila `i` empieza en `i*k`. Struct-of-arrays, nunca un array de objetos.
- *  - Las tres máscaras booleanas de pocas columnas (`mDieta` 6, `mAlergeno` 14,
- *    `mSlot` 5) van colapsadas a UN ENTERO por fila. El filtro base del pool
- *    pasa de tres barridos de columnas a un único bucle con tres comprobaciones
- *    de bits, y de paso desaparece la posibilidad de leer la columna equivocada.
- *  - Los bitsets de alimentos son `Uint32Array` con W32 = ceil(nAlimentos/32) y
- *    no los uint64 de numpy: JS no tiene enteros de 64 bits sin BigInt, y BigInt
- *    en el camino caliente cuesta un orden de magnitud (port-typescript.md,
+ *  - Las máscaras booleanas de pocas columnas que caben en 32 bits (`mDieta`
+ *    6, `mSlot` 5) van colapsadas a UN ENTERO por fila: el filtro base del
+ *    pool pasa de un barrido de columnas a una comprobación de bits, y de
+ *    paso desaparece la posibilidad de leer la columna equivocada.
+ *    `mAlergeno` (N_ALERGENOS = 25 hoy, subiendo) YA NO cabe en ese patrón —
+ *    se codifica como `ingrBits`/`ingrPerecBits` de abajo, en W_ALERGENO
+ *    palabras por fila.
+ *  - Los bitsets de alimentos (`ingrBits`/`ingrPerecBits`) y `mAlergeno` son
+ *    `Uint32Array` con varias palabras por fila (`w32`/`W_ALERGENO`) y no los
+ *    uint64 de numpy: JS no tiene enteros de 64 bits sin BigInt, y BigInt en
+ *    el camino caliente cuesta un orden de magnitud (port-typescript.md,
  *    representación de datos).
  *
  * `titulos` NO está: es lo único de `Catalogo` que el motor nunca lee. Vive en
@@ -121,8 +131,14 @@ export interface CatalogoCompilado {
   escalaMax: Float32Array;
   /** (n,) bitmask de 6 bits: bit IDX_DIETA[d]. */
   mDieta: Uint8Array;
-  /** (n,) bitmask de 14 bits: bit IDX_ALERGENO[a]. Seguridad alimentaria. */
-  mAlergeno: Uint16Array;
+  /** (n, W_ALERGENO) row-major, palabras de 32 bits: bit `IDX_ALERGENO[a] %
+   * 32` de la palabra `i*W_ALERGENO + (IDX_ALERGENO[a] / 32 | 0)`. Seguridad
+   * alimentaria — con N_ALERGENOS (25 hoy) ya por encima de 32 no cabría en
+   * un entero por fila (eso fue justo el bug que esto reemplaza: un
+   * Uint16Array truncaba en silencio y dejaba pasar alérgenos). Mismo
+   * esquema que `ingrBits`/`ingrPerecBits`, sólo que con ancho fijo
+   * (W_ALERGENO) en vez de dependiente del catálogo (w32). */
+  mAlergeno: Uint32Array;
   /** (n,) bitmask de 5 bits: bit IDX_SLOT[s]. */
   mSlot: Uint8Array;
   /** (n,) prep + cocción. int16 porque SIN_LIMITE_MINUTOS (32767) es su máximo. */
@@ -245,7 +261,9 @@ function indiceInverso(nombre: string, ids: readonly string[]): Map<string, numb
  * nunca como excepción:
  *
  *  - una máscara con un bit por encima de su tupla se recorta y deja de filtrar
- *    (`mAlergeno` con 16 bits en un `Uint16Array` pierde los dos altos);
+ *    (así se descubrió que `mAlergeno` en un solo `Uint16Array` de 16 bits
+ *    perdía los alérgenos más allá del 16.º — por eso ahora es multi-palabra,
+ *    como `ingrBits`, y no un único entero por fila);
  *  - unos minutos de 40000 en un `Int16Array` salen como −25536, que es ≤ que
  *    cualquier tope y cuela la receta en todos los slots;
  *  - un `costeCents` fuera de int32 da la vuelta y sale «gratis».
@@ -318,7 +336,7 @@ export function cargarCatalogo(datos: CatalogoSerializado): CatalogoCompilado {
   verificarLargo("escalaMin", datos.escalaMin, n);
   verificarLargo("escalaMax", datos.escalaMax, n);
   verificarLargo("mDieta", datos.mDieta, n);
-  verificarLargo("mAlergeno", datos.mAlergeno, n);
+  verificarLargo("mAlergeno", datos.mAlergeno, n * W_ALERGENO);
   verificarLargo("mSlot", datos.mSlot, n);
   verificarLargo("minutos", datos.minutos, n);
   verificarLargo("ingrBits", datos.ingrBits, n * w32);
@@ -327,9 +345,11 @@ export function cargarCatalogo(datos: CatalogoSerializado): CatalogoCompilado {
   verificarLargo("costeCents", datos.costeCents, n);
   verificarLargo("costeConocido", datos.costeConocido, n);
 
-  // Las tres máscaras: ni un bit por encima de su tupla. Ver `verificarRango`.
+  // mDieta/mSlot: ni un bit por encima de su tupla. mAlergeno ya no es un
+  // entero por fila (ver W_ALERGENO) así que se valida como los bitsets de
+  // alimentos: cada palabra es un uint32 legítimo, igual que `ingrBits`.
   verificarRango("mDieta", datos.mDieta, 0, (1 << BITS_DIETA) - 1);
-  verificarRango("mAlergeno", datos.mAlergeno, 0, (1 << BITS_ALERGENO) - 1);
+  verificarRango("mAlergeno", datos.mAlergeno, 0, 0xffffffff);
   verificarRango("mSlot", datos.mSlot, 0, (1 << BITS_SLOT) - 1);
   verificarRango("minutos", datos.minutos, MIN_INT16, MAX_INT16);
   verificarRango("nIngredientes", datos.nIngredientes, MIN_INT16, MAX_INT16);
@@ -363,7 +383,7 @@ export function cargarCatalogo(datos: CatalogoSerializado): CatalogoCompilado {
     escalaMin: new Float32Array(datos.escalaMin),
     escalaMax: new Float32Array(datos.escalaMax),
     mDieta: new Uint8Array(datos.mDieta),
-    mAlergeno: new Uint16Array(datos.mAlergeno),
+    mAlergeno: new Uint32Array(datos.mAlergeno),
     mSlot: new Uint8Array(datos.mSlot),
     minutos: new Int16Array(datos.minutos),
     ingrBits: new Uint32Array(datos.ingrBits),

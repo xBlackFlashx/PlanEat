@@ -54,6 +54,25 @@ def mascara_a_entero(m: np.ndarray) -> list[int]:
     return salida
 
 
+def mascara_a_palabras(m: np.ndarray) -> list[list[int]]:
+    """Como `mascara_a_entero`, pero en `ceil(columnas/32)` palabras por fila.
+
+    `m_alergeno` ya no cabe en un único entero (2026-08-19: ALERGENOS pasó de
+    14 a 25 columnas, camino a más) — el port empaqueta `mAlergeno` igual que
+    los bitsets de ingredientes: palabra `j // 32`, bit `j % 32` dentro de
+    ella, baja primero. Con columnas ≤ 32 da una lista de una palabra por
+    fila, que es justo `mascara_a_entero` envuelta en `[...]`.
+    """
+    salida = []
+    for fila in m:
+        palabras: list[int] = [0] * max(1, (len(fila) + 31) // 32)
+        for j, b in enumerate(fila):
+            if b:
+                palabras[j // 32] |= 1 << (j % 32)
+        salida.append(palabras)
+    return salida
+
+
 def bits_a_u32(bits: np.ndarray) -> list[list[int]]:
     """Reempaqueta los bitsets de uint64 a palabras de 32 bits, la baja primero.
 
@@ -87,7 +106,7 @@ def main() -> None:
         "escalaMin": [float(x) for x in cat.escala_min],
         "escalaMax": [float(x) for x in cat.escala_max],
         "mDieta": mascara_a_entero(cat.m_dieta),
-        "mAlergeno": mascara_a_entero(cat.m_alergeno),
+        "mAlergenoPalabras": mascara_a_palabras(cat.m_alergeno),
         "mSlot": mascara_a_entero(cat.m_slot),
         "minutos": [int(x) for x in cat.minutos],
         "nIngredientes": [int(x) for x in cat.n_ingredientes],

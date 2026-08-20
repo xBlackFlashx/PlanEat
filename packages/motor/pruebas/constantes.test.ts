@@ -40,6 +40,7 @@ import {
   W_DESP,
   W_ESC,
   W_FIT,
+  W_NUEVO,
   W_REP,
   W_SOL,
   temperatura,
@@ -72,6 +73,24 @@ test("el vocabulario está congelado: las cuatro tuplas y su orden", () => {
   //   gluten,crustaceos,huevos,pescado,cacahuetes,soja,lacteos,frutos_de_cascara,
   //     apio,mostaza,sesamo,sulfitos,altramuces,moluscos
   //   desayuno,almuerzo,comida,merienda,cena
+  // 2026-08-19: se añadieron 253 alérgenos más al final de ALERGENOS —83 con
+  // veto real, anclados a un ingrediente del catálogo (paprika, vainilla,
+  // sal, miel, mayonesa, vinagre, pesto, mermelada, tofu, tempeh, salsa,
+  // pollo, huevo, res... — ver services/solver/data/ingredientes.json para
+  // el mapeo completo) más 170 sin ingrediente real todavía (azafrán, mole,
+  // café, mango, kiwi, langosta... — sobre todo frutas/verduras/carnes/
+  // lácteos exóticos que el catálogo semilla no cubre) que el negocio pidió
+  // dejar disponibles igual. El hash cambió por eso, junto con
+  // VERSION_GENERADOR en los dos motores.
+  //
+  // Nota: el primer intento de añadir alérgenos sin ingrediente real (18 de
+  // ellos) rompía la carga del catálogo entero, porque entonces `mAlergeno`
+  // vivía empaquetado en un solo entero de 32 bits por receta y más de 32
+  // categorías desbordan eso (`1 << 32` da basura por wraparound en JS). Se
+  // arregló portando `mAlergeno` al mismo esquema multi-palabra que
+  // `ingrBits`/`ingrPerecBits` (ver `W_ALERGENO` en
+  // packages/motor/src/catalogo.ts) antes de reintentar — con 267 alérgenos
+  // eso ya son 9 palabras por fila, no 1.
   // Cambiar el hash es legítimo SÓLO junto con: recompilar el catálogo, subir
   // VERSION_GENERADOR y aceptar que todos los planes guardados dejan de
   // reproducirse.
@@ -80,7 +99,7 @@ test("el vocabulario está congelado: las cuatro tuplas y su orden", () => {
     `|DIETAS=${DIETAS.join(",")}` +
     `|ALERGENOS=${ALERGENOS.join(",")}` +
     `|SLOTS=${SLOTS.join(",")}`;
-  assert.equal(fnv1a(canonico), "b288b5e8");
+  assert.equal(fnv1a(canonico), "af14cae1");
 });
 
 test("los tamaños derivados son los del vocabulario, no números escritos a mano", () => {
@@ -88,9 +107,10 @@ test("los tamaños derivados son los del vocabulario, no números escritos a man
   assert.equal(N_DIETAS, DIETAS.length);
   assert.equal(N_ALERGENOS, ALERGENOS.length);
   assert.equal(N_SLOTS, SLOTS.length);
-  // Los anchos de las máscaras del catálogo: 6 dietas, 14 alérgenos (anexo II
-  // del Reglamento UE 1169/2011, ni uno menos), 5 slots.
-  assert.deepEqual([N_NUTR, N_DIETAS, N_ALERGENOS, N_SLOTS], [6, 6, 14, 5]);
+  // Los anchos de las máscaras del catálogo: 6 dietas, 267 alérgenos (los 14
+  // del anexo II del Reglamento UE 1169/2011 + 253 sensibilidades adicionales
+  // del negocio, 2026-08-19 — de las cuales 83 vetan de verdad), 5 slots.
+  assert.deepEqual([N_NUTR, N_DIETAS, N_ALERGENOS, N_SLOTS], [6, 6, 267, 5]);
 });
 
 test("los índices derivados son la posición exacta en su tupla", () => {
@@ -143,13 +163,20 @@ test("PESOS_LP tiene una pareja por nutriente y conserva las dos asimetrías", (
   assert.deepEqual(PESOS_LP[IDX_FIBRA], [0.0, 0.5]);
 });
 
-test("W_AFIN es 0 y el rango real del score es [-3,5 ; 8,7]", () => {
-  // DISENO.md §2.2 escribe 0,8·φ_afin y declara [-3,5 ; 9,5]. Manda el código.
+test("W_AFIN es 0 y el rango real del score es [-6,5 ; 9,9]", () => {
+  // DISENO.md §2.2 escribe 0,8·φ_afin y declara [-3,5 ; 9,5]. Manda el código:
+  // con W_AFIN=0 el máximo real coincidía con ese 9,5 sólo mientras W_SOL
+  // valía 2,0, y era coincidencia numérica, no un indicio de que la fórmula del
+  // documento se hubiera portado. El rango se ha movido en cada ronda de esta
+  // sesión: 9,5 -> 10,7 (W_SOL a 3,2) -> ahora, con W_SOL bajado a 2,4 y la
+  // llegada de W_NUEVO (§2.2h, penaliza el conteo absoluto de ingredientes
+  // nuevos), el máximo baja a 9,9 y el mínimo se hunde de −3,5 a −6,5 porque
+  // W_NUEVO es el primer término negativo desde W_REP.
   assert.equal(W_AFIN, 0.0);
   const maximo = W_FIT + W_ESC + W_DESP + W_SOL + W_AFIN;
-  const minimo = -(W_COST + W_REP);
-  assert.ok(Math.abs(maximo - 8.7) < 1e-12, `máximo ${maximo}`);
-  assert.equal(minimo, -3.5);
+  const minimo = -(W_COST + W_REP + W_NUEVO);
+  assert.ok(Math.abs(maximo - 9.9) < 1e-12, `máximo ${maximo}`);
+  assert.equal(minimo, -6.5);
 });
 
 test("temperatura mapea los extremos del control de variedad a [TAU_MIN, TAU_MAX]", () => {
@@ -195,7 +222,7 @@ test("las rutas del árbol de RNG son distintas entre sí", () => {
 test("VERSION_GENERADOR declara el salto de mayor del port", () => {
   // Cambian el RNG y el porcionador enteros: el mismo seed NO reproduce el plan
   // del backend Python, y la versión es lo único que lo dice.
-  assert.equal(VERSION_GENERADOR, "2.0.0-ts");
+  assert.equal(VERSION_GENERADOR, "2.5.0-ts");
   const mayor = Number(VERSION_GENERADOR.split(".")[0]);
   assert.ok(mayor > 1, "el port obliga a subir la versión mayor");
 });

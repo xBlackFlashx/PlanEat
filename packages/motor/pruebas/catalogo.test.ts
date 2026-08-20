@@ -20,7 +20,7 @@ import { dirname, resolve } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { cargarCatalogo, transferibles } from "../src/catalogo.ts";
+import { W_ALERGENO, cargarCatalogo, transferibles } from "../src/catalogo.ts";
 import { ALERGENOS, DIETAS, NUTRIENTES, SLOTS } from "../src/constantes.ts";
 import type { CatalogoSerializado } from "../herramientas/compilar-catalogo.ts";
 
@@ -48,7 +48,9 @@ interface ReferenciaPython {
   escalaMin: number[];
   escalaMax: number[];
   mDieta: number[];
-  mAlergeno: number[];
+  /** m_alergeno (matriz booleana) ya empaquetada en W_ALERGENO palabras de 32
+   * bits por fila — no un entero por fila, a diferencia de mDieta/mSlot. */
+  mAlergenoPalabras: number[][];
   mSlot: number[];
   minutos: number[];
   /** Los uint64 de numpy ya partidos en cuatro palabras de 32 bits por fila. */
@@ -108,13 +110,15 @@ test("las formas y los escalares son los que declara el catálogo compilado", ()
   assert.equal(cat.ingrPerecBits.length, cat.n * cat.w32);
 
   // Los tipos NO son intercambiables: float32 donde numpy tiene float32 decide
-  // qué empates del top-K se rompen, y un Uint16Array para `mAlergeno` es lo
-  // que hace que los catorce bits quepan.
+  // qué empates del top-K se rompen. `mAlergeno` es un Uint32Array de
+  // n*W_ALERGENO palabras (2026-08-19: 43 alérgenos, 2 palabras) — ni un
+  // Uint16Array (16 bits) ni un solo entero de 32 bits caben ya; ver la
+  // prueba dedicada «los alérgenos son los del Python en palabras de 32 bits».
   assert.ok(cat.nutr instanceof Float32Array);
   assert.ok(cat.vMacro instanceof Float32Array);
   assert.ok(cat.escalaMin instanceof Float32Array);
   assert.ok(cat.mDieta instanceof Uint8Array);
-  assert.ok(cat.mAlergeno instanceof Uint16Array);
+  assert.ok(cat.mAlergeno instanceof Uint32Array);
   assert.ok(cat.mSlot instanceof Uint8Array);
   assert.ok(cat.minutos instanceof Int16Array);
   assert.ok(cat.ingrBits instanceof Uint32Array);
@@ -140,7 +144,9 @@ test("cada columna decodificada coincide con el volcado de cargar_catalogo", () 
   assert.deepEqual([...cat.conocido], PY.conocido);
   assert.deepEqual([...cat.tieneMacro], PY.tieneMacro);
   assert.deepEqual([...cat.mDieta], PY.mDieta);
-  assert.deepEqual([...cat.mAlergeno], PY.mAlergeno);
+  // mAlergeno ya no es una columna de un entero por fila (ver la prueba
+  // dedicada más abajo, «los alérgenos son los del Python en palabras de 32
+  // bits», que compara PY.mAlergenoPalabras palabra a palabra).
   assert.deepEqual([...cat.mSlot], PY.mSlot);
   assert.deepEqual([...cat.minutos], PY.minutos);
   assert.deepEqual([...cat.nIngredientes], PY.nIngredientes);
@@ -160,6 +166,20 @@ test("los bitsets de alimentos son los uint64 del Python en palabras de 32 bits"
     // La palabra justo después de las que TS usa (índice cat.w32) tiene que
     // estar vacía; si no, w32 estaría perdiendo alimentos en silencio.
     assert.equal(esperadas[cat.w32] ?? 0, 0, `la fila ${i} usa bits por encima de w32`);
+  }
+});
+
+test("los alérgenos son los del Python en palabras de 32 bits", () => {
+  const cat = cargarCatalogo(COMPILADO);
+  for (let i = 0; i < cat.n; i++) {
+    const esperadas = PY.mAlergenoPalabras[i] ?? [];
+    for (let w = 0; w < W_ALERGENO; w++) {
+      assert.equal(cat.mAlergeno[i * W_ALERGENO + w], esperadas[w] ?? 0, `mAlergeno[${i}][${w}]`);
+    }
+    // La palabra justo después de las que TS usa tiene que estar vacía; si no,
+    // W_ALERGENO estaría perdiendo alérgenos en silencio — el mismo bug que
+    // truncaba en el Uint16Array de antes, sólo que a nivel de palabra.
+    assert.equal(esperadas[W_ALERGENO] ?? 0, 0, `la fila ${i} usa bits por encima de W_ALERGENO`);
   }
 });
 
@@ -255,14 +275,19 @@ test("lanza si un id no es ASCII", () => {
   exigeFallo(conTilde, "ASCII");
 });
 
-test("lanza si una máscara trae bits por encima de su tupla", () => {
-  // El bit 14 de `mAlergeno` no cabe en ALERGENOS. Sin esta comprobación se
-  // colaría entero en el Uint16Array (que tiene 16 bits) y el filtro duro
-  // compararía contra un alérgeno que no existe.
-  const alergenoFantasma = copiaCompilado();
-  alergenoFantasma.mAlergeno[0] = 1 << ALERGENOS.length;
-  exigeFallo(alergenoFantasma, "mAlergeno");
+test("lanza si mAlergeno no trae exactamente W_ALERGENO palabras por fila", () => {
+  // `mAlergeno` ya no es un entero por fila que pueda desbordarse con «un bit
+  // de más» (ese era justo el bug del Uint16Array de 16 bits que este esquema
+  // multi-palabra reemplaza): ahora la forma de corromperse en silencio es
+  // una fila con menos o más palabras de las que W_ALERGENO espera, que
+  // desalinearía TODAS las filas siguientes — el mismo fallo que ya cubre
+  // `w32` para los bitsets de alimentos.
+  const desalineadoAlergeno = copiaCompilado();
+  desalineadoAlergeno.mAlergeno.push(0);
+  exigeFallo(desalineadoAlergeno, "mAlergeno");
+});
 
+test("lanza si una máscara trae bits por encima de su tupla", () => {
   const dietaFantasma = copiaCompilado();
   dietaFantasma.mDieta[3] = 1 << DIETAS.length;
   exigeFallo(dietaFantasma, "mDieta");

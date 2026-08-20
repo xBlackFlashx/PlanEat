@@ -192,12 +192,15 @@ def _coste(
 ) -> float:
     """Coste global de una combinación. §5.1
 
-    λ = 0,006 hace conmensurables los dos términos que importan: quitar 10
-    ingredientes de la lista vale lo mismo que empeorar un día en 6 puntos de
-    desviación nutricional, es decir casi todo su presupuesto de error. Deja la
-    nutrición dominante —es el propósito del producto— pero con capacidad real
-    de mover la solución cuando hay empate nutricional, que es lo habitual
-    entre 6 candidatos generados contra el mismo objetivo.
+    λ = 0,12 (subido desde 0,006 en la cuarta ronda de "menos ingredientes",
+    ver el comentario junto a LAMBDA_INGREDIENTES en __init__.py): quitar 10
+    ingredientes de la lista vale ahora lo mismo que empeorar un día en ~1,4
+    puntos de desviación nutricional, mucho más agresivo que antes -medido
+    con scripts/medir_lambda_ingredientes.py, éste es el punto donde la media
+    de ingredientes/semana toca su suelo (más λ no baja más la media, sólo
+    empeora %cuadra sin necesidad). Ya no deja la nutrición tan dominante
+    como antes a propósito: el usuario prefiere explícitamente una despensa
+    mucho más compartida a costa de precisión nutricional.
     """
     err = 0.0
     usos: dict[int, int] = {}

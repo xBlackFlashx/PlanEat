@@ -1,0 +1,89 @@
+[a] PlanEat
+[button] Oscuro
+[h1] Tu día
+[h1] : Lunes 17 de agosto
+[span] Lunes 17 de agosto
+[span] 1 820
+[span] kcal
+[span] Cuadra
+[span] Los tres macros están dentro de tu rango.
+[p] El día cuadra: 1 820 kcal, con los tres macros dentro de tu rango.
+[span] Proteína
+[span] 119
+[span] 108
+[span] 126
+[span] Carbohidratos
+[span] 199
+[span] 185
+[span] 235
+[span] Grasa
+[summary] Ver tabla nutricional
+[th] Información nutricional
+[th] Este día
+[th] Tu objetivo
+[th] Valor energético
+[td] 1 820
+[span] kcal
+[td] 1 870 kcal ±3 %
+[th] Grasas
+[td] 55–70 g
+[th] de las cuales saturadas
+[span] sin declarar
+[th] Hidratos de carbono
+[td] 199
+[td] 185–235 g
+[th] de los cuales azúcares
+[span] sin declarar
+[th] Fibra alimentaria
+[td] 26 g mínimo
+[th] Proteínas
+[td] 119
+[td] 108–126 g
+[th] Sal
+[span] sin declarar
+[p] Orden del Reglamento (UE) 1169/2011. Los valores del día son la suma de las raciones servidas. El catálogo semilla no declara todavía grasas saturadas, azúcares ni sal por receta: por eso figuran como sin declarar en lugar de como cero.
+[h3] Desayuno
+[span] 350
+[span] kcal
+[p] Yogur griego con fresas y almendras
+[span] 4 min
+[span] 1,1 raciones
+[span] Cambiar
+[span] Yogur griego con fresas y almendras
+[span] Ver la ficha de
+[span] Yogur griego con fresas y almendras
+[p] Esta comida cubre el 19 % de tus calorías del día y aporta 24 g de proteína.
+[span] Proteína
+[span] Carbohidratos
+[span] Grasa
+[h3] Comida
+[span] 720
+[span] kcal
+[p] Sopa de pollo con verduras y arroz
+[span] 35 min
+[span] 1,8 raciones
+[span] Cambiar
+[span] Sopa de pollo con verduras y arroz
+[span] Ver la ficha de
+[span] Sopa de pollo con verduras y arroz
+[p] Esta comida cubre el 39 % de tus calorías del día y aporta 59 g de proteína.
+[span] Proteína
+[span] Carbohidratos
+[span] Grasa
+[h3] Cena
+[span] 750
+[span] kcal
+[p] Ensalada de garbanzos con tomate y pepino
+[span] 10 min
+[span] 1,8 raciones
+[span] Cambiar
+[span] Ensalada de garbanzos con tomate y pepino
+[span] Ver la ficha de
+[span] Ensalada de garbanzos con tomate y pepino
+[p] Esta comida cubre el 41 % de tus calorías del día y aporta 36 g de proteína.
+[span] Proteína
+[span] Carbohidratos
+[span] Grasa
+[p] estimado en ingredientes
+[button] Montar otro día
+[p] Son estimaciones a partir de fórmulas poblacionales (Mifflin-St Jeor). No son consejo médico. Filtramos por los ingredientes declarados en nuestro catálogo: no sustituye leer la etiqueta del producto que compres.

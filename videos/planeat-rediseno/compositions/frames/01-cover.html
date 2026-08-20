@@ -1,0 +1,81 @@
+<template>
+<div id="root" data-composition-id="01-cover" data-duration="3.4" data-width="1920" data-height="1080">
+  <style>
+    #root {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #f01-cover-bg {
+      position: absolute;
+      inset: 0;
+      background: #FFFFFF;
+    }
+
+    #f01-cover-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #f01-cover-wordmark {
+      font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      font-size: 80px;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: #475569;
+      opacity: 0;
+    }
+
+    #f01-cover-tagline {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      font-size: 31px;
+      line-height: 1.4;
+      letter-spacing: 0;
+      color: #B45309;
+      margin-top: 24px;
+      opacity: 0;
+    }
+  </style>
+
+  <div class="clip" id="f01-cover-bg" data-start="0" data-duration="3.4" data-track-index="0"></div>
+
+  <div id="f01-cover-stage">
+    <div class="clip" id="f01-cover-wordmark" data-start="0" data-duration="3.4" data-track-index="1">PlanEat</div>
+    <div class="clip" id="f01-cover-tagline" data-start="1.2" data-duration="2.2" data-track-index="2">Nueva identidad visual.</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Scene 1 (0.0-1.2s): wordmark fades + slides up into center — a single
+    // long-tail settle (power4.out decelerates hard, giving the slow tail).
+    tl.fromTo(
+      "#f01-cover-wordmark",
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 1.0, ease: "power4.out" },
+      0
+    );
+
+    // Scene 2 (1.2-3.0s): tagline reveals beneath the wordmark via a soft
+    // crossfade, then both hold dead still to the end of the shot.
+    tl.fromTo(
+      "#f01-cover-tagline",
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+      1.2
+    );
+
+    window.__timelines["01-cover"] = tl;
+  </script>
+</div>
+</template>

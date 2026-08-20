@@ -1,0 +1,164 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Poppins",
+      "fontSize": "46px",
+      "fontWeight": "400",
+      "lineHeight": "48.3px",
+      "letterSpacing": "-0.46px",
+      "color": "#0F172A",
+      "sampleText": "Tu semana, resuelta."
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Inter",
+      "fontSize": "28px",
+      "fontWeight": "600",
+      "lineHeight": "33.6px",
+      "letterSpacing": "-0.28px",
+      "color": "#0F172A",
+      "sampleText": "Un día real, no una maqueta"
+    },
+    {
+      "role": "body",
+      "fontFamily": "Inter",
+      "fontSize": "24px",
+      "fontWeight": "400",
+      "lineHeight": "52.8px",
+      "letterSpacing": "normal",
+      "color": "#0F172A",
+      "sampleText": "Soy Sexomujermujerhombre de Edad en años años, mido Altura e"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Inter",
+      "fontSize": "17px",
+      "fontWeight": "600",
+      "lineHeight": "22.1px",
+      "letterSpacing": "normal",
+      "color": "#0F172A",
+      "sampleText": "Avena con yogur griego y arándanos"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Inter",
+      "fontSize": "16px",
+      "fontWeight": "500",
+      "lineHeight": "24px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "Generar mi día"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      2,
+      6,
+      8,
+      12,
+      16,
+      24,
+      28,
+      32,
+      40,
+      96,
+      192
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "10px"
+  ],
+  "shadows": [],
+  "buttons": [
+    {
+      "label": "Oscuro",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#475569",
+      "padding": "0px 12px",
+      "borderRadius": "14px",
+      "border": "1px solid rgb(226, 232, 240)",
+      "boxShadow": "none",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "height": "44px"
+    },
+    {
+      "label": "Ver mi día",
+      "background": "#047857",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "0px 24px",
+      "borderRadius": "10px",
+      "border": "0px solid rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "17px",
+      "fontWeight": "600",
+      "height": "52px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#0F172A",
+      "padding": "24px",
+      "borderRadius": "14px",
+      "border": "1px solid rgb(226, 232, 240)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "237.781px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "transparent",
+    "backgroundImage": "",
+    "backdropFilter": "",
+    "color": "#0F172A",
+    "padding": "0px",
+    "borderRadius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "57px"
+  },
+  "chips": [],
+  "statCells": [],
+  "tabs": [
+    {
+      "label": "≈ 1 870 kcal",
+      "background": "transparent",
+      "color": "#0F172A",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(15, 23, 42)",
+      "boxShadow": "none",
+      "fontSize": "14px",
+      "fontWeight": "600",
+      "height": "auto"
+    },
+    {
+      "label": "5 min",
+      "background": "transparent",
+      "color": "#475569",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(71, 85, 105)",
+      "boxShadow": "none",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "height": "20px"
+    }
+  ],
+  "backgrounds": [],
+  "glass": []
+}
