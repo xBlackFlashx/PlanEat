@@ -290,6 +290,8 @@ export function FormularioSemana() {
               onChange={(e) => setDatos((d) => ({ ...d, comidas: Number(e.target.value) }))}
               className="h-12 rounded-[var(--radius)] border border-line-strong bg-surface px-3.5 text-[15px] outline-none focus-visible:outline-2 focus-visible:outline-brand"
             >
+              <option value={1}>1</option>
+              <option value={2}>2</option>
               <option value={3}>3</option>
               <option value={4}>4</option>
               <option value={5}>5</option>

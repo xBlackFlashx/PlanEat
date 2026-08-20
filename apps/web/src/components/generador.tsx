@@ -88,6 +88,8 @@ const CATEGORIAS_ALIMENTO: Record<string, readonly string[]> = Object.fromEntrie
 );
 
 const COMIDAS_OPCIONES = [
+  { valor: "1", etiqueta: "1" },
+  { valor: "2", etiqueta: "2" },
   { valor: "3", etiqueta: "3" },
   { valor: "4", etiqueta: "4" },
   { valor: "5", etiqueta: "5" },
@@ -567,7 +569,8 @@ export function Generador() {
           <span className="font-semibold tabular-nums text-text" data-numeric>
             ≈ {formatearKcal(objetivoPrevisto.kcal)} kcal
           </span>{" "}
-          repartidas en {slotsDe(datos).length} comidas. Son estimaciones a partir
+          repartidas en {slotsDe(datos).length}{" "}
+          {slotsDe(datos).length === 1 ? "comida" : "comidas"}. Son estimaciones a partir
           de fórmulas poblacionales (Mifflin-St Jeor). No son consejo médico.
         </p>
 

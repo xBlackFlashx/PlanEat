@@ -123,9 +123,14 @@ export default function Portada() {
         <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <span className="text-lg font-semibold tracking-tight">PlanEat</span>
           <div className="flex items-center gap-3">
+            {/* Discreto a propósito: "Suscríbete" (NavCuenta) es el botón
+                lleno de la cabecera, la conversión que le importa al
+                negocio. Este es sólo un atajo de scroll al generador
+                gratis, mismo lenguaje visual que ThemeToggle (borde, sin
+                relleno). */}
             <a
               href="#generador"
-              className="hidden min-h-11 items-center rounded-[var(--radius)] bg-brand px-4 text-sm font-medium text-on-brand transition-colors dur-rapida ease-suave hover:bg-brand-hover sm:inline-flex"
+              className="hidden min-h-11 items-center rounded-lg border border-line px-4 text-sm text-text-2 transition-colors dur-rapida ease-suave hover:bg-surface-2 hover:text-text sm:inline-flex"
             >
               Planea tu comida
             </a>
