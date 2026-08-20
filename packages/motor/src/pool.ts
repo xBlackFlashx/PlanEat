@@ -185,7 +185,7 @@ function idxBase(
   filas: for (let i = 0; i < cat.n; i++) {
     if ((((cat.mDieta[i] ?? 0) >>> bitDieta) & 1) === 0) continue;
     for (let w = 0; w < W_ALERGENO; w++) {
-      if (((cat.mAlergeno[i * W_ALERGENO + w] ?? 0) & mascaraAlergenos[w]) !== 0) continue filas;
+      if (((cat.mAlergeno[i * W_ALERGENO + w] ?? 0) & (mascaraAlergenos[w] ?? 0)) !== 0) continue filas;
     }
     if ((cat.minutos[i] ?? 0) > topeGlobal) continue;
     idx[p] = i;
