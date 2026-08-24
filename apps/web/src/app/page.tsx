@@ -206,6 +206,12 @@ export default function Portada() {
             >
               Planea tu comida
             </a>
+            <Link
+              href="/despensa"
+              className="hidden min-h-11 items-center rounded-lg border border-line px-4 text-sm text-text-2 transition-colors dur-rapida ease-suave hover:bg-surface-2 hover:text-text sm:inline-flex"
+            >
+              Qué puedo cocinar
+            </Link>
             <NavCuenta />
             <ThemeToggle />
           </div>
