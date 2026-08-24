@@ -443,8 +443,37 @@ K_CANDIDATOS_DIA = 6  # §5
 # encajan peor-. λ=0,10 daba el mismo resultado que 0,12 (empate en media,
 # mínimo y % en rango); se eligió 0,12 por tener el %cuadra ligeramente mejor
 # y coincidir con el punto donde λ=sola ya había tocado su suelo.
+#
+# QUINTA ronda, por el lado opuesto: MAX_USOS_RECETA_SEMANA=4 tiene un efecto
+# secundario que la cuarta ronda no midió -exprime muy pocas recetas
+# distintas-. Planes reales de 7 días generados con el catálogo (240 recetas)
+# para omnívoro/vegetariano/vegano usaban sólo 6-7 recetas para las 21 comidas
+# de la semana, varias repetidas 3-4 veces (el tope duro). Es la causa raíz de
+# la queja "toda la semana tofu teriyaki y arroz, es como si sólo estuvieran
+# esas opciones". scripts/medir_recetas_distintas.py (barrido conjunto
+# MAX_USOS_RECETA_SEMANA x NU_REPETICION, 40 semillas x 4 perfiles: de_todo,
+# 5slots omnívoro, vegetariana, vegana) confirma que sólo MAX_USOS_RECETA_
+# SEMANA=2 garantiza estructuralmente "ninguna receta >2 veces en 21 comidas"
+# (100,0 % de las semanas en todo el rango de NU_REPETICION probado; con
+# MAX_USOS=3 ese %rep<=2 no pasa de 20,6 % y con MAX_USOS=4 no pasa de 3,1 %,
+# es decir: la penalización blanda NU_REPETICION no puede sustituir al tope
+# duro para esa garantía). Con MAX_USOS=2 fijo, scripts/medir_recetas_
+# distintas_fino.py barre NU_REPETICION x LAMBDA_INGREDIENTES por si subir
+# alguno de los dos acerca la media de ingredientes/semana a [15,25] sin
+# perder variedad de recetas: subir LAMBDA_INGREDIENTES de 0,12 a 0,30 no
+# mueve la media un ápice (26,73->26,77, ya tocó su suelo, igual que en la
+# cuarta ronda) y subir NU_REPETICION por encima de 0,08 tampoco mejora nada
+# de forma relevante -el término ya no compite con nada una vez que el tope
+# duro hace el trabajo pesado-. NU_REPETICION se deja en 0,05 (valor previo,
+# confirmado óptimo en el barrido) y LAMBDA_INGREDIENTES en 0,12 (sin tocar,
+# como pide el encargo: no hacía falta). Con (MAX_USOS=2, NU_REP=0,05,
+# λ=0,12): media 26,74 ingredientes/semana (por encima de 15-25 pero el
+# usuario acepta "un poco más" con tal de no repetir receta), recetas
+# distintas media 14,10 (mínimo 11, 83,8 % de semanas con >=12), repetición
+# máxima de una receta SIEMPRE <=2, %cuadra 58,3 % (baja 4 pp frente al 62,3 %
+# de MAX_USOS=4, el coste de arreglar la queja real del usuario).
 LAMBDA_INGREDIENTES, MU_PRESUPUESTO, NU_REPETICION = 0.12, 0.30, 0.05
-MAX_USOS_RECETA_SEMANA = 4  # §5.1 (restricción dura, no penalización)
+MAX_USOS_RECETA_SEMANA = 2  # §5.1 (restricción dura, no penalización)
 SA_T0, SA_ALFA, SA_ITERACIONES = 0.05, 0.994, 400  # §5.3
 
 # --------------------------------------------------------------------------
@@ -463,9 +492,10 @@ MIN_POOL = 40  # §6.0
 # horizonte O el tope de repetición; uno inventado, no. (Cuarta ronda de
 # "menos ingredientes": bajó de 8 -ceil(7/2)+4, con el MAX_USOS_RECETA_SEMANA
 # de entonces- a 6, para no darle a la holgura el doble del margen que pide
-# el diseño con el nuevo MAX_USOS_RECETA_SEMANA=4.)
+# el diseño con el nuevo MAX_USOS_RECETA_SEMANA=4. Quinta ronda: vuelve a 8
+# -ceil(7/2)+4- porque MAX_USOS_RECETA_SEMANA vuelve a 2.)
 MIN_CANDIDATOS_SLOT_DIA = 3  # elegir + 2 reparaciones            §6.0
-MIN_CANDIDATOS_SLOT_SEMANA = 6  # ceil(7/4) + 4                   §6.0
+MIN_CANDIDATOS_SLOT_SEMANA = 8  # ceil(7/2) + 4                   §6.0
 # Por debajo de esta fracción del catálogo, la poda es atribuible a los filtros
 # del usuario (puerta 2). Por encima, el corto es el catálogo (puerta 3).
 FRACCION_POOL_ATRIBUIBLE = 0.5  # §6.0

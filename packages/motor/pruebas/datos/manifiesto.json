@@ -39,26 +39,26 @@
     }
   },
   "porciones": {
-    "total": 2168,
-    "reales": 2024,
+    "total": 2205,
+    "reales": 2061,
     "sinteticos": 144,
     "porR": {
-      "1": 309,
-      "2": 706,
-      "3": 386,
-      "4": 385,
-      "5": 358,
+      "1": 326,
+      "2": 650,
+      "3": 423,
+      "4": 408,
+      "5": 374,
       "6": 24
     },
     "porBucket": {
-      "malo": 1122,
-      "aceptable": 509,
+      "malo": 1135,
+      "aceptable": 533,
       "ok": 537
     },
-    "conCotaActiva": 2142,
-    "conNutrienteInactivo": 1796,
-    "conSodioAcotado": 336,
-    "conSigmaFueraDeRejillaAnclada0": 94,
+    "conCotaActiva": 2175,
+    "conNutrienteInactivo": 1837,
+    "conSodioAcotado": 332,
+    "conSigmaFueraDeRejillaAnclada0": 89,
     "emergencias": 0
   }
 }
