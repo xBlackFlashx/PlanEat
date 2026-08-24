@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { LogoPlanEat } from "@/components/logo";
 import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -27,7 +28,9 @@ export default async function LayoutAdmin({ children }: { children: React.ReactN
     <div className="flex min-h-full flex-col">
       <header className="border-b border-line">
         <div className="mx-auto flex h-14 max-w-[1120px] flex-wrap items-center gap-x-6 gap-y-2 px-4 sm:px-6 lg:px-8">
-          <span className="text-sm font-semibold tracking-tight">Admin · PlanEat</span>
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+            <LogoPlanEat tam={18} conTexto={false} /> Admin · PlanEat
+          </span>
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <Link href="/admin" className={ENLACE}>
               Resumen

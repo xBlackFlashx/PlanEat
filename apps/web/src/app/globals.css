@@ -187,6 +187,18 @@
   /* Velo de la hoja inferior. Mismo valor en los dos temas: oscurece el fondo,
      no lo tiñe. */
   --scrim: rgb(0 0 0 / 0.4);
+
+  /* Fondos de marca — intensidades del "mantel". Un token por capa, no por
+     página. No necesitan light-dark() propio: heredan el de --brand / --fat /
+     --energia / --line-strong (mismo razonamiento documentado en el
+     body::before de la sección 5), así que cubren claro y oscuro con una
+     sola declaración. Consumidos por body::before y por las clases
+     .fondo-hero / .fondo-banner / .fondo-cabecera de la sección 5. */
+  --velo-marca: color-mix(in oklab, var(--brand) 12%, transparent); /* blob principal */
+  --velo-frio: color-mix(in oklab, var(--fat) 7%, transparent); /* blob secundario */
+  --velo-calido: color-mix(in oklab, var(--energia) 6%, transparent); /* blob de banner CTA */
+  --punto: color-mix(in oklab, var(--line-strong) 50%, transparent); /* tinta de la rejilla de puntos */
+  --punto-marca: color-mix(in oklab, var(--brand) 25%, transparent); /* rejilla sobre brand-soft */
 }
 
 /* ----------------------------------------------------------------------------
@@ -518,11 +530,49 @@
     z-index: -1;
     pointer-events: none;
     background-image:
-      radial-gradient(65% 55% at 10% -5%, color-mix(in oklab, var(--brand) 10%, transparent), transparent 70%),
-      radial-gradient(55% 50% at 100% 0%, color-mix(in oklab, var(--fat) 7%, transparent), transparent 70%),
+      radial-gradient(65% 55% at 10% -5%, var(--velo-marca), transparent 70%),
+      radial-gradient(55% 50% at 100% 0%, var(--velo-frio), transparent 70%),
       radial-gradient(45% 40% at 0% 100%, color-mix(in oklab, var(--gold) 6%, transparent), transparent 70%),
-      radial-gradient(color-mix(in oklab, var(--line-strong) 40%, transparent) 1px, transparent 1px);
+      radial-gradient(var(--punto) 1px, transparent 1px);
     background-size: auto, auto, auto, 24px 24px;
+  }
+
+  /* Clases utilitarias de "mantel de marca" — 3.º del lenguaje de fondos.
+     Consumen los tokens velo y punto de la sección 1. Ninguna lleva
+     animación (así no tocan el bloque de prefers-reduced-motion) y ninguna
+     compite con --surface/--surface-2/--brand-soft, que siguen siendo fondos
+     opacos que tapan la textura donde se pintan encima. */
+  .fondo-hero,
+  .fondo-banner,
+  .fondo-cabecera {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .fondo-hero::before,
+  .fondo-banner::before,
+  .fondo-cabecera::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .fondo-hero::before {
+    background-image:
+      radial-gradient(60% 55% at 12% 8%, var(--velo-marca), transparent 70%),
+      radial-gradient(55% 45% at 100% 0%, var(--velo-frio), transparent 70%),
+      radial-gradient(var(--punto) 1px, transparent 1px);
+    background-size: auto, auto, 22px 22px;
+  }
+  .fondo-banner::before {
+    background-image:
+      radial-gradient(70% 80% at 85% 120%, var(--velo-calido), transparent 70%),
+      radial-gradient(var(--punto-marca) 1px, transparent 1px);
+    background-size: auto, 20px 20px;
+  }
+  .fondo-cabecera::before {
+    background-image: radial-gradient(36% 33% at 0% 0%, var(--velo-marca), transparent 70%);
   }
 
   /* Toda cifra nutricional o de precio usa números tabulares. Sin esto las

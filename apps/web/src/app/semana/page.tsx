@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { LogoPlanEat } from "@/components/logo";
 import { NavCuenta } from "@/components/nav-cuenta";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { auth } from "@/lib/auth";
@@ -102,9 +103,9 @@ function Cascaron({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="inline-flex min-h-11 items-center text-lg font-semibold tracking-tight underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
           >
-            PlanEat
+            <LogoPlanEat className="text-lg font-semibold tracking-tight" />
           </Link>
           <div className="flex items-center gap-3">
             <NavCuenta />
