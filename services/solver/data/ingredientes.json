@@ -11424,6 +11424,54 @@
           "precioEstimadoCents": 25
         }
       ]
+    },
+    {
+      "id": "maicena",
+      "nombre": "Maicena",
+      "estado": "crudo",
+      "categoria": "despensa",
+      "perecedero": false,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 381,
+        "proteinaG": 0.3,
+        "carbohidratoG": 91.3,
+        "grasaG": 0.1,
+        "fibraG": 0.9,
+        "sodioMg": 3
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "bolsa 500 g",
+          "gramos": 500,
+          "precioEstimadoCents": 25
+        }
+      ]
+    },
+    {
+      "id": "quelites",
+      "nombre": "Quelites",
+      "estado": "crudo",
+      "categoria": "verduleria",
+      "perecedero": true,
+      "fuente": "USDA FDC",
+      "panel": {
+        "kcal": 32,
+        "proteinaG": 3.2,
+        "carbohidratoG": 5.5,
+        "grasaG": 0.5,
+        "fibraG": 3.1,
+        "sodioMg": 80
+      },
+      "alergenos": [],
+      "formatosCompra": [
+        {
+          "descripcion": "manojo",
+          "gramos": 250,
+          "precioEstimadoCents": 60
+        }
+      ]
     }
   ]
 }

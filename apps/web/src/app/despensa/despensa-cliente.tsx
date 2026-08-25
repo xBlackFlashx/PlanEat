@@ -7,6 +7,7 @@ import recetasVista from "@planeat/motor/recetas-vista";
 
 import { CampoAutocompletar } from "@/components/campo-autocompletar";
 import { IconoCuadra } from "@/components/iconos";
+import { PanelReceta } from "@/components/panel-receta";
 import { ALIMENTOS } from "@/lib/alimentos";
 import { recetasQuePuedoHacer } from "@/lib/despensa";
 import { minutos as formatearMinutos } from "@/lib/formato";
@@ -18,6 +19,7 @@ const ALIMENTOS_OPCIONES = ALIMENTOS.map((a) => ({ valor: a.id, etiqueta: a.nomb
 export function DespensaCliente() {
   const [tengo, setTengo] = useState<string[]>([]);
   const [soloCompletas, setSoloCompletas] = useState(false);
+  const [recetaAbiertaId, setRecetaAbiertaId] = useState<string | null>(null);
 
   const resultado = useMemo(() => recetasQuePuedoHacer(tengo, vista), [tengo]);
   const visibles = soloCompletas ? resultado.filter((r) => r.cobertura === 1) : resultado;
@@ -69,9 +71,11 @@ export function DespensaCliente() {
       ) : (
         <ul role="list" className="flex flex-col gap-3">
           {visibles.map(({ receta, cobertura, faltantes }) => (
-            <li
-              key={receta.id}
-              className="flex items-center gap-3 rounded-[var(--radius-lg)] bg-surface p-3 sm:p-4"
+            <li key={receta.id}>
+            <button
+              type="button"
+              onClick={() => setRecetaAbiertaId(receta.id)}
+              className="flex w-full items-center gap-3 rounded-[var(--radius-lg)] bg-surface p-3 text-left transition-colors dur-rapida ease-suave hover:bg-surface-2 sm:p-4"
             >
               {receta.imagenUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element -- ver panel-receta.tsx: sitio estático sin optimizador.
@@ -110,10 +114,17 @@ export function DespensaCliente() {
                   Te falta: {faltantes.map((i) => i.nombre).join(", ")}
                 </p>
               )}
+            </button>
             </li>
           ))}
         </ul>
       )}
+
+      <PanelReceta
+        receta={recetaAbiertaId ? (vista.recetas[recetaAbiertaId] ?? null) : null}
+        factorRacion={1}
+        alCerrar={() => setRecetaAbiertaId(null)}
+      />
     </div>
   );
 }
