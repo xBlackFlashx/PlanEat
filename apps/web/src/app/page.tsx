@@ -6,6 +6,7 @@ import recetasVista from "@planeat/motor/recetas-vista";
 import { DiaReal } from "@/components/dia-real";
 import { Generador } from "@/components/generador";
 import { IconoFlecha } from "@/components/iconos";
+import { LogoPlanEat } from "@/components/logo";
 import { MotoresConfianza } from "@/components/motores-confianza";
 import { NavCuenta } from "@/components/nav-cuenta";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -85,18 +86,79 @@ const ESTILOS_PORTADA = `
     background-size: auto, auto, 22px 22px;
   }
 
-  .pe-cta-textura {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
+  /* --- Coreografía de entrada del hero (una sola vez, al cargar) ----------
+     Titular → subtítulo → fotos escalonadas → badge. Sólo opacity/transform,
+     todo con "backwards" hacia el estado natural: el reset global de
+     prefers-reduced-motion (globals.css @layer base) las deja en su estado
+     final de inmediato; la media query de abajo es el cinturón extra. */
+  @keyframes pe-entrada-hero {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  .pe-cta-textura::before {
+  .pe-hero-titular {
+    animation: pe-entrada-hero var(--dur-lenta) var(--ease-entrada) backwards;
+  }
+  .pe-hero-sub {
+    animation: pe-entrada-hero var(--dur-media) var(--ease-entrada) var(--dur-rapida) backwards;
+  }
+  @keyframes pe-entrada-foto {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .pe-hero-foto {
+    animation: pe-entrada-foto var(--dur-media) var(--ease-entrada) backwards;
+  }
+  /* El centrado del badge usa la utilidad -translate-x-1/2 de Tailwind v4
+     (propiedad \`translate\`, independiente de \`transform\`), así que animar
+     transform aquí no lo pisa. */
+  @keyframes pe-entrada-badge {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .pe-hero-badge {
+    animation: pe-entrada-badge var(--dur-media) var(--ease-entrada) 360ms backwards;
+  }
+
+  /* Detalle vivo persistente: "resuelta" se subraya una vez, de izquierda a
+     derecha, cuando el titular ya aterrizó. Se dibuja y se queda — eco del
+     compás 4 del estado de generación ("hasta que cuadró"). */
+  .pe-subrayado {
+    position: relative;
+  }
+  .pe-subrayado::after {
     content: "";
     position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-image: radial-gradient(color-mix(in oklab, var(--brand) 25%, transparent) 1px, transparent 1px);
-    background-size: 20px 20px;
+    left: 0;
+    right: 0;
+    bottom: -0.08em;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--brand);
+    transform-origin: left;
+    animation: pe-trazo var(--dur-cuadre) var(--ease-suave) 320ms backwards;
+  }
+  @keyframes pe-trazo {
+    from {
+      transform: scaleX(0);
+    }
   }
 
   @keyframes pe-entrada-pilar {
@@ -112,6 +174,16 @@ const ESTILOS_PORTADA = `
   .pe-pilar {
     animation: pe-entrada-pilar var(--dur-media) var(--ease-entrada) backwards;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pe-hero-titular,
+    .pe-hero-sub,
+    .pe-hero-foto,
+    .pe-hero-badge,
+    .pe-subrayado::after {
+      animation: none;
+    }
+  }
 `;
 
 export default function Portada() {
@@ -121,14 +193,25 @@ export default function Portada() {
 
       <header className="border-b border-line">
         <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-4 sm:px-6 lg:px-8">
-          <span className="text-lg font-semibold tracking-tight">PlanEat</span>
+          <LogoPlanEat className="text-lg font-semibold tracking-tight" />
           <div className="flex items-center gap-3">
+            {/* Discreto a propósito: "Suscríbete" (NavCuenta) es el botón
+                lleno de la cabecera, la conversión que le importa al
+                negocio. Este es sólo un atajo de scroll al generador
+                gratis, mismo lenguaje visual que ThemeToggle (borde, sin
+                relleno). */}
             <a
               href="#generador"
-              className="hidden min-h-11 items-center rounded-[var(--radius)] bg-brand px-4 text-sm font-medium text-on-brand transition-colors dur-rapida ease-suave hover:bg-brand-hover sm:inline-flex"
+              className="hidden min-h-11 items-center rounded-lg border border-line px-4 text-sm text-text-2 transition-colors dur-rapida ease-suave hover:bg-surface-2 hover:text-text sm:inline-flex"
             >
               Planea tu comida
             </a>
+            <Link
+              href="/despensa"
+              className="hidden min-h-11 items-center rounded-lg border border-line px-4 text-sm text-text-2 transition-colors dur-rapida ease-suave hover:bg-surface-2 hover:text-text sm:inline-flex"
+            >
+              Qué puedo cocinar
+            </Link>
             <NavCuenta />
             <ThemeToggle />
           </div>
@@ -138,8 +221,10 @@ export default function Portada() {
       <main className="mx-auto w-full max-w-[1120px] flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="pe-hero mx-auto grid max-w-4xl items-center gap-8 rounded-[var(--radius-lg)] border border-line bg-surface px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <h1 className="voz-1 text-balance">Tu semana, resuelta.</h1>
-            <p className="mt-4 text-pretty text-[17px] leading-relaxed text-text-2">
+            <h1 className="pe-hero-titular voz-1 text-balance">
+              Tu semana, <span className="pe-subrayado">resuelta</span>.
+            </h1>
+            <p className="pe-hero-sub mt-4 text-pretty text-[17px] leading-relaxed text-text-2">
               Qué comer y qué comprar, sin listas de sesenta ingredientes.
             </p>
           </div>
@@ -153,7 +238,11 @@ export default function Portada() {
               const receta = vista.recetas[id];
               if (!receta?.imagenUrl) return null;
               return (
-                <div key={id} className={`relative overflow-hidden rounded-[var(--radius-lg)] border border-line ${clase}`}>
+                <div
+                  key={id}
+                  className={`pe-hero-foto relative overflow-hidden rounded-[var(--radius-lg)] border border-line ${clase}`}
+                  style={{ animationDelay: `calc(140ms + ${indice} * 60ms)` }}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={receta.imagenUrl}
@@ -165,7 +254,7 @@ export default function Portada() {
                 </div>
               );
             })}
-            <span className="pointer-events-none absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-energia px-3 py-1 text-xs font-semibold text-on-energia shadow-[var(--shadow-pop)]">
+            <span className="pe-hero-badge pointer-events-none absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-energia px-3 py-1 text-xs font-semibold text-on-energia shadow-[var(--shadow-pop)]">
               Fotos reales, no maqueta
             </span>
           </div>
@@ -198,7 +287,7 @@ export default function Portada() {
         <MotoresConfianza />
 
         <section className="mx-auto mt-16 w-full max-w-[1120px] border-t border-line pt-10 sm:mt-24">
-          <div className="pe-cta-textura rounded-[var(--radius-lg)] bg-brand-soft p-6 text-center sm:p-10">
+          <div className="fondo-banner rounded-[var(--radius-lg)] bg-brand-soft p-6 text-center sm:p-10">
             <h2 className="t-1">El día suelto, sin cuenta ni tarjeta</h2>
             <p className="mx-auto mt-3 max-w-xl text-pretty leading-relaxed text-text-2">
               Genera un día completo cuantas veces quieras, sin registrarte y
@@ -234,7 +323,9 @@ export default function Portada() {
           {/* `--text-2` y no `--text-3`: sobre `--bg` en tema claro el tercer
               nivel de texto se queda en 4,47:1, tres centésimas por debajo de
               AA. Medido, no supuesto (docs/diseno-producto.md, anexo A). */}
-          <p className="mt-4 text-sm text-text-2">PlanEat</p>
+          <p className="mt-4 text-sm text-text-2">
+            <LogoPlanEat tam={20} className="text-sm text-text-2" />
+          </p>
         </div>
       </footer>
     </div>

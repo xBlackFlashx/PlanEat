@@ -127,6 +127,10 @@ export interface CatalogoSerializado {
  * calcular, no leer.
  */
 export interface IngredienteVista {
+  /** Id del catálogo de ingredientes.json — p.ej. "cebolla". Necesario para
+   * cruzar "qué ya tengo" (apps/web/src/lib/despensa.ts) sin depender de
+   * comparar nombres en texto libre. */
+  alimentoId: string;
   nombre: string;
   /** `recetas.json[].ingredientes[].descripcion`. Cadena vacía cuando la
    * receta no aparece en `recetas.json` (no debería pasar, ver
@@ -798,6 +802,7 @@ export function vistaDeRecetas(
       slots: f.slots,
       alergenos: f.alergenos,
       ingredientes: f.ingredientes.map((id) => ({
+        alimentoId: id,
         nombre: info.get(id)?.nombre ?? id,
         cantidad: d?.cantidades.get(id) ?? "",
       })),

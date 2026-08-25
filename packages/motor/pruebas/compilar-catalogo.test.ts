@@ -296,10 +296,10 @@ test("la vista resuelve los ingredientes a nombres legibles con su cantidad", ()
   const receta = VISTA.recetas["avena_yogur_arandanos"];
   assert.notEqual(receta, undefined);
   assert.deepEqual(receta?.ingredientes, [
-    { nombre: "Arándanos", cantidad: "un puñado · 70 g" },
-    { nombre: "Copos de avena", cantidad: "5 cdas · 50 g" },
-    { nombre: "Miel", cantidad: "1 cdta · 8 g" },
-    { nombre: "Yogur griego natural", cantidad: "150 g" },
+    { alimentoId: "arandanos", nombre: "Arándanos", cantidad: "un puñado · 70 g" },
+    { alimentoId: "avena_copos", nombre: "Copos de avena", cantidad: "5 cdas · 50 g" },
+    { alimentoId: "miel", nombre: "Miel", cantidad: "1 cdta · 8 g" },
+    { alimentoId: "yogur_griego", nombre: "Yogur griego natural", cantidad: "150 g" },
   ]);
   assert.equal(receta?.titulo, "Avena con yogur griego y arándanos");
 });

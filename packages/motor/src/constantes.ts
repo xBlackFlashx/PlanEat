@@ -609,12 +609,34 @@ export const K_CANDIDATOS_DIA = 6; // §5
  * receta en vez de que la variedad obligatoria fuerce mezclas que encajan
  * peor. λ=0,10 empataba con 0,12 en media/mínimo/%-en-rango; se eligió 0,12
  * por el %cuadra ligeramente mejor.
+ *
+ * QUINTA ronda, lado opuesto: MAX_USOS_RECETA_SEMANA=4 tiene un efecto
+ * secundario que la cuarta ronda no midió — exprime muy pocas recetas
+ * distintas. Planes reales de 7 días con el catálogo (240 recetas) para
+ * omnívoro/vegetariano/vegano usaban sólo 6-7 recetas para las 21 comidas de
+ * la semana, varias repetidas 3-4 veces (el tope duro): "toda la semana tofu
+ * teriyaki y arroz". `scripts/medir_recetas_distintas.py` (Python; barrido
+ * conjunto MAX_USOS_RECETA_SEMANA x NU_REPETICION, 40 semillas x 4 perfiles)
+ * confirma que sólo MAX_USOS_RECETA_SEMANA=2 garantiza estructuralmente
+ * "ninguna receta >2 veces en 21 comidas" (100,0 % de las semanas en todo el
+ * rango de NU_REPETICION probado; con MAX_USOS=3 el %rep<=2 no pasa de
+ * 20,6 % y con MAX_USOS=4 no pasa de 3,1 %: la penalización blanda no puede
+ * sustituir al tope duro para esa garantía). `scripts/medir_recetas_
+ * distintas_fino.py`, con MAX_USOS=2 fijo, muestra que subir LAMBDA_
+ * INGREDIENTES de 0,12 a 0,30 no mueve la media de ingredientes/semana
+ * (26,73->26,77, ya tocó su suelo) y subir NU_REPETICION por encima de 0,08
+ * tampoco mejora nada relevante. Se deja NU_REPETICION=0,05 y LAMBDA_
+ * INGREDIENTES=0,12 sin tocar. Resultado con (MAX_USOS=2, NU_REP=0,05,
+ * λ=0,12): media 26,74 ingredientes/semana (por encima de 15-25, aceptado a
+ * cambio de no repetir receta), recetas distintas media 14,10 (mínimo 11,
+ * 83,8 % de semanas con >=12), repetición máxima de una receta SIEMPRE <=2,
+ * %cuadra 58,3 % (baja 4 pp frente al 62,3 % de MAX_USOS=4).
  */
 export const LAMBDA_INGREDIENTES = 0.12;
 export const MU_PRESUPUESTO = 0.3; // §5.1
 export const NU_REPETICION = 0.05; // §5.1
 /** Restricción DURA, no penalización: la impone `repararDuras`, no el recocido. §5.1 */
-export const MAX_USOS_RECETA_SEMANA = 4;
+export const MAX_USOS_RECETA_SEMANA = 2;
 export const SA_T0 = 0.05; // §5.3
 export const SA_ALFA = 0.994; // §5.3
 export const SA_ITERACIONES = 400; // §5.3
@@ -648,9 +670,10 @@ export const MIN_CANDIDATOS_SLOT_DIA = 3;
  * Cuarta ronda de "menos ingredientes": bajó de 8 (ceil(7/2)+4, con el
  * MAX_USOS_RECETA_SEMANA=2 de entonces) a 6 (ceil(7/4)+4) al subir
  * MAX_USOS_RECETA_SEMANA a 4 — dejarlo en 8 le habría dado a la holgura el
- * doble del margen que pide el diseño (6 en vez de 4). §6.0
+ * doble del margen que pide el diseño (6 en vez de 4). Quinta ronda: vuelve
+ * a 8 (ceil(7/2)+4) porque MAX_USOS_RECETA_SEMANA vuelve a 2. §6.0
  */
-export const MIN_CANDIDATOS_SLOT_SEMANA = 6;
+export const MIN_CANDIDATOS_SLOT_SEMANA = 8;
 /**
  * Por debajo de esta fracción del catálogo, la poda es atribuible a los filtros
  * del usuario (puerta 2). Por encima, el corto es el catálogo (puerta 3). §6.0

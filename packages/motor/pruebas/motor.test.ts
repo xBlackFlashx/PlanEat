@@ -497,15 +497,15 @@ test("una tolerancia de kcal fuera de [0, 0,5] no se interpreta, se rechaza", ()
 });
 
 test("minCandidatosSlot se deriva del tope de repeticiones, no se inventa", () => {
-  // Cuarta ronda de "menos ingredientes": MAX_USOS_RECETA_SEMANA subió de 2 a
-  // 4 y MIN_CANDIDATOS_SLOT_SEMANA bajó de 8 a 6 en consecuencia (misma
-  // holgura de 4, recalculada con el nuevo tope). Los literales de abajo
-  // salen de volver a aplicar la fórmula, no de adivinar.
+  // Quinta ronda ("recetas distintas"): MAX_USOS_RECETA_SEMANA volvió de 4 a
+  // 2 (§5.1) y MIN_CANDIDATOS_SLOT_SEMANA volvió de 6 a 8 en consecuencia
+  // (misma holgura de 4, recalculada con el nuevo tope). Los literales de
+  // abajo salen de volver a aplicar la fórmula, no de adivinar.
   assert.equal(minCandidatosSlot(1), 3); // elegir + 2 reparaciones
-  assert.equal(minCandidatosSlot(2), 5); // ceil(2/4) + 4
-  assert.equal(minCandidatosSlot(3), 5); // ceil(3/4) + 4
-  assert.equal(minCandidatosSlot(7), 6); // ceil(7/4) + 4, topado por MIN_CANDIDATOS_SLOT_SEMANA
-  assert.equal(minCandidatosSlot(30), 6);
+  assert.equal(minCandidatosSlot(2), 5); // ceil(2/2) + 4
+  assert.equal(minCandidatosSlot(3), 6); // ceil(3/2) + 4
+  assert.equal(minCandidatosSlot(7), 8); // ceil(7/2) + 4, topado por MIN_CANDIDATOS_SLOT_SEMANA
+  assert.equal(minCandidatosSlot(30), 8);
 });
 
 // ---------------------------------------------------------------------------

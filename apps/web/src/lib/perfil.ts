@@ -391,6 +391,8 @@ export const ORDEN_SLOTS: SlotComida[] = [
  * añade de verdad: primero la merienda, después el almuerzo de media mañana.
  */
 export const LAYOUTS: Record<number, SlotComida[]> = {
+  1: ["comida"],
+  2: ["comida", "cena"],
   3: ["desayuno", "comida", "cena"],
   4: ["desayuno", "comida", "merienda", "cena"],
   5: ["desayuno", "almuerzo", "comida", "merienda", "cena"],
@@ -525,7 +527,7 @@ export function leerFormulario(crudos: ParametrosCrudos): DatosFormulario {
       DIETAS.map((d) => d.valor),
       FORMULARIO_POR_DEFECTO.dieta,
     ),
-    comidas: [3, 4, 5].includes(enteroOPorDefecto(texto(crudos, "comidas"), 3))
+    comidas: [1, 2, 3, 4, 5].includes(enteroOPorDefecto(texto(crudos, "comidas"), 3))
       ? enteroOPorDefecto(texto(crudos, "comidas"), 3)
       : 3,
     // Alérgenos desconocidos se descartan aquí (vocabulario cerrado, ver

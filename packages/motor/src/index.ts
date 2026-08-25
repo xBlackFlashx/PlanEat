@@ -62,6 +62,7 @@ export type {
 export type {
   CatalogoSerializado,
   IngredienteConGramos,
+  IngredienteVista,
   PorcionesRecetas,
   RecetaConGramos,
   RecetaVista,

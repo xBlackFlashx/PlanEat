@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { VistaRecetas } from "@planeat/motor";
 import recetasVista from "@planeat/motor/recetas-vista";
 
+import { LogoPlanEat } from "@/components/logo";
 import { NavCuenta } from "@/components/nav-cuenta";
 import { TarjetasPrecio } from "@/components/tarjetas-precio";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -42,9 +43,9 @@ export default async function PaginaPrecios() {
         <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="inline-flex min-h-11 items-center text-lg font-semibold tracking-tight underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
           >
-            PlanEat
+            <LogoPlanEat className="text-lg font-semibold tracking-tight" />
           </Link>
           <div className="flex items-center gap-3">
             <NavCuenta />
@@ -54,20 +55,13 @@ export default async function PaginaPrecios() {
       </header>
 
       <main className="mx-auto w-full max-w-[1120px] flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        {/* Hero: textura sutil de dos degradados radiales sobre los tokens de
-         * marca y dorado ya existentes, puramente decorativa. Suavizada con
-         * `color-mix` (antes usaba `--brand-soft`/`--gold-soft` a plena
-         * intensidad): con la textura global nueva de `globals.css` (mismo
-         * rincón superior-izquierdo, mismo verde de marca) esta capa local ya
-         * no necesita cargar sola todo el acento — sólo lo remata — y a plena
-         * intensidad competía con ella, sobre todo en oscuro, donde
-         * `--brand-soft` es un verde bastante saturado sobre `--bg` casi
-         * negro. */}
-        <div className="relative grid items-center gap-8 overflow-hidden rounded-[var(--radius-lg)] px-4 py-8 sm:px-8 sm:py-12 lg:grid-cols-[1.2fr_0.8fr]">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(900px_360px_at_15%_-10%,color-mix(in_oklab,var(--brand-soft)_55%,transparent),transparent),radial-gradient(650px_280px_at_100%_-20%,color-mix(in_oklab,var(--gold-soft)_55%,transparent),transparent)]"
-          />
+        {/* Hero: mismo lenguaje de "mantel de marca" que la portada —
+         * `.fondo-hero` de globals.css (velos de marca/frío + rejilla de
+         * puntos, tokens con light-dark() ya resuelto). Reemplaza la textura
+         * local que había aquí (dos radiales sueltos con literales
+         * `_55%,transparent`) para no duplicar el lenguaje visual por
+         * página. */}
+        <div className="fondo-hero grid items-center gap-8 rounded-[var(--radius-lg)] px-4 py-8 sm:px-8 sm:py-12 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="max-w-2xl">
             <h1 className="voz-1 text-balance">
               Un plan gratis de verdad, y un Pro que ahorra tiempo de compra.
