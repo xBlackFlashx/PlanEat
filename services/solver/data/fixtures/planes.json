@@ -153,9 +153,9 @@
             }
           }
         ],
-        "msTranscurridos": 17,
+        "msTranscurridos": 13,
         "seed": "1",
-        "versionCatalogo": "100da762e89826bb",
+        "versionCatalogo": "a4d42920400a24e4",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
@@ -353,9 +353,9 @@
             }
           }
         ],
-        "msTranscurridos": 3,
+        "msTranscurridos": 4,
         "seed": "7",
-        "versionCatalogo": "100da762e89826bb",
+        "versionCatalogo": "a4d42920400a24e4",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
@@ -1495,9 +1495,9 @@
             }
           }
         ],
-        "msTranscurridos": 36,
+        "msTranscurridos": 39,
         "seed": "42",
-        "versionCatalogo": "100da762e89826bb",
+        "versionCatalogo": "a4d42920400a24e4",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
@@ -1893,9 +1893,9 @@
             }
           }
         ],
-        "msTranscurridos": 17,
+        "msTranscurridos": 20,
         "seed": "1",
-        "versionCatalogo": "100da762e89826bb",
+        "versionCatalogo": "a4d42920400a24e4",
         "versionGenerador": "1.5.0",
         "pool": 138,
         "catalogoEstrecho": false
@@ -2174,9 +2174,9 @@
             }
           }
         ],
-        "msTranscurridos": 11,
+        "msTranscurridos": 12,
         "seed": "12",
-        "versionCatalogo": "100da762e89826bb",
+        "versionCatalogo": "a4d42920400a24e4",
         "versionGenerador": "1.5.0",
         "pool": 177,
         "catalogoEstrecho": false
@@ -2572,15 +2572,15 @@
             }
           }
         ],
-        "msTranscurridos": 20,
+        "msTranscurridos": 23,
         "seed": "5",
-        "versionCatalogo": "100da762e89826bb",
+        "versionCatalogo": "a4d42920400a24e4",
         "versionGenerador": "1.5.0",
         "pool": 240,
         "catalogoEstrecho": false
       }
     }
   ],
-  "catalogoVersion": "100da762e89826bb",
+  "catalogoVersion": "a4d42920400a24e4",
   "nRecetas": 240
 }

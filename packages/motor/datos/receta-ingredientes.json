@@ -1,5 +1,5 @@
 {
-"version": "100da762e89826bb",
+"version": "a4d42920400a24e4",
 "recetas": {
  "avena_yogur_arandanos": {"racionesBase":1,"ingredientes":[{"alimentoId":"avena_copos","nombre":"Copos de avena","categoria":"despensa","gramos":50},{"alimentoId":"yogur_griego","nombre":"Yogur griego natural","categoria":"lacteos","gramos":150},{"alimentoId":"arandanos","nombre":"Arándanos","categoria":"fruteria","gramos":70},{"alimentoId":"miel","nombre":"Miel","categoria":"despensa","gramos":8}]},
  "tostada_aguacate_huevo": {"racionesBase":1,"ingredientes":[{"alimentoId":"pan_integral","nombre":"Pan integral","categoria":"panaderia","gramos":60},{"alimentoId":"aguacate","nombre":"Aguacate","categoria":"fruteria","gramos":70,"gramosPorPieza":200},{"alimentoId":"huevo","nombre":"Huevo","categoria":"huevos","gramos":60,"gramosPorPieza":60},{"alimentoId":"aceite_oliva","nombre":"Aceite de oliva virgen extra","categoria":"despensa","gramos":5},{"alimentoId":"sal","nombre":"Sal","categoria":"despensa","gramos":1}]},
